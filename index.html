@@ -177,6 +177,102 @@
         .badge-md { background: #f3e8ff; color: #6b21a8; }
         .badge-pdf { background: #fee2e2; color: #991b1b; }
         .badge-imscc { background: #fef3c7; color: #92400e; }
+        /* Student Results */
+        .results-banner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 32px 0 40px;
+        }
+        .result-card {
+            background: white;
+            border: 1px solid var(--sand);
+            border-radius: 8px;
+            padding: 22px 16px;
+            text-align: center;
+        }
+        .result-num {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.6rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .result-num.green { color: #15803d; }
+        .result-num.blue { color: #1d4ed8; }
+        .result-num.amber { color: #b45309; }
+        .result-num.navy { color: var(--navy); }
+        .result-desc {
+            font-size: 0.82rem;
+            color: var(--muted);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        .result-highlight {
+            font-size: 0.72rem;
+            color: #15803d;
+            font-weight: 600;
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .quotes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        .student-quote {
+            background: white;
+            border: 1px solid var(--sand);
+            border-left: 4px solid var(--amber);
+            border-radius: 2px 6px 6px 2px;
+            padding: 20px 22px;
+            font-size: 0.95rem;
+            color: var(--slate);
+            line-height: 1.65;
+            font-style: italic;
+            position: relative;
+        }
+        .student-quote::before {
+            content: '\201C';
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3rem;
+            color: var(--amber);
+            opacity: 0.3;
+            position: absolute;
+            top: 6px;
+            left: 10px;
+            line-height: 1;
+        }
+        .student-quote p {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            padding-left: 18px;
+        }
+        .student-quote .quote-tag {
+            display: block;
+            font-style: normal;
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 10px;
+            padding-left: 18px;
+        }
+        .survey-note {
+            font-size: 0.82rem;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 28px;
+            font-style: italic;
+        }
+        @media (max-width: 640px) {
+            .results-banner { grid-template-columns: repeat(2, 1fr); }
+            .quotes-grid { grid-template-columns: 1fr; }
+        }
         .steps { counter-reset: step-counter; list-style: none; padding: 0; }
         .steps li {
             counter-increment: step-counter;
@@ -278,6 +374,66 @@
                 <tr><td><span class="tier-dot dot-quick"></span>Quick Engagement</td><td>5–8 pts</td><td>9</td><td>Personal impact reflections, 60-second government videos</td></tr>
             </tbody>
         </table>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>What <span class="accent">Students</span> Say</h2>
+        <p class="section-lead">
+            End-of-semester survey results from 38 community college students at Tarrant County College.
+        </p>
+
+        <div class="results-banner">
+            <div class="result-card">
+                <div class="result-num green">89%</div>
+                <div class="result-desc">said CAP was better than traditional exams</div>
+                <div class="result-highlight">0% said worse</div>
+            </div>
+            <div class="result-card">
+                <div class="result-num blue">87%</div>
+                <div class="result-desc">rated their overall CAP experience Good or Excellent</div>
+            </div>
+            <div class="result-card">
+                <div class="result-num amber">58%</div>
+                <div class="result-desc">said no activity was "least valuable" — all were worthwhile</div>
+            </div>
+            <div class="result-card">
+                <div class="result-num navy">86%</div>
+                <div class="result-desc">found the Complete/Incomplete rubrics helpful</div>
+            </div>
+        </div>
+
+        <div class="quotes-grid">
+            <div class="student-quote">
+                <p>The activities made me actually think about how I interacted with my local government instead of just memorizing facts.</p>
+                <span class="quote-tag">— TCC Student</span>
+            </div>
+            <div class="student-quote">
+                <p>It took them from a book concept into reality. I am a hands-on learner so I liked that this took me out of my computer and into the real world.</p>
+                <span class="quote-tag">— TCC Student</span>
+            </div>
+            <div class="student-quote">
+                <p>I learned how easy it truly was to connect with my government. I didn't realize how we interact with our government on a daily basis.</p>
+                <span class="quote-tag">— TCC Student</span>
+            </div>
+            <div class="student-quote">
+                <p>They made me engage more than I likely would have just memorizing things for tests.</p>
+                <span class="quote-tag">— TCC Student</span>
+            </div>
+            <div class="student-quote">
+                <p>It helped bring our readings to life, and not just reading from a textbook. The CAP activities helped connect real life experience to the textbook readings.</p>
+                <span class="quote-tag">— TCC Student</span>
+            </div>
+            <div class="student-quote">
+                <p>I was surprised to learn how easy it was to apply these concepts. I never would've even given some things a second thought if I wasn't actively looking for topics.</p>
+                <span class="quote-tag">— TCC Student</span>
+            </div>
+        </div>
+
+        <p class="survey-note">
+            Source: CAP Reflection Survey, Fall 2025 · n=38 · Tarrant County College, Fort Worth, TX
+        </p>
     </div>
 </section>
 
@@ -396,7 +552,7 @@
                 <p>I built CAP because I was tired of watching community college students disengage from government courses that relied on memorization and multiple-choice exams. These students are working adults, parents, first-generation college students — people who are already affected by government every day. They deserved better than Scantrons.</p>
                 <p>CAP is grounded in Self-Determination Theory, experiential learning theory, and authentic assessment research. It gives students real choices, connects course material to their actual lives, and replaces high-stakes testing with meaningful civic engagement.</p>
                 <p>If you're interested in using CAP, adapting it for your context, or collaborating on research, I'd love to hear from you.</p>
-                <p>📧 <a href="mailto:jared.stewart@tccd.edu">jared.stewart@tccd.edu</a><br>
+                <p>📧 <a href="/cdn-cgi/l/email-protection#bfd5decddadb91cccbdac8decdcbffcbdcdcdb91dadbca"><span class="__cf_email__" data-cfemail="573d362532337924233220362523172334343379323322">[email&#160;protected]</span></a><br>
                 🏛️ <a href="https://www.tccd.edu" target="_blank">Tarrant County College</a></p>
             </div>
         </div>
@@ -408,9 +564,4 @@
 <footer>
     <strong>Civic Action Project (CAP)</strong><br>
     Created by Jared Stewart · Tarrant County College · Fort Worth, Texas<br><br>
-    This work is shared as an Open Educational Resource.<br>
-    You are free to use, adapt, and distribute these materials with attribution.
-</footer>
-
-</body>
-</html>
+    This work is shared as a
