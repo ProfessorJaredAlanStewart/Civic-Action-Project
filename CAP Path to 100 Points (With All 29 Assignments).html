@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAP Path to 100 Points - Complete Planner</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2d3436;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%);
+            color: white;
+            padding: 35px 40px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 15px 40px rgba(30, 58, 95, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .header h1 {
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 2.4em;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        /* Instructions */
+        .instructions {
+            background: white;
+            padding: 22px 28px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2d5a87;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        
+        .instructions h3 {
+            color: #1e3a5f;
+            margin-bottom: 12px;
+            font-size: 1.15em;
+        }
+        
+        .instructions ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 8px;
+        }
+        
+        .instructions li {
+            padding-left: 24px;
+            position: relative;
+            font-size: 0.95em;
+            color: #555;
+        }
+        
+        .instructions li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        /* Category Sections */
+        .category-section {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+        
+        .category-header {
+            padding: 16px 24px;
+            font-weight: 700;
+            font-size: 1.1em;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: filter 0.2s ease;
+        }
+        
+        .category-header:hover {
+            filter: brightness(1.05);
+        }
+        
+        .category-header .toggle-icon {
+            font-size: 1.3em;
+            transition: transform 0.3s ease;
+        }
+        
+        .category-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .category-high .category-header {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+        }
+        
+        .category-medium .category-header {
+            background: linear-gradient(135deg, #d68910 0%, #f39c12 100%);
+        }
+        
+        .category-quick .category-header {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        
+        .category-content {
+            padding: 18px;
+            transition: max-height 0.3s ease;
+        }
+        
+        .category-content.collapsed {
+            display: none;
+        }
+        
+        /* Assignment Items */
+        .assignment-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.25s ease;
+        }
+        
+        .assignment-item:hover {
+            border-color: #2d5a87;
+            background: #fff;
+            transform: translateX(4px);
+        }
+        
+        .assignment-item.selected {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4edda 100%);
+            border-color: #27ae60;
+        }
+        
+        .assignment-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #27ae60;
+            flex-shrink: 0;
+        }
+        
+        .assignment-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .assignment-name {
+            font-weight: 600;
+            font-size: 0.98em;
+            color: #2d3436;
+            cursor: pointer;
+        }
+        
+        .assignment-desc {
+            font-size: 0.82em;
+            color: #6c757d;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .points-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        
+        .points-input {
+            width: 60px;
+            padding: 8px 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: 600;
+            font-family: inherit;
+            transition: border-color 0.2s ease;
+        }
+        
+        .points-input:focus {
+            outline: none;
+            border-color: #2d5a87;
+        }
+        
+        .points-label {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        
+        /* Sticky Summary Panel */
+        .summary-panel {
+            position: sticky;
+            top: 20px;
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+            margin-bottom: 25px;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .total-display {
+            text-align: center;
+        }
+        
+        .total-label {
+            font-size: 0.95em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .total-points {
+            font-family: 'Crimson Pro', Georgia, serif;
+            font-size: 3.5em;
+            font-weight: 700;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+        
+        .total-points.under { color: #2d5a87; }
+        .total-points.exact { color: #27ae60; }
+        .total-points.over { color: #e67e22; }
+        
+        .goal-display {
+            text-align: right;
+        }
+        
+        .goal-label {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+        
+        .goal-value {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #2d3436;
+        }
+        
+        .progress-section {
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 14px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease, background 0.3s ease;
+            background: linear-gradient(90deg, #2d5a87, #3d7ab5);
+        }
+        
+        .progress-fill.exact {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+        
+        .progress-fill.over {
+            background: linear-gradient(90deg, #e67e22, #f39c12);
+        }
+        
+        .progress-text {
+            font-size: 0.9em;
+            color: #6c757d;
+            text-align: center;
+        }
+        
+        /* Requirements Check */
+        .requirements-check {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .req-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid transparent;
+        }
+        
+        .req-item.met {
+            background: #d4edda;
+            border-color: #27ae60;
+        }
+        
+        .req-item.unmet {
+            background: #fff3cd;
+            border-color: #f39c12;
+        }
+        
+        .req-icon {
+            font-size: 1.3em;
+        }
+        
+        .req-text {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        /* Message Box */
+        .message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .message.success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 2px solid #27ae60;
+        }
+        
+        .message.warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeeba);
+            color: #856404;
+            border: 2px solid #f39c12;
+        }
+        
+        .message.info {
+            background: linear-gradient(135deg, #cce5ff, #b8daff);
+            color: #004085;
+            border: 2px solid #2d5a87;
+        }
+        
+        /* Buttons */
+        .button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .btn-reset {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #2d5a87, #1e3a5f);
+            color: white;
+        }
+        
+        .btn-load {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+        
+        .btn-suggest {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+        }
+        
+        /* Tools Section */
+        .tools-section {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+        
+        .tools-section h3 {
+            color: #1e3a5f;
+            margin-bottom: 18px;
+            font-size: 1.15em;
+        }
+        
+        .suggestion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .suggestion-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        
+        .suggestion-card:hover {
+            border-color: #2d5a87;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        
+        .suggestion-title {
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+        
+        .suggestion-desc {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .suggestion-points {
+            font-weight: 600;
+            color: #27ae60;
+            font-size: 0.9em;
+        }
+        
+        /* Selection Summary */
+        .selection-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+        
+        .selection-summary h4 {
+            color: #2d3436;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+        
+        .selected-list {
+            font-size: 0.9em;
+            color: #495057;
+            line-height: 1.6;
+        }
+        
+        .selected-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin: 3px;
+            border: 1px solid #dee2e6;
+            font-size: 0.85em;
+        }
+        
+        .selected-item .pts {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        /* Two column layout for larger screens */
+        @media (min-width: 900px) {
+            .main-content {
+                display: grid;
+                grid-template-columns: 1fr 340px;
+                gap: 25px;
+                align-items: start;
+            }
+            
+            .left-column {
+                order: 1;
+            }
+            
+            .right-column {
+                order: 2;
+            }
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .assignment-item {
+                flex-wrap: wrap;
+            }
+            
+            .assignment-info {
+                width: calc(100% - 40px);
+            }
+            
+            .points-container {
+                margin-left: 34px;
+            }
+            
+            .requirements-check {
+                grid-template-columns: 1fr;
+            }
+            
+            .total-points {
+                font-size: 2.8em;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .btn, .tools-section {
+                display: none;
+            }
+            
+            .summary-panel {
+                position: static;
+                box-shadow: none;
+                border: 2px solid #000;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 CAP Path to 100 Points</h1>
+            <p>Plan your Civic Action Project activities to reach your goal!</p>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How to Use This Planner</h3>
+            <ul>
+                <li>Select activities you plan to complete</li>
+                <li>Edit point values if your instructor uses different amounts</li>
+                <li>You must complete activities from at least 2 categories</li>
+                <li>Use suggested paths for quick planning ideas</li>
+                <li>Save your plan to return later</li>
+            </ul>
+        </div>
+        
+        <div class="main-content">
+            <div class="left-column">
+                <!-- Higher Effort Section -->
+                <div class="category-section category-high">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span>🔴 Higher Effort Activities (20-30 points each) — 10 Assignments</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="category-content" id="high-content"></div>
+                </div>
+                
+                <!-- Medium Effort Section -->
+                <div class="category-section category-medium">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span>🟡 Medium Effort Activities (10-15 points each) — 10 Assignments</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="category-content" id="medium-content"></div>
+                </div>
+                
+                <!-- Quick Engagement Section -->
+                <div class="category-section category-quick">
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span>🟢 Quick Engagement Activities (5-8 points each) — 9 Assignments</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="category-content" id="quick-content"></div>
+                </div>
+                
+                <!-- Suggested Paths -->
+                <div class="tools-section">
+                    <h3>💡 Suggested Paths to 100 Points</h3>
+                    <div class="suggestion-grid">
+                        <div class="suggestion-card" onclick="applySuggestion('balanced')">
+                            <div class="suggestion-title">Balanced Mix</div>
+                            <div class="suggestion-desc">A variety of activities across all categories</div>
+                            <div class="suggestion-points">= 100 points</div>
+                        </div>
+                        <div class="suggestion-card" onclick="applySuggestion('higheffort')">
+                            <div class="suggestion-title">Deep Dive</div>
+                            <div class="suggestion-desc">Focus on fewer, higher-effort activities</div>
+                            <div class="suggestion-points">= 100 points</div>
+                        </div>
+                        <div class="suggestion-card" onclick="applySuggestion('manysmall')">
+                            <div class="suggestion-title">Steady Progress</div>
+                            <div class="suggestion-desc">Many smaller activities spread over time</div>
+                            <div class="suggestion-points">= 100 points</div>
+                        </div>
+                        <div class="suggestion-card" onclick="applySuggestion('video')">
+                            <div class="suggestion-title">Video Creator</div>
+                            <div class="suggestion-desc">Perfect if you enjoy making videos</div>
+                            <div class="suggestion-points">= 100 points</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="summary-panel">
+                    <div class="summary-header">
+                        <div class="total-display">
+                            <div class="total-label">Your Total</div>
+                            <div class="total-points under" id="totalPoints">0</div>
+                        </div>
+                        <div class="goal-display">
+                            <div class="goal-label">Goal</div>
+                            <div class="goal-value">100 pts</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Select activities to begin</div>
+                    </div>
+                    
+                    <div class="requirements-check">
+                        <div class="req-item unmet" id="reqPoints">
+                            <span class="req-icon">📊</span>
+                            <span class="req-text">Need 100 points</span>
+                        </div>
+                        <div class="req-item unmet" id="reqCategories">
+                            <span class="req-icon">📁</span>
+                            <span class="req-text">Need 2 categories</span>
+                        </div>
+                    </div>
+                    
+                    <div class="message info" id="message">
+                        Select activities to reach 100 points from at least 2 categories.
+                    </div>
+                    
+                    <div class="button-row">
+                        <button class="btn btn-save" onclick="savePlan()">💾 Save</button>
+                        <button class="btn btn-load" onclick="loadPlan()">📂 Load</button>
+                        <button class="btn btn-reset" onclick="resetAll()">🔄 Reset</button>
+                    </div>
+                    
+                    <div class="selection-summary" id="selectionSummary" style="display: none;">
+                        <h4>Your Selected Activities:</h4>
+                        <div class="selected-list" id="selectedList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete assignment database with all 29 assignments
+        const assignments = {
+            // Higher Effort (10 assignments)
+            meeting: {
+                name: "Government Meeting Attendance",
+                category: "high",
+                defaultPoints: 25,
+                description: "Attend a public government meeting and write reflection"
+            },
+            interview1: {
+                name: "Civic Interview Series #1",
+                category: "high",
+                defaultPoints: 20,
+                description: "Interview community member about government impact"
+            },
+            interview2: {
+                name: "Civic Interview Series #2",
+                category: "high",
+                defaultPoints: 20,
+                description: "Second interview with different community member"
+            },
+            directory: {
+                name: "Public Services Directory",
+                category: "high",
+                defaultPoints: 30,
+                description: "Create guide of 10+ government services for specific audience"
+            },
+            mythvideo: {
+                name: "Myth Busting Video",
+                category: "high",
+                defaultPoints: 25,
+                description: "3-5 minute video debunking a government misconception"
+            },
+            publiccomment: {
+                name: "Public Comment Champion",
+                category: "high",
+                defaultPoints: 25,
+                description: "Deliver public comments at 2 government meetings"
+            },
+            civicorg: {
+                name: "Civic Organization Immersion",
+                category: "high",
+                defaultPoints: 25,
+                description: "Volunteer 10+ hours with a civic organization"
+            },
+            naturalization: {
+                name: "Naturalization Ceremony Witness",
+                category: "high",
+                defaultPoints: 25,
+                description: "Attend citizenship ceremony and interview new citizens"
+            },
+            ridealong: {
+                name: "Ride-Along Documentary",
+                category: "high",
+                defaultPoints: 30,
+                description: "Shadow a government employee for 4-6 hours"
+            },
+            voterdrive: {
+                name: "Voter Registration Drive",
+                category: "high",
+                defaultPoints: 30,
+                description: "Organize voter registration at 3+ locations"
+            },
+            
+            // Medium Effort (10 assignments)
+            scavenger: {
+                name: "Government Services Scavenger Hunt",
+                category: "medium",
+                defaultPoints: 15,
+                description: "Document 5 government services over 2 weeks"
+            },
+            clip1: {
+                name: "Interview Clip #1",
+                category: "medium",
+                defaultPoints: 10,
+                description: "2-3 minute video interview with peer"
+            },
+            clip2: {
+                name: "Interview Clip #2",
+                category: "medium",
+                defaultPoints: 10,
+                description: "Second interview clip with different person"
+            },
+            clip3: {
+                name: "Interview Clip #3",
+                category: "medium",
+                defaultPoints: 10,
+                description: "Third interview clip with different person"
+            },
+            journal1: {
+                name: "News Connection Journal #1",
+                category: "medium",
+                defaultPoints: 10,
+                description: "Connect news article to course concepts"
+            },
+            journal2: {
+                name: "News Connection Journal #2",
+                category: "medium",
+                defaultPoints: 10,
+                description: "Second news journal with different article"
+            },
+            journal3: {
+                name: "News Connection Journal #3",
+                category: "medium",
+                defaultPoints: 10,
+                description: "Third news journal with different article"
+            },
+            detective: {
+                name: "Regulation Detective",
+                category: "medium",
+                defaultPoints: 12,
+                description: "Research regulations affecting a local business"
+            },
+            democracy: {
+                name: "Democracy in Action Video Series",
+                category: "medium",
+                defaultPoints: 12,
+                description: "Create 3-4 social media videos about democratic participation"
+            },
+            failure: {
+                name: "Government Failure Investigation",
+                category: "medium",
+                defaultPoints: 15,
+                description: "Research a failed/over-budget government project"
+            },
+            
+            // Quick Engagement (9 assignments)
+            reflect1: {
+                name: "Personal Impact Reflection #1",
+                category: "quick",
+                defaultPoints: 5,
+                description: "150-word reflection on government's impact"
+            },
+            reflect2: {
+                name: "Personal Impact Reflection #2",
+                category: "quick",
+                defaultPoints: 5,
+                description: "Second reflection on different topic"
+            },
+            reflect3: {
+                name: "Personal Impact Reflection #3",
+                category: "quick",
+                defaultPoints: 5,
+                description: "Third reflection on different topic"
+            },
+            reflect4: {
+                name: "Personal Impact Reflection #4",
+                category: "quick",
+                defaultPoints: 5,
+                description: "Fourth reflection showing deeper understanding"
+            },
+            reflect5: {
+                name: "Personal Impact Reflection #5",
+                category: "quick",
+                defaultPoints: 5,
+                description: "Final reflection demonstrating mastery"
+            },
+            video1: {
+                name: "60-Second Government Impact #1",
+                category: "quick",
+                defaultPoints: 8,
+                description: "60-second video explaining government impact"
+            },
+            video2: {
+                name: "60-Second Government Impact #2",
+                category: "quick",
+                defaultPoints: 8,
+                description: "Second 60-second video on different topic"
+            },
+            video3: {
+                name: "60-Second Government Impact #3",
+                category: "quick",
+                defaultPoints: 8,
+                description: "Third 60-second video on different topic"
+            },
+            video4: {
+                name: "60-Second Government Impact #4",
+                category: "quick",
+                defaultPoints: 8,
+                description: "Fourth 60-second video demonstrating mastery"
+            }
+        };
+        
+        // Suggested paths
+        const suggestedPaths = {
+            balanced: ['meeting', 'interview1', 'scavenger', 'journal1', 'reflect1', 'reflect2', 'video1', 'video2'],
+            higheffort: ['directory', 'interview1', 'interview2', 'mythvideo', 'reflect1'],
+            manysmall: ['scavenger', 'clip1', 'clip2', 'journal1', 'journal2', 'reflect1', 'reflect2', 'reflect3', 'video1', 'video2'],
+            video: ['mythvideo', 'democracy', 'clip1', 'clip2', 'clip3', 'video1', 'video2', 'video3', 'video4']
+        };
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            buildAssignmentLists();
+            loadFromStorage();
+            calculateTotal();
+        });
+        
+        function buildAssignmentLists() {
+            const highContent = document.getElementById('high-content');
+            const mediumContent = document.getElementById('medium-content');
+            const quickContent = document.getElementById('quick-content');
+            
+            Object.entries(assignments).forEach(([id, assignment]) => {
+                const item = createAssignmentItem(id, assignment);
+                
+                if (assignment.category === 'high') {
+                    highContent.appendChild(item);
+                } else if (assignment.category === 'medium') {
+                    mediumContent.appendChild(item);
+                } else {
+                    quickContent.appendChild(item);
+                }
+            });
+        }
+        
+        function createAssignmentItem(id, assignment) {
+            const item = document.createElement('div');
+            item.className = 'assignment-item';
+            item.id = `item-${id}`;
+            
+            item.innerHTML = `
+                <input type="checkbox" class="assignment-checkbox" id="check-${id}" 
+                       data-id="${id}" onchange="handleCheckboxChange(this)">
+                <div class="assignment-info">
+                    <label class="assignment-name" for="check-${id}">${assignment.name}</label>
+                    <div class="assignment-desc">${assignment.description}</div>
+                </div>
+                <div class="points-container">
+                    <input type="number" class="points-input" id="points-${id}" 
+                           value="${assignment.defaultPoints}" min="0" max="100"
+                           data-id="${id}" data-default="${assignment.defaultPoints}"
+                           onchange="handlePointsChange(this)">
+                    <span class="points-label">pts</span>
+                </div>
+            `;
+            
+            return item;
+        }
+        
+        function handleCheckboxChange(checkbox) {
+            const id = checkbox.dataset.id;
+            const item = document.getElementById(`item-${id}`);
+            
+            if (checkbox.checked) {
+                item.classList.add('selected');
+            } else {
+                item.classList.remove('selected');
+            }
+            
+            calculateTotal();
+            saveToStorage();
+        }
+        
+        function handlePointsChange(input) {
+            calculateTotal();
+            saveToStorage();
+        }
+        
+        function calculateTotal() {
+            let total = 0;
+            const categories = new Set();
+            const selected = [];
+            
+            Object.keys(assignments).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                const pointsInput = document.getElementById(`points-${id}`);
+                
+                if (checkbox && checkbox.checked) {
+                    const points = parseInt(pointsInput.value) || 0;
+                    total += points;
+                    categories.add(assignments[id].category);
+                    selected.push({ id, name: assignments[id].name, points });
+                }
+            });
+            
+            updateDisplay(total, categories.size, selected);
+        }
+        
+        function updateDisplay(total, categoryCount, selected) {
+            const totalElement = document.getElementById('totalPoints');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const messageElement = document.getElementById('message');
+            const reqPoints = document.getElementById('reqPoints');
+            const reqCategories = document.getElementById('reqCategories');
+            const selectionSummary = document.getElementById('selectionSummary');
+            const selectedList = document.getElementById('selectedList');
+            
+            // Update total
+            totalElement.textContent = total;
+            
+            // Update total color class
+            totalElement.className = 'total-points';
+            progressFill.className = 'progress-fill';
+            
+            if (total >= 100) {
+                if (total === 100) {
+                    totalElement.classList.add('exact');
+                    progressFill.classList.add('exact');
+                } else {
+                    totalElement.classList.add('over');
+                    progressFill.classList.add('over');
+                }
+            } else {
+                totalElement.classList.add('under');
+            }
+            
+            // Update progress bar
+            const percentage = Math.min((total / 100) * 100, 100);
+            progressFill.style.width = percentage + '%';
+            
+            // Update progress text
+            if (total === 0) {
+                progressText.textContent = 'Select activities to begin';
+            } else if (total < 100) {
+                progressText.textContent = `${100 - total} more points needed`;
+            } else if (total === 100) {
+                progressText.textContent = 'Goal reached! 🎉';
+            } else {
+                progressText.textContent = `${total - 100} points over goal`;
+            }
+            
+            // Update requirements
+            reqPoints.className = 'req-item ' + (total >= 100 ? 'met' : 'unmet');
+            reqPoints.querySelector('.req-icon').textContent = total >= 100 ? '✅' : '📊';
+            reqPoints.querySelector('.req-text').textContent = total >= 100 ? '100+ points ✓' : `Need ${100 - total} more points`;
+            
+            reqCategories.className = 'req-item ' + (categoryCount >= 2 ? 'met' : 'unmet');
+            reqCategories.querySelector('.req-icon').textContent = categoryCount >= 2 ? '✅' : '📁';
+            reqCategories.querySelector('.req-text').textContent = categoryCount >= 2 ? `${categoryCount} categories ✓` : `Need ${2 - categoryCount} more category`;
+            
+            // Update message
+            if (total >= 100 && categoryCount >= 2) {
+                messageElement.className = 'message success';
+                messageElement.textContent = '🎉 Congratulations! You\'ve met all CAP requirements!';
+            } else if (total >= 100 && categoryCount < 2) {
+                messageElement.className = 'message warning';
+                messageElement.textContent = '⚠️ You have enough points, but need activities from at least 2 categories.';
+            } else if (total > 0) {
+                messageElement.className = 'message info';
+                messageElement.textContent = `Keep going! Select ${100 - total} more points${categoryCount < 2 ? ' from at least 2 categories' : ''}.`;
+            } else {
+                messageElement.className = 'message info';
+                messageElement.textContent = 'Select activities to reach 100 points from at least 2 categories.';
+            }
+            
+            // Update selection summary
+            if (selected.length > 0) {
+                selectionSummary.style.display = 'block';
+                selectedList.innerHTML = selected.map(s => 
+                    `<span class="selected-item">${s.name} <span class="pts">(${s.points})</span></span>`
+                ).join('');
+            } else {
+                selectionSummary.style.display = 'none';
+            }
+        }
+        
+        function toggleCategory(header) {
+            header.classList.toggle('collapsed');
+            const content = header.nextElementSibling;
+            content.classList.toggle('collapsed');
+        }
+        
+        function applySuggestion(pathName) {
+            // Clear current selections
+            Object.keys(assignments).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                const item = document.getElementById(`item-${id}`);
+                if (checkbox) {
+                    checkbox.checked = false;
+                    item.classList.remove('selected');
+                }
+            });
+            
+            // Apply suggested path
+            const path = suggestedPaths[pathName];
+            if (path) {
+                path.forEach(id => {
+                    const checkbox = document.getElementById(`check-${id}`);
+                    const item = document.getElementById(`item-${id}`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        item.classList.add('selected');
+                    }
+                });
+            }
+            
+            calculateTotal();
+            saveToStorage();
+            
+            // Scroll to top of summary
+            document.querySelector('.summary-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function resetAll() {
+            if (confirm('Are you sure you want to reset all selections?')) {
+                Object.keys(assignments).forEach(id => {
+                    const checkbox = document.getElementById(`check-${id}`);
+                    const pointsInput = document.getElementById(`points-${id}`);
+                    const item = document.getElementById(`item-${id}`);
+                    
+                    if (checkbox) checkbox.checked = false;
+                    if (pointsInput) pointsInput.value = assignments[id].defaultPoints;
+                    if (item) item.classList.remove('selected');
+                });
+                
+                calculateTotal();
+                localStorage.removeItem('capPlannerData');
+            }
+        }
+        
+        function savePlan() {
+            saveToStorage();
+            alert('✅ Your plan has been saved to this browser!\n\nYour selections will be here when you return.');
+        }
+        
+        function loadPlan() {
+            const saved = loadFromStorage();
+            if (saved) {
+                alert('📂 Your saved plan has been loaded!');
+            } else {
+                alert('No saved plan found in this browser.');
+            }
+        }
+        
+        function saveToStorage() {
+            const data = {};
+            
+            Object.keys(assignments).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                const pointsInput = document.getElementById(`points-${id}`);
+                
+                data[id] = {
+                    checked: checkbox ? checkbox.checked : false,
+                    points: pointsInput ? parseInt(pointsInput.value) : assignments[id].defaultPoints
+                };
+            });
+            
+            localStorage.setItem('capPlannerData', JSON.stringify(data));
+        }
+        
+        function loadFromStorage() {
+            const saved = localStorage.getItem('capPlannerData');
+            
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    
+                    Object.entries(data).forEach(([id, values]) => {
+                        const checkbox = document.getElementById(`check-${id}`);
+                        const pointsInput = document.getElementById(`points-${id}`);
+                        const item = document.getElementById(`item-${id}`);
+                        
+                        if (checkbox && values.checked !== undefined) {
+                            checkbox.checked = values.checked;
+                            if (values.checked && item) {
+                                item.classList.add('selected');
+                            }
+                        }
+                        
+                        if (pointsInput && values.points !== undefined) {
+                            pointsInput.value = values.points;
+                        }
+                    });
+                    
+                    return true;
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                    return false;
+                }
+            }
+            
+            return false;
+        }
+    </script>
+</body>
+</html>
