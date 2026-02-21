@@ -307,10 +307,11 @@
             padding: 36px; display: flex; gap: 28px; align-items: flex-start;
         }
         .about-avatar {
-            width: 80px; height: 80px; min-width: 80px; border-radius: 50%;
+            width: 100px; height: 100px; min-width: 100px; border-radius: 50%;
             background: var(--navy); color: white;
             display: flex; align-items: center; justify-content: center;
             font-family: 'Libre Baskerville', serif; font-size: 1.8rem; font-weight: 700;
+            object-fit: cover;
         }
         .about-text h3 { font-family: 'Libre Baskerville', serif; font-size: 1.2rem; color: var(--navy); margin-bottom: 4px; }
         .about-text .title { font-size: 0.9rem; color: var(--amber); font-weight: 600; margin-bottom: 12px; }
@@ -393,6 +394,10 @@
             <div class="result-card">
                 <div class="result-num blue">87%</div>
                 <div class="result-desc">rated their overall CAP experience Good or Excellent</div>
+            </div>
+            <div class="result-card">
+                <div class="result-num amber">58%</div>
+                <div class="result-desc">said no activity was "least valuable" — all were worthwhile</div>
             </div>
             <div class="result-card">
                 <div class="result-num navy">86%</div>
@@ -541,7 +546,7 @@
     <div class="container">
         <h2>About the <span class="accent">Author</span></h2>
         <div class="about-card">
-            <div class="about-avatar">JS</div>
+            <img class="about-avatar" src="headshot.jpg" alt="Professor Jared Stewart">
             <div class="about-text">
                 <h3>Professor Jared Alan Stewart</h3>
                 <div class="title">Government Faculty · Tarrant County College · Fort Worth, TX</div>
