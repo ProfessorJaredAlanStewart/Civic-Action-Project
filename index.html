@@ -269,10 +269,6 @@
             margin-top: 28px;
             font-style: italic;
         }
-        @media (max-width: 640px) {
-            .results-banner { grid-template-columns: repeat(2, 1fr); }
-            .quotes-grid { grid-template-columns: 1fr; }
-        }
         .steps { counter-reset: step-counter; list-style: none; padding: 0; }
         .steps li {
             counter-increment: step-counter;
@@ -288,13 +284,17 @@
         .steps li div { padding-top: 6px; }
         .steps li strong { color: var(--navy); display: block; margin-bottom: 4px; }
         .steps li p { color: var(--muted); font-size: 0.95rem; margin: 0; }
+
+        /* Tiers table — scrollable wrapper for mobile */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 24px 0; }
         .tiers-table {
-            width: 100%; border-collapse: collapse; margin: 24px 0;
+            width: 100%; border-collapse: collapse; min-width: 520px;
             background: white; border-radius: 6px; overflow: hidden; border: 1px solid var(--sand);
         }
         .tiers-table th {
             background: var(--navy); color: white; font-weight: 600; font-size: 0.85rem;
             letter-spacing: 0.04em; text-transform: uppercase; padding: 14px 20px; text-align: left;
+            white-space: nowrap;
         }
         .tiers-table td { padding: 14px 20px; border-bottom: 1px solid #f1ece3; font-size: 0.95rem; }
         .tiers-table tr:last-child td { border-bottom: none; }
@@ -325,13 +325,64 @@
         footer strong { color: rgba(255,255,255,0.8); }
         footer a { color: var(--amber); text-decoration: none; }
         footer a:hover { text-decoration: underline; }
+
+        /* ===== TABLET ===== */
+        @media (max-width: 768px) {
+            .results-banner { grid-template-columns: repeat(2, 1fr); }
+            .quotes-grid { grid-template-columns: 1fr; }
+            .about-card { padding: 28px; }
+        }
+
+        /* ===== MOBILE ===== */
         @media (max-width: 640px) {
-            .hero { padding: 50px 20px 45px; }
-            .resource-card { grid-template-columns: 44px 1fr; gap: 14px; }
+            body { font-size: 16px; }
+            .hero { padding: 44px 20px 40px; }
+            .hero h1 { font-size: 1.85rem; }
+            .hero-subtitle { font-size: 1rem; margin-bottom: 24px; }
+            section { padding: 44px 0; }
+            section h2 { font-size: 1.45rem; }
+            .section-lead { font-size: 0.98rem; }
+
+            .stat-row { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+            .stat-card { padding: 16px 10px; }
+            .stat-num { font-size: 1.8rem; }
+            .stat-label { font-size: 0.75rem; }
+
+            .results-banner { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .result-card { padding: 16px 10px; }
+            .result-num { font-size: 2rem; }
+            .result-desc { font-size: 0.78rem; }
+
+            .resource-card { grid-template-columns: 44px 1fr; gap: 14px; padding: 16px 18px; }
             .resource-badge { display: none; }
             .resource-icon { width: 44px; height: 44px; font-size: 20px; }
-            .about-card { flex-direction: column; align-items: center; text-align: center; }
-            .stat-row { grid-template-columns: repeat(2, 1fr); }
+            .resource-info h3 { font-size: 0.98rem; }
+            .resource-info p { font-size: 0.82rem; }
+
+            .about-card { flex-direction: column; align-items: center; text-align: center; padding: 24px 20px; gap: 20px; }
+            .about-avatar { width: 88px; height: 88px; min-width: 88px; }
+            .about-text h3 { font-size: 1.1rem; }
+            .about-text p { font-size: 0.9rem; }
+
+            .steps li { gap: 14px; }
+            .steps li::before { width: 34px; height: 34px; min-width: 34px; font-size: 0.88rem; }
+            .steps li strong { font-size: 0.95rem; }
+            .steps li p { font-size: 0.88rem; }
+
+            .student-quote { padding: 16px 18px; font-size: 0.9rem; }
+            .student-quote::before { font-size: 2.4rem; top: 4px; left: 6px; }
+            .student-quote p { padding-left: 14px; }
+
+            .quotes-grid { grid-template-columns: 1fr; gap: 12px; }
+        }
+
+        /* ===== VERY SMALL PHONES ===== */
+        @media (max-width: 380px) {
+            .hero { padding: 36px 16px 32px; }
+            .hero h1 { font-size: 1.6rem; }
+            .container { padding: 0 16px; }
+            .stat-row { grid-template-columns: 1fr 1fr; }
+            .results-banner { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -367,6 +418,7 @@
             <div class="stat-card"><div class="stat-num">100</div><div class="stat-label">Points to Complete</div></div>
             <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Effort Tiers</div></div>
         </div>
+        <div class="table-wrap">
         <table class="tiers-table">
             <thead><tr><th>Category</th><th>Point Range</th><th>Activities</th><th>Examples</th></tr></thead>
             <tbody>
@@ -375,6 +427,7 @@
                 <tr><td><span class="tier-dot dot-quick"></span>Quick Engagement</td><td>5–8 pts</td><td>9</td><td>Personal impact reflections, 60-second government videos</td></tr>
             </tbody>
         </table>
+        </div>
     </div>
 </section>
 
@@ -388,20 +441,20 @@
         <div class="results-banner">
             <div class="result-card">
                 <div class="result-num green">89%</div>
-                <div class="result-desc">said CAP was <strong>better than traditional exams</strong></div>
+                <div class="result-desc">said CAP was better than traditional exams</div>
                 <div class="result-highlight">0% said worse</div>
             </div>
             <div class="result-card">
                 <div class="result-num blue">87%</div>
-                <div class="result-desc">rated their overall CAP experience <strong>Good or Excellent</strong></div>
+                <div class="result-desc">rated their overall CAP experience Good or Excellent</div>
             </div>
             <div class="result-card">
                 <div class="result-num amber">58%</div>
-                <div class="result-desc">said no activity was "least valuable" — <strong>all were worthwhile</strong></div>
+                <div class="result-desc">said no activity was "least valuable" — all were worthwhile</div>
             </div>
             <div class="result-card">
                 <div class="result-num navy">86%</div>
-                <div class="result-desc">found the Complete/Incomplete <strong>rubrics helpful</strong></div>
+                <div class="result-desc">found the Complete/Incomplete rubrics helpful</div>
             </div>
         </div>
 
