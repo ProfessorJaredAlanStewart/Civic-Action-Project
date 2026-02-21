@@ -1,0 +1,3078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAP Tracker - Auto-Resume & Keyed Data</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .main-container {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        /* Phase containers */
+        .phase-container {
+            display: none;
+        }
+        
+        .phase-container.active {
+            display: block;
+        }
+        
+        /* Setup Container */
+        .setup-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .setup-instructions {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .setup-instructions h2 {
+            color: #1565C0;
+            margin-bottom: 15px;
+        }
+        
+        .setup-instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .setup-instructions li {
+            padding: 5px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .setup-instructions li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .category-header {
+            padding: 15px 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .category-high .category-header {
+            background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+        }
+        
+        .category-medium .category-header {
+            background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+        }
+        
+        .category-quick .category-header {
+            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+        }
+        
+        .category-content {
+            padding: 15px;
+            background: #fafafa;
+        }
+        
+        .category-high .category-content {
+            background: #fff5f5;
+        }
+        
+        .category-medium .category-content {
+            background: #fffbf0;
+        }
+        
+        .category-quick .category-content {
+            background: #f1f8f4;
+        }
+        
+        /* Assignment Items */
+        .assignment-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .assignment-item:hover {
+            border-color: #4CAF50;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .assignment-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #4CAF50;
+        }
+        
+        .assignment-label {
+            flex: 1;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .points-input {
+            width: 70px;
+            padding: 6px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .points-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+        
+        .points-input:disabled {
+            background: #f5f5f5;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .view-details-btn {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .view-details-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        /* Configuration Summary */
+        .config-summary {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #ba68c8;
+        }
+        
+        .config-summary h3 {
+            color: #6a1b9a;
+            margin-bottom: 15px;
+        }
+        
+        .config-stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .config-stat {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .config-stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .config-stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #6a1b9a;
+        }
+        
+        .target-points-input {
+            width: 100px;
+            padding: 8px;
+            border: 2px solid #ba68c8;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin: 0 10px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .action-btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: Georgia, serif;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            color: white;
+            font-size: 18px;
+            padding: 15px 40px;
+        }
+        
+        .btn-load-all {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 30px auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.6em;
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .modal-body {
+            padding: 30px;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+        
+        .modal-section {
+            margin-bottom: 25px;
+        }
+        
+        .modal-section h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .requirements-list li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.5;
+        }
+        
+        .requirements-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .rubric-category {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .rubric-category h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .rubric-items {
+            list-style: none;
+            padding-left: 20px;
+        }
+        
+        .rubric-items li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #555;
+            line-height: 1.4;
+        }
+        
+        .rubric-items li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #999;
+            font-weight: bold;
+        }
+        
+        /* Tracker Styles */
+        .tracker-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .tracker-header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tracker-info {
+            font-size: 1.1em;
+        }
+        
+        .btn-back {
+            background: white;
+            color: #4CAF50;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-back:hover {
+            background: #f0f0f0;
+        }
+        
+        .section-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .section-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .section-tab:hover {
+            background: #f0f0f0;
+        }
+        
+        .section-tab.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .section-tab-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .delete-section-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .section-tab-container:hover .delete-section-btn {
+            display: flex;
+        }
+        
+        .delete-section-btn:hover {
+            background: #d32f2f;
+            transform: scale(1.1);
+        }
+        
+        /* Data Modal Styles */
+        .data-modal-content {
+            max-width: 600px;
+        }
+        
+        .data-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .data-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .data-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        
+        .data-btn:hover {
+            border-color: #4CAF50;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .data-btn-icon {
+            font-size: 24px;
+        }
+        
+        .data-btn-text {
+            flex: 1;
+        }
+        
+        .data-btn-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+        
+        .data-btn-desc {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .import-section {
+            border-left: 4px solid #2196F3;
+        }
+        
+        .export-section {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        
+        .controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: Georgia, serif;
+        }
+        
+        .btn-add {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .btn-import {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-export {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        .table-wrapper {
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 600px;
+            position: relative;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-family: Georgia, serif;
+        }
+        
+        .student-name {
+            text-align: left;
+            font-weight: bold;
+            min-width: 150px;
+            background: #f8f8f8;
+            position: sticky;
+            left: 0;
+            z-index: 50;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        
+        th.student-name {
+            z-index: 101;
+            background: linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 100%);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .activity-cell {
+            cursor: pointer;
+            font-size: 20px;
+            user-select: none;
+        }
+        
+        .activity-cell:hover {
+            filter: brightness(0.92);
+            box-shadow: inset 0 0 0 2px rgba(0,0,0,0.15);
+        }
+        
+        .total-cell {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .total-success {
+            color: #4CAF50;
+        }
+        
+        .total-partial {
+            color: #FF9800;
+        }
+        
+        .total-fail {
+            color: #f44336;
+        }
+        
+        .notes-input {
+            width: 100%;
+            min-width: 150px;
+            border: 1px solid #ddd;
+            padding: 4px;
+            border-radius: 3px;
+        }
+        
+        .preview-message {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        /* ── Category-based column coloring ── */
+        /* Higher Effort: warm rose */
+        .cat-higher { background-color: #fff0f0; }
+        th.cat-higher { background: linear-gradient(180deg, #d4423f 0%, #c0392b 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        
+        /* Medium Effort: warm amber */
+        .cat-medium { background-color: #fffbf0; }
+        th.cat-medium { background: linear-gradient(180deg, #e8a317 0%, #d4930a 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        
+        /* Quick Engagement: cool steel blue */
+        .cat-quick { background-color: #f0f4fa; }
+        th.cat-quick { background: linear-gradient(180deg, #4a7fb5 0%, #3a6a9e 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        
+        /* ── High-contrast completion marks ── */
+        .completed {
+            color: #1a1a1a;
+            font-weight: 900;
+            font-size: 22px;
+            text-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            line-height: 1;
+        }
+        
+        /* Tinted backgrounds when completed per category */
+        td.cat-higher.is-done { background-color: #fcd5d5; }
+        td.cat-medium.is-done { background-color: #fcebc8; }
+        td.cat-quick.is-done  { background-color: #d0deef; }
+        
+        .not-completed {
+            color: #bbb;
+            font-size: 18px;
+        }
+        
+        /* Zebra striping on rows for readability */
+        #tableBody tr:nth-child(even) {
+            filter: brightness(0.97);
+        }
+        
+        /* Enhanced header styling for floating effect */
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        th.cat-higher, th.cat-medium, th.cat-quick {
+            min-width: 120px;
+            max-width: 150px;
+            white-space: normal;
+            line-height: 1.3;
+            padding: 12px 8px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Setup Phase - DEFAULT VISIBLE -->
+        <div id="setupPhase" class="phase-container active">
+            <div class="header">
+                <h1>🎯 CAP Customizable Tracker Setup</h1>
+                <p>Select assignments and configure point values for your course</p>
+            </div>
+            
+            <div class="setup-container">
+                <div class="setup-instructions">
+                    <h2>📋 Setup Instructions</h2>
+                    <ul>
+                        <li>Browse all 29 assignments across three effort levels</li>
+                        <li>Click "View Details" to see complete rubrics</li>
+                        <li>Select assignments to include in your tracker</li>
+                        <li>Customize point values as needed</li>
+                        <li>Click "Generate Tracker" to create your custom tracking system</li>
+                    </ul>
+                </div>
+                
+                <div id="assignmentSections">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+                
+                <div class="config-summary">
+                    <h3>📊 Configuration Summary</h3>
+                    <div class="config-stats">
+                        <div class="config-stat">
+                            <div class="config-stat-label">Total Available</div>
+                            <div class="config-stat-value">29</div>
+                        </div>
+                        <div class="config-stat">
+                            <div class="config-stat-label">Selected Assignments</div>
+                            <div class="config-stat-value" id="selectedCount">0</div>
+                        </div>
+                        <div class="config-stat">
+                            <div class="config-stat-label">Total Possible Points</div>
+                            <div class="config-stat-value" id="totalPoints">0</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <label style="font-weight: bold; font-size: 1.1em;">
+                            Target Completion Points:
+                            <input type="number" class="target-points-input" id="targetPoints" value="100" min="0">
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn btn-load-all" onclick="selectAllAssignments()">
+                        <span>✓</span>
+                        <span>Select All</span>
+                    </button>
+                    <button class="action-btn btn-clear" onclick="clearAllSelections()">
+                        <span>✗</span>
+                        <span>Clear All</span>
+                    </button>
+                    <button class="action-btn btn-generate" onclick="generateTracker()">
+                        <span>🚀</span>
+                        <span>Generate Custom Tracker</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tracker Phase - HIDDEN BY DEFAULT -->
+        <div id="trackerPhase" class="phase-container">
+            <div class="header">
+                <h1>🎯 CAP Student Tracker</h1>
+                <p id="trackerInfo">Custom tracker with your selected assignments</p>
+            </div>
+            
+            <div class="tracker-container">
+                <div class="tracker-header">
+                    <div class="tracker-info">
+                        <div id="configInfo"></div>
+                    </div>
+                    <button class="btn-back" onclick="backToSetup()">← Back to Setup</button>
+                </div>
+                
+                <div class="section-tabs">
+                    <button class="action-btn btn-add" onclick="addSection()">+ Add Section</button>
+                    <div id="sectionTabs" style="display: inline-flex; gap: 10px;"></div>
+                </div>
+                
+                <!-- Student Management Controls -->
+                <div id="studentControls" class="controls" style="display: none;">
+                    <button class="btn-add" onclick="addStudent()">+ Add Student</button>
+                    <button class="btn-import" onclick="openDataModal()">📁 Import/Export Data</button>
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCanvasCSV(event)">
+                    <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleJSONImport(event)">
+                    <button class="btn-delete" onclick="clearSection()">🗑️ Clear Students</button>
+                    <button class="btn-delete" onclick="deleteSection()" style="background: #d32f2f;">✖ Delete Section</button>
+                </div>
+                
+                <!-- Category Color Legend -->
+                <div style="display:flex; gap:20px; align-items:center; margin:12px 0 6px; font-size:0.9em; color:#555;">
+                    <span style="font-weight:600;">Column colors:</span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:#c0392b;display:inline-block;"></span> Higher Effort</span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:#d4930a;display:inline-block;"></span> Medium Effort</span>
+                    <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:#3a6a9e;display:inline-block;"></span> Quick Engagement</span>
+                </div>
+                
+                <!-- The table is ALWAYS visible, showing the selected assignments -->
+                <div class="table-wrapper">
+                    <table>
+                        <thead id="tableHeader"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                
+                <div id="previewMessage" class="preview-message">
+                    <h3>📊 Your Tracking Grid is Ready!</h3>
+                    <p>The columns above show all the assignments you'll be tracking.</p>
+                    <p><strong>Click "Add Section" to begin adding students and tracking their progress.</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Assignment Details Modal -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalTitle">Assignment Details</h2>
+                    <button class="close-modal" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Content dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Import/Export Data Modal -->
+        <div id="dataModal" class="modal">
+            <div class="modal-content data-modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);">
+                    <h2 class="modal-title">📁 Import / Export Data</h2>
+                    <button class="close-modal" onclick="closeDataModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="data-section import-section">
+                        <h3>📥 Import Data</h3>
+                        
+                        <button class="data-btn" onclick="document.getElementById('csvFileInput').click(); closeDataModal();">
+                            <span class="data-btn-icon">📋</span>
+                            <div class="data-btn-text">
+                                <div class="data-btn-title">Import Class Roster (CSV)</div>
+                                <div class="data-btn-desc">Add students from Canvas gradebook export to current section</div>
+                            </div>
+                        </button>
+                        
+                        <button class="data-btn" onclick="document.getElementById('jsonFileInput').click(); closeDataModal();">
+                            <span class="data-btn-icon">💾</span>
+                            <div class="data-btn-text">
+                                <div class="data-btn-title">Import Previous Save (JSON)</div>
+                                <div class="data-btn-desc">Merge saved tracker data - keeps highest completion for each student</div>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="data-section export-section">
+                        <h3>📤 Export Data</h3>
+                        
+                        <button class="data-btn" onclick="exportFullSave(); closeDataModal();">
+                            <span class="data-btn-icon">💾</span>
+                            <div class="data-btn-text">
+                                <div class="data-btn-title">Save All Data (JSON)</div>
+                                <div class="data-btn-desc">Export complete tracker with all sections, students, and configuration</div>
+                            </div>
+                        </button>
+                        
+                        <button class="data-btn" onclick="exportStudentSummary(); closeDataModal();">
+                            <span class="data-btn-icon">📊</span>
+                            <div class="data-btn-text">
+                                <div class="data-btn-title">Student Summary (CSV)</div>
+                                <div class="data-btn-desc">Export all students with points, status, and completed assignments</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Complete assignment database with FULL rubrics for ALL 29 assignments
+        const completeAssignmentDatabase = {
+            meeting: {
+                name: "Government Meeting Attendance",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Attend a public government meeting (city council, school board, county commissioners, planning commission, or similar legitimate public body) and write a structured 500-word reflection connecting your observations to course concepts. This activity helps students see how theoretical government concepts play out in real decisions affecting their communities.",
+                estimatedTime: "3-4 hours total",
+                requirements: [
+                    "Attend a legitimate public government meeting",
+                    "Write a 500-word minimum reflection",
+                    "Provide proof of attendance (photo, program, screenshot, signed sheet)",
+                    "Identify at least 3 specific issues discussed",
+                    "Connect observations to at least 2 course concepts"
+                ],
+                rubric: {
+                    "Attendance Evidence ✓": [
+                        "Proof of attendance provided (photo, program, screenshot, signed sheet, etc.)",
+                        "Meeting date clearly identified",
+                        "Meeting location clearly identified",
+                        "Meeting was a legitimate public government meeting (city council, school board, county commissioners, planning commission, etc.)"
+                    ],
+                    "Reflection Quality (500 words minimum) ✓": [
+                        "Meets or exceeds 500-word requirement",
+                        "Demonstrates actual attendance with specific details about meeting content",
+                        "Identifies at least 3 specific issues discussed during the meeting",
+                        "Makes clear connections to at least 2 course concepts (federalism, representation, checks and balances, etc.)",
+                        "Shows analysis beyond basic summary (personal insights, surprises, questions raised)",
+                        "Uses proper grammar and organization"
+                    ],
+                    "Course Connection ✓": [
+                        "Explicitly connects observations to specific concepts from readings/lectures",
+                        "Goes beyond surface-level connections to show deeper understanding"
+                    ]
+                }
+            },
+            
+            interview1: {
+                name: "Civic Interview Series #1",
+                category: "Higher Effort",
+                defaultPoints: 20,
+                description: "Conduct a structured 15-20 minute interview with a community member about how government impacts their work, business, or daily life. This activity helps students understand that government affects everyone differently and develops their ability to gather and analyze primary source information.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Conduct a 15-20 minute interview",
+                    "Provide recording/transcript OR detailed notes",
+                    "Write a 300-word analysis",
+                    "Ask all required questions plus additional meaningful questions",
+                    "Clearly identify interviewee's role/background"
+                ],
+                rubric: {
+                    "Interview Documentation ✓": [
+                        "Interview lasted 15-20 minutes (or detailed notes indicate substantial conversation)",
+                        "Recording/transcript OR detailed notes provided",
+                        "Interviewee's role/background clearly identified",
+                        "All required questions asked plus additional meaningful questions"
+                    ],
+                    "Required Questions Addressed ✓": [
+                        "How does government regulation directly impact your work/life?",
+                        "Have changes in policy at any level affected you in the past few years?",
+                        "Do you feel your interests are well-represented in government decisions?",
+                        "What government policies would you change if you could?"
+                    ],
+                    "Analysis Component (300 words minimum) ✓": [
+                        "Meets word count requirement",
+                        "Identifies key insights from the interview",
+                        "Connects interviewee's experiences to course concepts",
+                        "Shows thoughtful reflection on what was learned",
+                        "Demonstrates understanding of how government impacts different groups"
+                    ]
+                }
+            },
+            
+            interview2: {
+                name: "Civic Interview Series #2",
+                category: "Higher Effort",
+                defaultPoints: 20,
+                description: "Conduct a second interview with a DIFFERENT community member from Interview #1. This allows students to compare perspectives and understand how government impacts different sectors or demographics in varied ways.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Interview DIFFERENT person than Interview #1",
+                    "Conduct a 15-20 minute interview",
+                    "Provide recording/transcript OR detailed notes",
+                    "Write a 300-word analysis",
+                    "Compare perspectives between interviews"
+                ],
+                rubric: {
+                    "Interview Documentation ✓": [
+                        "Different person interviewed than Interview #1",
+                        "Interview lasted 15-20 minutes",
+                        "Recording/transcript OR detailed notes provided",
+                        "Interviewee's role/background clearly identified"
+                    ],
+                    "Required Questions Addressed ✓": [
+                        "How does government regulation directly impact your work/life?",
+                        "Have changes in policy at any level affected you in the past few years?",
+                        "Do you feel your interests are well-represented in government decisions?",
+                        "What government policies would you change if you could?"
+                    ],
+                    "Analysis Component (300 words minimum) ✓": [
+                        "Meets word count requirement",
+                        "Identifies key insights from Interview #2",
+                        "Compares perspectives between Interview #1 and Interview #2",
+                        "Shows thoughtful reflection",
+                        "Demonstrates understanding of varied government impacts"
+                    ]
+                }
+            },
+            
+            directory: {
+                name: "Public Services Directory",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Create a comprehensive guide documenting at least 10 government services available to a specific audience (college students, families, small businesses, seniors, etc.). This activity helps students discover the breadth of government services while creating a useful resource for their community.",
+                estimatedTime: "4-5 hours",
+                requirements: [
+                    "Research minimum 10 different government services",
+                    "Include services from federal, state, and local levels",
+                    "Provide accurate contact information for each service",
+                    "Create user-friendly guide format",
+                    "Include eligibility requirements and application processes",
+                    "Focus on a specific target audience"
+                ],
+                rubric: {
+                    "Scope and Research ✓": [
+                        "Includes minimum 10 different government services",
+                        "Services span multiple levels of government (federal, state, local)",
+                        "Focus area clearly identified (students, families, small business, etc.)",
+                        "All services relevant to target audience"
+                    ],
+                    "Information Quality ✓": [
+                        "Accurate contact information (phone, website, address)",
+                        "Eligibility requirements clearly explained",
+                        "Application/access process described",
+                        "Hours of operation included where relevant",
+                        "Cost information provided if applicable"
+                    ],
+                    "Presentation and Usability ✓": [
+                        "Well-organized and easy to navigate",
+                        "Professional formatting",
+                        "Clear categories or sections",
+                        "Includes helpful tips for accessing services",
+                        "Could actually be used by someone needing these services"
+                    ]
+                }
+            },
+            
+            mythvideo: {
+                name: "Myth Busting Video",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Create a 3-5 minute video that debunks a common misconception about government using credible research. This activity helps students develop media literacy, research skills, and the ability to communicate complex information clearly.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Create a 3-5 minute video",
+                    "Research and cite minimum 3 credible sources",
+                    "Include visual aids to enhance understanding",
+                    "Clearly state the myth and explain the truth",
+                    "Upload to Canvas Studio or provide shareable link"
+                ],
+                rubric: {
+                    "Research Quality ✓": [
+                        "Minimum 3 credible sources cited",
+                        "Sources are authoritative (government sites, academic, reputable news)",
+                        "Sources are recent and relevant",
+                        "Myth is clearly stated at the beginning",
+                        "Correct information is thoroughly explained with evidence"
+                    ],
+                    "Video Production ✓": [
+                        "Video is 3-5 minutes in length",
+                        "Audio is clear and understandable",
+                        "Visual aids enhance understanding (charts, graphics, examples)",
+                        "Video has clear introduction, body, and conclusion",
+                        "Production quality allows content to be easily understood"
+                    ],
+                    "Content and Course Connection ✓": [
+                        "Misconception directly relates to course topics",
+                        "Student demonstrates clear understanding of correct information",
+                        "Explains WHY this misconception exists",
+                        "Shows why understanding the truth matters",
+                        "Makes explicit connections to course readings or lectures"
+                    ]
+                }
+            },
+            
+            publiccomment: {
+                name: "Public Comment Champion",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Research a local issue, prepare public comments following official meeting rules, and deliver those comments at 2 different government meetings. This activity provides firsthand experience with civic participation and helps students understand the public comment process.",
+                estimatedTime: "4-5 hours total",
+                requirements: [
+                    "Research issue thoroughly with credible sources",
+                    "Prepare professional public comments (2-3 minutes)",
+                    "Deliver comments at 2 different meetings",
+                    "Document meeting procedures and responses",
+                    "Write 600-word comparative reflection"
+                ],
+                rubric: {
+                    "Research and Preparation ✓": [
+                        "Issue thoroughly researched with credible sources",
+                        "Comments follow meeting's time limits and rules",
+                        "Professional, respectful tone maintained",
+                        "Clear ask or position stated",
+                        "Supporting evidence included"
+                    ],
+                    "Delivery and Documentation ✓": [
+                        "Comments delivered at 2 different meetings",
+                        "Meetings were legitimate government bodies",
+                        "Proof of participation provided",
+                        "Other citizens' comments documented",
+                        "Officials' responses recorded"
+                    ],
+                    "Reflection (600 words) ✓": [
+                        "Meets word count requirement",
+                        "Compares effectiveness of comments at both meetings",
+                        "Analyzes officials' responsiveness",
+                        "Connects to concepts of citizen participation",
+                        "Evaluates impact of public comment process",
+                        "Shows understanding of democratic engagement"
+                    ]
+                }
+            },
+            
+            civicorg: {
+                name: "Civic Organization Immersion",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Volunteer minimum 10 hours with a civic organization to understand how citizens organize to influence government. This activity provides deep insight into grassroots democracy and advocacy strategies.",
+                estimatedTime: "10+ hours volunteer time plus documentation",
+                requirements: [
+                    "Volunteer minimum 10 hours with approved civic organization",
+                    "Attend at least one organizational meeting",
+                    "Help with one project or event",
+                    "Interview leadership about advocacy strategies",
+                    "Create 'How to Get Involved' guide for other students"
+                ],
+                rubric: {
+                    "Volunteer Documentation ✓": [
+                        "10+ hours completed and verified",
+                        "Organization is legitimate civic group",
+                        "Multiple activities documented",
+                        "Photos or supervisor verification provided",
+                        "Consistent engagement shown"
+                    ],
+                    "Organizational Understanding ✓": [
+                        "Meeting attendance documented",
+                        "Project/event participation described",
+                        "Organization's mission clearly understood",
+                        "Relationship with government explained",
+                        "Advocacy methods identified"
+                    ],
+                    "Leadership Interview ✓": [
+                        "Interview with leader/officer conducted",
+                        "Questions about advocacy strategies asked",
+                        "Challenges facing organization discussed",
+                        "Success stories documented",
+                        "Insights about civic engagement gained"
+                    ],
+                    "Student Guide Creation ✓": [
+                        "Professional 'How to Get Involved' guide created",
+                        "Contact information included",
+                        "Meeting times and locations provided",
+                        "Volunteer opportunities explained",
+                        "Could actually be used by another student"
+                    ]
+                }
+            },
+            
+            naturalization: {
+                name: "Naturalization Ceremony Witness",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Attend a citizenship naturalization ceremony and interview new citizens about their journey to understand the meaning of citizenship. This activity helps students appreciate civic participation from immigrant perspectives.",
+                estimatedTime: "3-4 hours plus writing",
+                requirements: [
+                    "Attend public naturalization ceremony at courthouse",
+                    "Document the ceremony process and oath",
+                    "Interview 2-3 new citizens about their journey",
+                    "Research citizenship test requirements",
+                    "Write 600-word reflection on meaning of citizenship"
+                ],
+                rubric: {
+                    "Ceremony Attendance ✓": [
+                        "Attendance at actual naturalization ceremony verified",
+                        "Date, time, and location documented",
+                        "Number of new citizens noted",
+                        "Ceremony procedures described",
+                        "Oath of Allegiance text included"
+                    ],
+                    "Citizen Interviews ✓": [
+                        "2-3 new citizens interviewed",
+                        "Countries of origin identified",
+                        "Journey to citizenship discussed",
+                        "Reasons for seeking citizenship explored",
+                        "Challenges in process documented",
+                        "Respectful, sensitive approach shown"
+                    ],
+                    "Citizenship Test Research ✓": [
+                        "Current test requirements researched",
+                        "Sample questions reviewed",
+                        "Pass rates and statistics found",
+                        "Preparation resources identified",
+                        "Difficulty level assessed"
+                    ],
+                    "Reflection (600 words) ✓": [
+                        "Meets word count requirement",
+                        "Personal definition of citizenship developed",
+                        "Compares natural-born vs. naturalized perspectives",
+                        "Connects to course concepts about civic participation",
+                        "Shows empathy and understanding",
+                        "Meaningful insights about American identity"
+                    ]
+                }
+            },
+            
+            ridealong: {
+                name: "Ride-Along Documentary",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Arrange and document a ride-along or job shadow with a government employee to see policy implementation at street level. This activity provides unique insight into bureaucracy in action.",
+                estimatedTime: "4-6 hours plus documentation",
+                requirements: [
+                    "Arrange ride-along with government employee",
+                    "Document full shift (4-6 hours)",
+                    "Create photo essay showing 'day in the life'",
+                    "Interview employee about policy implementation",
+                    "Write 500-word analysis of street-level bureaucracy"
+                ],
+                rubric: {
+                    "Arrangement and Preparation ✓": [
+                        "Proper permissions obtained",
+                        "Background check/waivers completed if required",
+                        "Appropriate dress and behavior",
+                        "Safety protocols followed",
+                        "Employee role clearly identified"
+                    ],
+                    "Shift Documentation ✓": [
+                        "4-6 hour shift completed",
+                        "Multiple activities observed",
+                        "Challenges documented",
+                        "Citizen interactions noted",
+                        "Decision-making processes observed"
+                    ],
+                    "Photo Essay Creation ✓": [
+                        "8-10 quality photos taken",
+                        "Permission obtained for photos",
+                        "Captions explain government work",
+                        "'Day in the life' story told visually",
+                        "Professional presentation"
+                    ],
+                    "Employee Interview ✓": [
+                        "How policies affect daily work discussed",
+                        "Discretion in implementation explored",
+                        "Biggest challenges identified",
+                        "Public misconceptions addressed",
+                        "Job satisfaction factors discussed"
+                    ],
+                    "Analysis (500 words) ✓": [
+                        "Meets word count requirement",
+                        "Street-level bureaucracy concept applied",
+                        "Policy vs. practice gaps identified",
+                        "Employee discretion analyzed",
+                        "Connects to course concepts",
+                        "Shows understanding of implementation challenges"
+                    ]
+                }
+            },
+            
+            voterdrive: {
+                name: "Voter Registration Drive",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Organize and run a voter registration drive to understand civic engagement and democratic participation. This hands-on activity teaches students about barriers to voting and electoral participation.",
+                estimatedTime: "6-8 hours across multiple events",
+                requirements: [
+                    "Get trained as volunteer deputy registrar (where applicable)",
+                    "Set up registration at 3+ locations",
+                    "Register at least 10 new voters (or document attempts)",
+                    "Create social media campaign for promotion",
+                    "Analyze barriers to registration in community"
+                ],
+                rubric: {
+                    "Training and Preparation ✓": [
+                        "Proper training completed (or state requirements met)",
+                        "Registration forms and materials obtained",
+                        "Legal requirements understood",
+                        "Nonpartisan approach maintained",
+                        "Locations strategically chosen"
+                    ],
+                    "Registration Events ✓": [
+                        "3+ registration events held",
+                        "Different locations used (campus, stores, events)",
+                        "Professional setup maintained",
+                        "Engagement strategies documented",
+                        "Weather/challenges overcome"
+                    ],
+                    "Registration Results ✓": [
+                        "10+ registrations or substantial attempts documented",
+                        "Demographics of registrants noted (anonymously)",
+                        "Common questions recorded",
+                        "Reasons for not registering documented",
+                        "Follow-up information provided"
+                    ],
+                    "Social Media Campaign ✓": [
+                        "3+ social media posts created",
+                        "Registration deadlines highlighted",
+                        "Location/times promoted",
+                        "Engagement metrics tracked",
+                        "Nonpartisan tone maintained"
+                    ],
+                    "Barriers Analysis ✓": [
+                        "Common registration barriers identified",
+                        "Demographics of non-registered analyzed",
+                        "Solutions proposed",
+                        "Comparison to national trends",
+                        "Connects to voting rights concepts"
+                    ]
+                }
+            },
+            
+            scavenger: {
+                name: "Government Services Scavenger Hunt",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Over a 2-week period, document 5 different government services or regulations you encounter in daily life. This activity helps students recognize the pervasive presence of government even when it's invisible.",
+                estimatedTime: "2-3 hours total",
+                requirements: [
+                    "Document exactly 5 government services",
+                    "Take photos of each interaction",
+                    "Occur over minimum 2-week period",
+                    "Write 250-word reflection",
+                    "Identify government level for each"
+                ],
+                rubric: {
+                    "Documentation Requirements ✓": [
+                        "Exactly 5 different services documented",
+                        "Photo provided for each interaction",
+                        "Interactions occurred over minimum 2-week period",
+                        "Services represent diverse government functions"
+                    ],
+                    "Analysis for Each Service ✓": [
+                        "Correctly identifies which level of government is responsible",
+                        "Explains how the service is funded (if determinable)",
+                        "Describes impact on community",
+                        "Shows understanding of service's role in daily life"
+                    ],
+                    "Reflection Component (250 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses overall impact of government services",
+                        "Shows surprise/new awareness",
+                        "Makes connections to course concepts about federalism"
+                    ]
+                }
+            },
+            
+            clip1: {
+                name: "Interview Clip #1",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Create 2-3 minute video interview with peer/community member about government topics. This scaled-down interview allows for quick engagement.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Create 2-3 minute video",
+                    "Include 3 structured questions",
+                    "Feature on-camera introduction and conclusion",
+                    "Write 150-word analysis"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Video is 2-3 minutes in length",
+                        "Includes on-camera introduction by student",
+                        "Features interview with peer/community member",
+                        "Includes on-camera conclusion with student's analysis"
+                    ],
+                    "Interview Content ✓": [
+                        "Uses 3 structured questions about government topic",
+                        "Questions relate to course concepts",
+                        "Interviewee provides substantive responses",
+                        "Student demonstrates good interview skills"
+                    ],
+                    "Analysis Component ✓": [
+                        "Written analysis (150+ words) accompanies video",
+                        "Compares interviewee's views to course concepts",
+                        "Shows student's reflection on perspectives shared",
+                        "Demonstrates understanding of diverse viewpoints"
+                    ]
+                }
+            },
+            
+            clip2: {
+                name: "Interview Clip #2",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Second interview clip with different person. Same requirements as Clip #1.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Different interviewee than Clip #1",
+                    "Create 2-3 minute video",
+                    "Include 3 structured questions",
+                    "Write 150-word analysis"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Different person interviewed than Clip #1",
+                        "Video is 2-3 minutes in length",
+                        "Includes introduction and conclusion",
+                        "Clear audio and video quality"
+                    ],
+                    "Interview Content ✓": [
+                        "Uses 3 structured questions",
+                        "Questions relate to course concepts",
+                        "Substantive responses obtained",
+                        "Professional interview conduct"
+                    ],
+                    "Analysis Component ✓": [
+                        "Written analysis (150+ words)",
+                        "Compares perspectives from both interviews",
+                        "Shows reflection on different viewpoints",
+                        "Connects to course materials"
+                    ]
+                }
+            },
+            
+            clip3: {
+                name: "Interview Clip #3",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Third interview clip with different person. Same requirements as Clips #1 & #2.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Different interviewee than Clips #1 & #2",
+                    "Create 2-3 minute video",
+                    "Include 3 structured questions",
+                    "Write 150-word analysis comparing all three"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Different person than previous interviews",
+                        "Video is 2-3 minutes in length",
+                        "Professional presentation",
+                        "High-quality audio and video"
+                    ],
+                    "Interview Content ✓": [
+                        "Uses 3 structured questions",
+                        "Questions show progression/depth",
+                        "Meaningful responses captured",
+                        "Excellent interview skills demonstrated"
+                    ],
+                    "Analysis Component ✓": [
+                        "Written analysis (150+ words)",
+                        "Synthesizes insights from all three interviews",
+                        "Identifies patterns or contrasts",
+                        "Shows deep reflection on diverse perspectives"
+                    ]
+                }
+            },
+            
+            journal1: {
+                name: "News Connection Journal #1",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Connect current news article to course concepts and personal experience.",
+                estimatedTime: "1-1.5 hours",
+                requirements: [
+                    "Article from last 30 days",
+                    "Write 450 words total (3 sections)",
+                    "Include photo of local impact",
+                    "Link to original article"
+                ],
+                rubric: {
+                    "Article Requirements ✓": [
+                        "Article published within last 30 days",
+                        "Article relates clearly to course topics",
+                        "Link to original article provided",
+                        "Article from credible news source"
+                    ],
+                    "Written Components (450 words total) ✓": [
+                        "Article summary (150 words) - demonstrates understanding",
+                        "Course connections (150 words) - links to specific concepts",
+                        "Personal impact analysis (150 words) - explains relevance",
+                        "All sections meet word count requirements"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Photo or screenshot showing local impact",
+                        "Image is relevant and clearly connected",
+                        "Caption explains connection between image and article"
+                    ]
+                }
+            },
+            
+            journal2: {
+                name: "News Connection Journal #2",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Second news journal with different article. Same requirements as Journal #1.",
+                estimatedTime: "1-1.5 hours",
+                requirements: [
+                    "Different article than Journal #1",
+                    "Article from last 30 days",
+                    "Write 450 words total",
+                    "Include photo evidence"
+                ],
+                rubric: {
+                    "Article Requirements ✓": [
+                        "Different article than Journal #1",
+                        "Published within last 30 days",
+                        "Clear relevance to course topics",
+                        "From credible news source"
+                    ],
+                    "Written Components (450 words) ✓": [
+                        "Article summary (150 words)",
+                        "Course connections (150 words)",
+                        "Personal impact (150 words)",
+                        "Professional writing quality"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Relevant photo or screenshot",
+                        "Clear connection to article",
+                        "Appropriate caption included"
+                    ]
+                }
+            },
+            
+            journal3: {
+                name: "News Connection Journal #3",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Third news journal with different article. Same requirements as Journals #1 & #2.",
+                estimatedTime: "1-1.5 hours",
+                requirements: [
+                    "Different article than Journals #1 & #2",
+                    "Article from last 30 days",
+                    "Write 450 words total",
+                    "Include photo evidence"
+                ],
+                rubric: {
+                    "Article Requirements ✓": [
+                        "Different from previous journals",
+                        "Published within last 30 days",
+                        "Course connection apparent",
+                        "Credible source used"
+                    ],
+                    "Written Components (450 words) ✓": [
+                        "Summary shows understanding",
+                        "Course concepts properly connected",
+                        "Personal impact thoughtfully analyzed",
+                        "Excellent writing demonstrated"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Strong photo choice",
+                        "Direct relevance shown",
+                        "Professional presentation"
+                    ]
+                }
+            },
+            
+            detective: {
+                name: "Regulation Detective",
+                category: "Medium Effort",
+                defaultPoints: 12,
+                description: "Trace how government regulations affect a local business by documenting all required compliance and licensing.",
+                estimatedTime: "2.5-3 hours",
+                requirements: [
+                    "Choose a local restaurant, salon, daycare, or shop",
+                    "Interview owner about licenses, permits, inspections",
+                    "Photograph visible compliance (permits, grades, etc.)",
+                    "Create flowchart of all government touchpoints",
+                    "Write 400-word analysis on regulation vs. free enterprise"
+                ],
+                rubric: {
+                    "Business Selection and Access ✓": [
+                        "Appropriate local business chosen",
+                        "Owner/manager interview conducted",
+                        "Permission obtained for documentation",
+                        "Professional approach maintained"
+                    ],
+                    "Regulatory Documentation ✓": [
+                        "All required licenses identified",
+                        "Permit costs documented",
+                        "Inspection schedules noted",
+                        "Compliance costs estimated",
+                        "Multiple government levels identified"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Photos of posted permits/licenses",
+                        "Health grades or inspection certificates shown",
+                        "Compliance notices documented",
+                        "Clear, readable images"
+                    ],
+                    "Flowchart Creation ✓": [
+                        "Professional flowchart created",
+                        "All government touchpoints included",
+                        "Federal, state, local levels distinguished",
+                        "Timeline of compliance shown",
+                        "Easy to understand format"
+                    ],
+                    "Analysis (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Balance of regulation vs. free enterprise discussed",
+                        "Owner's perspective included",
+                        "Consumer protection considered",
+                        "Course concepts applied",
+                        "Thoughtful evaluation of tradeoffs"
+                    ]
+                }
+            },
+            
+            democracy: {
+                name: "Democracy in Action Video Series",
+                category: "Medium Effort",
+                defaultPoints: 12,
+                description: "Create 3-4 short social media videos teaching peers about democratic participation.",
+                estimatedTime: "2-3 hours total",
+                requirements: [
+                    "Create 3-4 videos (30-45 seconds each)",
+                    "Topics: voter registration, finding polling place, ballot info, contacting reps",
+                    "Platform-appropriate format (TikTok/Instagram style)",
+                    "Local information featured",
+                    "Track engagement metrics"
+                ],
+                rubric: {
+                    "Video Production ✓": [
+                        "3-4 videos created",
+                        "Each 30-45 seconds long",
+                        "Clear audio and visuals",
+                        "Platform-appropriate style",
+                        "Engaging presentation"
+                    ],
+                    "Content Requirements ✓": [
+                        "How to register to vote locally",
+                        "Finding polling place demonstrated",
+                        "Local ballot information explained",
+                        "Contacting representatives shown",
+                        "Accurate information provided"
+                    ],
+                    "Local Relevance ✓": [
+                        "Local registration deadlines included",
+                        "County clerk info provided",
+                        "Local election dates mentioned",
+                        "District representatives identified",
+                        "Community-specific details featured"
+                    ],
+                    "Engagement and Impact ✓": [
+                        "Videos actually posted (or ready to post)",
+                        "Engagement metrics tracked if posted",
+                        "Peer feedback gathered",
+                        "Shareable format created",
+                        "Call to action included"
+                    ]
+                }
+            },
+            
+            failure: {
+                name: "Government Failure Investigation",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Research a local government project that failed or went over budget to understand accountability and oversight.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Find news articles about failed/over-budget project",
+                    "Attempt FOIA request for documents",
+                    "Interview affected citizens",
+                    "Write 'lessons learned' report",
+                    "Connect to accountability concepts"
+                ],
+                rubric: {
+                    "Project Research ✓": [
+                        "Specific failed project identified",
+                        "Multiple news sources consulted",
+                        "Timeline of failure documented",
+                        "Budget overruns calculated",
+                        "Key players identified"
+                    ],
+                    "FOIA/Document Request ✓": [
+                        "FOIA request attempted (even if denied)",
+                        "Process documented",
+                        "Public documents found",
+                        "Meeting minutes reviewed if available",
+                        "Budget documents analyzed"
+                    ],
+                    "Citizen Impact ✓": [
+                        "2+ affected citizens interviewed",
+                        "Impact on community documented",
+                        "Tax implications discussed",
+                        "Alternative solutions explored",
+                        "Public sentiment captured"
+                    ],
+                    "Lessons Learned Report ✓": [
+                        "Professional report format",
+                        "Clear failure points identified",
+                        "Accountability gaps highlighted",
+                        "Recommendations provided",
+                        "Similar failures researched"
+                    ],
+                    "Course Connections ✓": [
+                        "Connects to accountability concepts",
+                        "Oversight mechanisms analyzed",
+                        "Transparency issues discussed",
+                        "Democratic checks evaluated",
+                        "Reform suggestions based on course material"
+                    ]
+                }
+            },
+            
+            reflect1: {
+                name: "Personal Impact Reflection #1",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Identify specific ways weekly topics directly affect your life.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Write 150-word reflection",
+                    "Include photo evidence",
+                    "Identify specific government policy/agency",
+                    "Connect to weekly topic"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Meets word count requirement",
+                        "Identifies specific government policy or agency",
+                        "Explains concrete impact on student's life",
+                        "Evaluates whether impact is positive, negative, or mixed",
+                        "Shows clear connection to weekly course topic"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Photo represents the government impact described",
+                        "Image is original (taken by student)",
+                        "Clear connection between photo and reflection"
+                    ],
+                    "Course Connection ✓": [
+                        "References specific course concepts or readings",
+                        "Goes beyond surface-level observation"
+                    ]
+                }
+            },
+            
+            reflect2: {
+                name: "Personal Impact Reflection #2",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Second reflection on different government impact.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Different topic than Reflection #1",
+                    "Write 150-word reflection",
+                    "Include photo evidence",
+                    "Connect to course"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Topic is different from Reflection #1",
+                        "Meets word count requirement",
+                        "Specific government impact identified",
+                        "Personal relevance explained",
+                        "Analysis shows growth from earlier reflection"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Appropriate photo choice",
+                        "Original work",
+                        "Clear relevance to topic"
+                    ],
+                    "Course Connection ✓": [
+                        "Stronger connections than Reflection #1",
+                        "Multiple concepts referenced"
+                    ]
+                }
+            },
+            
+            reflect3: {
+                name: "Personal Impact Reflection #3",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Third reflection on different government impact.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Different topic than previous reflections",
+                    "Write 150 words",
+                    "Include photo",
+                    "Show growth in understanding"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Unique topic from previous reflections",
+                        "150 word requirement met",
+                        "Specific examples provided",
+                        "Thoughtful analysis included",
+                        "Shows progression in thinking"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Strong photo choice",
+                        "Clear relevance to topic",
+                        "Original work"
+                    ],
+                    "Course Connection ✓": [
+                        "Multiple course concepts referenced",
+                        "Synthesis of ideas shown"
+                    ]
+                }
+            },
+            
+            reflect4: {
+                name: "Personal Impact Reflection #4",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Fourth reflection showing deeper understanding.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "New topic",
+                    "150 words",
+                    "Photo evidence",
+                    "Advanced analysis"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Fresh perspective on new topic",
+                        "Word count met",
+                        "Nuanced understanding demonstrated",
+                        "Critical thinking evident",
+                        "Sophisticated analysis"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Compelling image choice",
+                        "Creative connection shown",
+                        "High quality photo"
+                    ],
+                    "Course Connection ✓": [
+                        "Complex connections made",
+                        "Original insights provided"
+                    ]
+                }
+            },
+            
+            reflect5: {
+                name: "Personal Impact Reflection #5",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Final reflection demonstrating mastery.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Culminating topic",
+                    "150 words",
+                    "Photo evidence",
+                    "Synthesis of learning"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Sophisticated analysis",
+                        "Word count met",
+                        "Multiple perspectives considered",
+                        "Excellent writing quality",
+                        "Mastery demonstrated"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Outstanding photo choice",
+                        "Perfect relevance",
+                        "Professional quality"
+                    ],
+                    "Course Connection ✓": [
+                        "Masterful connections to course",
+                        "Deep synthesis of semester learning"
+                    ]
+                }
+            },
+            
+            video1: {
+                name: "60-Second Government Impact #1",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Create concise video explaining government's impact on your week.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "60-second video (55-65 seconds)",
+                    "Identify specific government impact",
+                    "Include visual evidence",
+                    "Connect to course concept"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Video is approximately 60 seconds (55-65 seconds acceptable)",
+                        "Student clearly explains one government impact from their week",
+                        "Audio is clear and understandable",
+                        "Visual evidence included in video"
+                    ],
+                    "Content Quality ✓": [
+                        "Specific government impact identified (not vague)",
+                        "Connection to course concept clearly stated",
+                        "Shows understanding of government's role",
+                        "Demonstrates personal engagement with topic"
+                    ],
+                    "Presentation ✓": [
+                        "Format is engaging",
+                        "Student appears confident and knowledgeable",
+                        "Video flows logically",
+                        "Brief written explanation (2-3 sentences) provided"
+                    ]
+                }
+            },
+            
+            video2: {
+                name: "60-Second Government Impact #2",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Second 60-second video on different impact.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "Different topic than Video #1",
+                    "60-second video",
+                    "Visual evidence",
+                    "Course connection"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Different topic from Video #1",
+                        "60 seconds in length",
+                        "Clear audio and video",
+                        "Visual support included"
+                    ],
+                    "Content Quality ✓": [
+                        "New government impact shown",
+                        "Strong course connection",
+                        "Good understanding demonstrated",
+                        "Authentic engagement shown"
+                    ],
+                    "Presentation ✓": [
+                        "Improved delivery from Video #1",
+                        "Creative approach",
+                        "Professional presentation",
+                        "Written summary provided"
+                    ]
+                }
+            },
+            
+            video3: {
+                name: "60-Second Government Impact #3",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Third video with unique content.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "New topic",
+                    "60 seconds",
+                    "Strong visuals",
+                    "Clear connections"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Unique content from previous videos",
+                        "Proper length maintained",
+                        "Excellent production quality",
+                        "Compelling visuals"
+                    ],
+                    "Content Quality ✓": [
+                        "Different government impact featured",
+                        "Multiple course connections",
+                        "Deep understanding shown",
+                        "Personal relevance clear"
+                    ],
+                    "Presentation ✓": [
+                        "Professional presentation",
+                        "Engaging delivery",
+                        "Creative format",
+                        "Summary demonstrates insight"
+                    ]
+                }
+            },
+            
+            video4: {
+                name: "60-Second Government Impact #4",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Final video demonstrating mastery.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "Culminating topic",
+                    "60 seconds",
+                    "Professional quality",
+                    "Synthesis shown"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Original approach to topic",
+                        "Perfect timing (60 seconds)",
+                        "Outstanding production quality",
+                        "Exceptional visuals"
+                    ],
+                    "Content Quality ✓": [
+                        "Sophisticated government impact analysis",
+                        "Multiple course concepts integrated",
+                        "Mastery demonstrated",
+                        "Strong personal connection"
+                    ],
+                    "Presentation ✓": [
+                        "Outstanding quality",
+                        "Highly engaging",
+                        "Creative and original",
+                        "Written component shows deep understanding"
+                    ]
+                }
+            }
+        };
+        
+        // Active configuration
+        let activeConfig = {
+            assignments: [],
+            targetPoints: 100
+        };
+        
+        // Tracker data
+        let trackerSections = {};
+        let currentSection = null;
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing CAP Tracker...');
+            buildAssignmentSections();
+            loadSavedConfiguration();
+            
+            // AUTO-RESUME: If we have a saved config with assignments, skip setup
+            if (activeConfig.assignments.length > 0) {
+                console.log('Saved configuration found - resuming tracker...');
+                // Restore setup checkboxes to match saved config (so "Back to Setup" works)
+                restoreSetupFromConfig();
+                // Jump straight to tracker
+                document.getElementById('setupPhase').classList.remove('active');
+                document.getElementById('trackerPhase').classList.add('active');
+                document.getElementById('configInfo').textContent = 
+                    `${activeConfig.assignments.length} assignments • Target: ${activeConfig.targetPoints} points • 2+ categories required`;
+                initializeTracker();
+            } else {
+                updateSummary();
+            }
+            console.log('Setup complete.');
+        });
+        
+        // Restore setup phase checkboxes/points to match saved config
+        function restoreSetupFromConfig() {
+            // First clear all
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                const pointsInput = document.getElementById(`points-${id}`);
+                if (checkbox) checkbox.checked = false;
+                if (pointsInput) {
+                    pointsInput.value = completeAssignmentDatabase[id].defaultPoints;
+                    pointsInput.disabled = true;
+                }
+            });
+            // Then check/set the ones in activeConfig
+            activeConfig.assignments.forEach(a => {
+                const checkbox = document.getElementById(`check-${a.id}`);
+                const pointsInput = document.getElementById(`points-${a.id}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+                if (pointsInput) {
+                    pointsInput.value = a.points;
+                    pointsInput.disabled = false;
+                }
+            });
+            document.getElementById('targetPoints').value = activeConfig.targetPoints;
+            updateSummary();
+        }
+        
+        function buildAssignmentSections() {
+            console.log('Building assignment sections...');
+            const container = document.getElementById('assignmentSections');
+            container.innerHTML = '';
+            
+            // Higher Effort Section
+            const highSection = document.createElement('div');
+            highSection.className = 'category-section category-high';
+            highSection.innerHTML = '<div class="category-header">🔴 Higher Effort Activities (20-30 points) - 10 Assignments</div>';
+            const highContent = document.createElement('div');
+            highContent.className = 'category-content';
+            
+            ['meeting', 'interview1', 'interview2', 'directory', 'mythvideo', 
+             'publiccomment', 'civicorg', 'naturalization', 'ridealong', 'voterdrive'].forEach(id => {
+                if (completeAssignmentDatabase[id]) {
+                    highContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
+                }
+            });
+            
+            highSection.appendChild(highContent);
+            container.appendChild(highSection);
+            
+            // Medium Effort Section
+            const mediumSection = document.createElement('div');
+            mediumSection.className = 'category-section category-medium';
+            mediumSection.innerHTML = '<div class="category-header">🟡 Medium Effort Activities (10-15 points) - 10 Assignments</div>';
+            const mediumContent = document.createElement('div');
+            mediumContent.className = 'category-content';
+            
+            ['scavenger', 'clip1', 'clip2', 'clip3', 'journal1', 
+             'journal2', 'journal3', 'detective', 'democracy', 'failure'].forEach(id => {
+                if (completeAssignmentDatabase[id]) {
+                    mediumContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
+                }
+            });
+            
+            mediumSection.appendChild(mediumContent);
+            container.appendChild(mediumSection);
+            
+            // Quick Engagement Section
+            const quickSection = document.createElement('div');
+            quickSection.className = 'category-section category-quick';
+            quickSection.innerHTML = '<div class="category-header">🟢 Quick Engagement Activities (5-8 points) - 9 Assignments</div>';
+            const quickContent = document.createElement('div');
+            quickContent.className = 'category-content';
+            
+            ['reflect1', 'reflect2', 'reflect3', 'reflect4', 'reflect5',
+             'video1', 'video2', 'video3', 'video4'].forEach(id => {
+                if (completeAssignmentDatabase[id]) {
+                    quickContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
+                }
+            });
+            
+            quickSection.appendChild(quickContent);
+            container.appendChild(quickSection);
+        }
+        
+        function createAssignmentItem(id, assignment) {
+            const item = document.createElement('div');
+            item.className = 'assignment-item';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'assignment-checkbox';
+            checkbox.id = `check-${id}`;
+            checkbox.onchange = updateSummary;
+            
+            const label = document.createElement('label');
+            label.htmlFor = `check-${id}`;
+            label.className = 'assignment-label';
+            label.textContent = assignment.name;
+            
+            const pointsInput = document.createElement('input');
+            pointsInput.type = 'number';
+            pointsInput.className = 'points-input';
+            pointsInput.id = `points-${id}`;
+            pointsInput.value = assignment.defaultPoints;
+            pointsInput.min = 0;
+            pointsInput.max = 100;
+            pointsInput.disabled = true;
+            pointsInput.oninput = updateSummary;
+            
+            const pointsSpan = document.createElement('span');
+            pointsSpan.textContent = 'points';
+            
+            const viewBtn = document.createElement('button');
+            viewBtn.className = 'view-details-btn';
+            viewBtn.textContent = 'View Details';
+            viewBtn.onclick = () => showDetails(id);
+            
+            item.appendChild(checkbox);
+            item.appendChild(label);
+            item.appendChild(pointsInput);
+            item.appendChild(pointsSpan);
+            item.appendChild(viewBtn);
+            
+            return item;
+        }
+        
+        function showDetails(assignmentId) {
+            const assignment = completeAssignmentDatabase[assignmentId];
+            if (!assignment) return;
+            
+            document.getElementById('modalTitle').textContent = assignment.name;
+            
+            let content = `
+                <div class="modal-section">
+                    <h3>📝 Description</h3>
+                    <p>${assignment.description}</p>
+                    <p><strong>Estimated Time:</strong> ${assignment.estimatedTime}</p>
+                    <p><strong>Category:</strong> ${assignment.category} Activity</p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>📋 Requirements</h3>
+                    <ul class="requirements-list">
+                        ${assignment.requirements.map(req => `<li>${req}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>✅ Complete/Incomplete Rubric</h3>
+                    <p style="color: #666; font-style: italic; margin-bottom: 15px;">
+                        Student receives full points when ALL criteria below are met:
+                    </p>
+                    ${Object.entries(assignment.rubric).map(([category, items]) => `
+                        <div class="rubric-category">
+                            <h4>${category}</h4>
+                            <ul class="rubric-items">
+                                ${items.map(item => `<li>${item}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('detailsModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+        
+        function loadSavedConfiguration() {
+            const saved = localStorage.getItem('capTrackerCompleteData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.config) activeConfig = data.config;
+                    if (data.sections) trackerSections = data.sections;
+                    
+                    // MIGRATION: Convert old positional arrays to keyed objects
+                    migrateCompletedData();
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+        }
+        
+        // Migrate student.completed from [true, false, ...] to { assignmentId: true, ... }
+        function migrateCompletedData() {
+            if (activeConfig.assignments.length === 0) return;
+            
+            Object.keys(trackerSections).forEach(sectionName => {
+                trackerSections[sectionName].forEach(student => {
+                    if (Array.isArray(student.completed)) {
+                        // Old format - convert using current config's assignment order
+                        const keyed = {};
+                        student.completed.forEach((val, idx) => {
+                            if (idx < activeConfig.assignments.length) {
+                                keyed[activeConfig.assignments[idx].id] = !!val;
+                            }
+                        });
+                        student.completed = keyed;
+                        console.log(`Migrated ${student.name} to keyed format`);
+                    }
+                    // If it's already an object, no migration needed
+                });
+            });
+            
+            // Save the migrated data
+            saveConfiguration();
+        }
+        
+        function updateSummary() {
+            let selected = 0;
+            let total = 0;
+            
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                const pointsInput = document.getElementById(`points-${id}`);
+                
+                if (checkbox && checkbox.checked) {
+                    selected++;
+                    total += parseInt(pointsInput.value) || 0;
+                    pointsInput.disabled = false;
+                } else if (pointsInput) {
+                    pointsInput.disabled = true;
+                }
+            });
+            
+            document.getElementById('selectedCount').textContent = selected;
+            document.getElementById('totalPoints').textContent = total;
+        }
+        
+        function selectAllAssignments() {
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                if (checkbox) checkbox.checked = true;
+            });
+            updateSummary();
+        }
+        
+        function clearAllSelections() {
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                if (checkbox) checkbox.checked = false;
+            });
+            updateSummary();
+        }
+        
+        function generateTracker() {
+            // Collect selected assignments
+            activeConfig.assignments = [];
+            activeConfig.targetPoints = parseInt(document.getElementById('targetPoints').value) || 100;
+            
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                const pointsInput = document.getElementById(`points-${id}`);
+                
+                if (checkbox && checkbox.checked) {
+                    const assignment = completeAssignmentDatabase[id];
+                    activeConfig.assignments.push({
+                        id: id,
+                        name: assignment.name,
+                        category: assignment.category,
+                        points: parseInt(pointsInput.value) || 0
+                    });
+                }
+            });
+            
+            if (activeConfig.assignments.length === 0) {
+                alert('Please select at least one assignment!');
+                return;
+            }
+            
+            console.log('Generated config:', activeConfig);
+            saveConfiguration();
+            
+            // Switch to tracker
+            document.getElementById('setupPhase').classList.remove('active');
+            document.getElementById('trackerPhase').classList.add('active');
+            
+            // Update info
+            document.getElementById('configInfo').textContent = 
+                `${activeConfig.assignments.length} assignments • Target: ${activeConfig.targetPoints} points • 2+ categories required`;
+            
+            // Initialize tracker WITH preview table
+            initializeTracker();
+        }
+        
+        function backToSetup() {
+            document.getElementById('trackerPhase').classList.remove('active');
+            document.getElementById('setupPhase').classList.add('active');
+        }
+        
+        function initializeTracker() {
+            // IMMEDIATELY show the table headers with selected assignments
+            renderTableHeaders();
+            renderSectionTabs();
+            
+            if (Object.keys(trackerSections).length === 0) {
+                document.getElementById('previewMessage').style.display = 'block';
+            } else {
+                document.getElementById('previewMessage').style.display = 'none';
+                const firstSection = Object.keys(trackerSections)[0];
+                showSection(firstSection);
+            }
+        }
+        
+        // Map assignment category to CSS class
+        function getCatClass(category) {
+            if (category === 'Higher Effort') return 'cat-higher';
+            if (category === 'Medium Effort') return 'cat-medium';
+            return 'cat-quick';
+        }
+        
+        function renderTableHeaders() {
+            // This function ALWAYS shows the assignment columns, even with no sections
+            const header = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+            
+            header.innerHTML = '';
+            body.innerHTML = '';
+            
+            // Create header row
+            const headerRow = document.createElement('tr');
+            
+            // Student name column
+            const nameHeader = document.createElement('th');
+            nameHeader.className = 'student-name';
+            nameHeader.textContent = 'Student Name';
+            headerRow.appendChild(nameHeader);
+            
+            // Assignment columns - colored by CATEGORY
+            activeConfig.assignments.forEach((assignment) => {
+                const th = document.createElement('th');
+                th.className = getCatClass(assignment.category);
+                th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
+                headerRow.appendChild(th);
+            });
+            
+            // Total column
+            const totalHeader = document.createElement('th');
+            totalHeader.textContent = 'Total Points';
+            headerRow.appendChild(totalHeader);
+            
+            // Categories column
+            const catHeader = document.createElement('th');
+            catHeader.textContent = 'Categories';
+            headerRow.appendChild(catHeader);
+            
+            // Notes column
+            const notesHeader = document.createElement('th');
+            notesHeader.textContent = 'Notes';
+            headerRow.appendChild(notesHeader);
+            
+            // Actions column
+            const actionsHeader = document.createElement('th');
+            actionsHeader.textContent = 'Actions';
+            headerRow.appendChild(actionsHeader);
+            
+            header.appendChild(headerRow);
+            
+            // If no sections exist, show a placeholder row
+            if (Object.keys(trackerSections).length === 0 || !currentSection) {
+                const placeholderRow = document.createElement('tr');
+                const placeholderCell = document.createElement('td');
+                placeholderCell.colSpan = activeConfig.assignments.length + 5;
+                placeholderCell.style.textAlign = 'center';
+                placeholderCell.style.padding = '20px';
+                placeholderCell.style.color = '#999';
+                placeholderCell.innerHTML = '<em>Add a section above to begin tracking students</em>';
+                placeholderRow.appendChild(placeholderCell);
+                body.appendChild(placeholderRow);
+            }
+        }
+        
+        function addSection() {
+            const name = prompt('Enter section name (e.g., "Period 1", "GOVT 2305-001"):');
+            if (name && name.trim()) {
+                if (trackerSections[name]) {
+                    alert('Section already exists!');
+                    return;
+                }
+                trackerSections[name] = [];
+                currentSection = name;
+                document.getElementById('previewMessage').style.display = 'none';
+                document.getElementById('studentControls').style.display = 'flex';
+                saveConfiguration();
+                renderSectionTabs();
+                showSection(name);
+            }
+        }
+        
+        function renderSectionTabs() {
+            const tabs = document.getElementById('sectionTabs');
+            tabs.innerHTML = '';
+            
+            Object.keys(trackerSections).forEach(name => {
+                const tab = document.createElement('div');
+                tab.className = 'section-tab';
+                if (name === currentSection) {
+                    tab.classList.add('active');
+                }
+                tab.textContent = name;
+                tab.onclick = () => showSection(name);
+                tabs.appendChild(tab);
+            });
+        }
+        
+        function showSection(name) {
+            currentSection = name;
+            document.getElementById('studentControls').style.display = 'flex';
+            document.getElementById('previewMessage').style.display = 'none';
+            renderSectionTabs();
+            renderTable();
+        }
+        
+        function addStudent() {
+            if (!currentSection) {
+                alert('Please create a section first!');
+                return;
+            }
+            
+            const name = prompt('Enter student name:');
+            if (name && name.trim()) {
+                // Create keyed completion object
+                const completed = {};
+                activeConfig.assignments.forEach(a => {
+                    completed[a.id] = false;
+                });
+                
+                trackerSections[currentSection].push({
+                    name: name.trim(),
+                    completed: completed,
+                    notes: ''
+                });
+                saveConfiguration();
+                renderTable();
+            }
+        }
+        
+        function renderTable() {
+            const header = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+            
+            // Clear and rebuild header
+            header.innerHTML = '';
+            body.innerHTML = '';
+            
+            // Create header row
+            const headerRow = document.createElement('tr');
+            
+            // Student name column
+            const nameHeader = document.createElement('th');
+            nameHeader.className = 'student-name';
+            nameHeader.textContent = 'Student Name';
+            headerRow.appendChild(nameHeader);
+            
+            // Assignment columns
+            activeConfig.assignments.forEach((assignment) => {
+                const th = document.createElement('th');
+                th.className = getCatClass(assignment.category);
+                th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
+                headerRow.appendChild(th);
+            });
+            
+            // Additional columns
+            headerRow.innerHTML += '<th>Total Points</th><th>Categories</th><th>Notes</th><th>Actions</th>';
+            header.appendChild(headerRow);
+            
+            // Create student rows
+            if (currentSection && trackerSections[currentSection]) {
+                trackerSections[currentSection].forEach((student, sIdx) => {
+                    const row = document.createElement('tr');
+                    
+                    // Name cell
+                    const nameCell = document.createElement('td');
+                    nameCell.className = 'student-name';
+                    nameCell.textContent = student.name;
+                    row.appendChild(nameCell);
+                    
+                    // Activity cells - keyed by assignment ID
+                    let total = 0;
+                    const categories = new Set();
+                    
+                    activeConfig.assignments.forEach((assignment, aIdx) => {
+                        const cell = document.createElement('td');
+                        const catCls = getCatClass(assignment.category);
+                        
+                        const completed = student.completed[assignment.id] || false;
+                        cell.className = `${catCls} activity-cell${completed ? ' is-done' : ''}`;
+                        cell.innerHTML = `<span class="${completed ? 'completed' : 'not-completed'}">${completed ? '✓' : '○'}</span>`;
+                        cell.onclick = () => toggleActivity(sIdx, assignment.id);
+                        
+                        if (completed) {
+                            total += assignment.points;
+                            categories.add(assignment.category);
+                        }
+                        
+                        row.appendChild(cell);
+                    });
+                    
+                    // Total cell
+                    const totalCell = document.createElement('td');
+                    totalCell.className = 'total-cell';
+                    if (total >= activeConfig.targetPoints && categories.size >= 2) {
+                        totalCell.classList.add('total-success');
+                    } else if (total > 0) {
+                        totalCell.classList.add('total-partial');
+                    } else {
+                        totalCell.classList.add('total-fail');
+                    }
+                    totalCell.textContent = total;
+                    row.appendChild(totalCell);
+                    
+                    // Categories cell
+                    const catCell = document.createElement('td');
+                    catCell.textContent = `${categories.size}/2`;
+                    catCell.style.color = categories.size >= 2 ? '#4CAF50' : '#f44336';
+                    row.appendChild(catCell);
+                    
+                    // Notes cell
+                    const notesCell = document.createElement('td');
+                    const notesInput = document.createElement('input');
+                    notesInput.type = 'text';
+                    notesInput.className = 'notes-input';
+                    notesInput.value = student.notes || '';
+                    notesInput.onchange = (e) => updateNotes(sIdx, e.target.value);
+                    notesCell.appendChild(notesInput);
+                    row.appendChild(notesCell);
+                    
+                    // Actions cell
+                    const actionsCell = document.createElement('td');
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.className = 'btn-delete';
+                    deleteBtn.style.padding = '5px 10px';
+                    deleteBtn.style.fontSize = '12px';
+                    deleteBtn.onclick = () => deleteStudent(sIdx);
+                    actionsCell.appendChild(deleteBtn);
+                    row.appendChild(actionsCell);
+                    
+                    body.appendChild(row);
+                });
+            }
+        }
+        
+        function toggleActivity(studentIdx, assignmentId) {
+            const student = trackerSections[currentSection][studentIdx];
+            student.completed[assignmentId] = !student.completed[assignmentId];
+            saveConfiguration();
+            renderTable();
+        }
+        
+        function updateNotes(studentIdx, notes) {
+            trackerSections[currentSection][studentIdx].notes = notes;
+            saveConfiguration();
+        }
+        
+        function deleteStudent(idx) {
+            if (confirm('Delete this student?')) {
+                trackerSections[currentSection].splice(idx, 1);
+                saveConfiguration();
+                renderTable();
+            }
+        }
+        
+        function clearSection() {
+            if (confirm(`Clear all students from ${currentSection}?`)) {
+                trackerSections[currentSection] = [];
+                saveConfiguration();
+                renderTable();
+            }
+        }
+        
+        function handleCanvasCSV(event) {
+            const file = event.target.files[0];
+            if (!file || !currentSection) {
+                if (!currentSection) alert('Please select a section first!');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                let studentsAdded = 0;
+                
+                // Skip header row
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    // Parse CSV line - handles quoted fields properly
+                    const fields = parseCSVLine(line);
+                    
+                    if (fields.length >= 4) {
+                        // Extract First Name (index 1) and Last Name (index 3)
+                        const firstName = fields[1].replace(/['"]/g, '').trim();
+                        const lastName = fields[3].replace(/['"]/g, '').trim();
+                        
+                        if (firstName && lastName) {
+                            const fullName = `${firstName} ${lastName}`;
+                            
+                            // Check if student already exists
+                            const exists = trackerSections[currentSection].some(
+                                student => student.name === fullName
+                            );
+                            
+                            if (!exists) {
+                                const completed = {};
+                                activeConfig.assignments.forEach(a => {
+                                    completed[a.id] = false;
+                                });
+                                trackerSections[currentSection].push({
+                                    name: fullName,
+                                    completed: completed,
+                                    notes: ''
+                                });
+                                studentsAdded++;
+                            }
+                        }
+                    }
+                }
+                
+                if (studentsAdded > 0) {
+                    saveConfiguration();
+                    renderTable();
+                    alert(`Successfully imported ${studentsAdded} students from Canvas roster!`);
+                } else {
+                    alert('No new students were added. They may already exist in this section.');
+                }
+            };
+            
+            reader.onerror = function() {
+                alert('Error reading file. Please try again.');
+            };
+            
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+        
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current); // Don't forget the last field
+            return result;
+        }
+        
+        function exportSection() {
+            if (!currentSection) return;
+            
+            let csv = 'Student Name,';
+            csv += activeConfig.assignments.map(a => `"${a.name}"`).join(',');
+            csv += ',Total Points,Categories,Notes\n';
+            
+            trackerSections[currentSection].forEach(student => {
+                csv += `"${student.name}",`;
+                
+                let total = 0;
+                const categories = new Set();
+                
+                activeConfig.assignments.forEach(assignment => {
+                    const completed = student.completed[assignment.id] || false;
+                    csv += (completed ? 'Complete' : '') + ',';
+                    if (completed) {
+                        total += assignment.points;
+                        categories.add(assignment.category);
+                    }
+                });
+                
+                csv += `${total},${categories.size},"${student.notes || ''}"\n`;
+            });
+            
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CAP_Tracker_${currentSection}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function saveConfiguration() {
+            localStorage.setItem('capTrackerCompleteData', JSON.stringify({
+                config: activeConfig,
+                sections: trackerSections
+            }));
+        }
+        
+        // Data Modal Functions
+        function openDataModal() {
+            document.getElementById('dataModal').style.display = 'block';
+        }
+        
+        function closeDataModal() {
+            document.getElementById('dataModal').style.display = 'none';
+        }
+        
+        // Delete Section with confirmation
+        function deleteSection() {
+            if (!currentSection) {
+                alert('No section selected!');
+                return;
+            }
+            
+            const studentCount = trackerSections[currentSection]?.length || 0;
+            const message = studentCount > 0 
+                ? `Are you sure you want to delete the section "${currentSection}"?\n\nThis will permanently delete ${studentCount} student(s) and all their progress data.\n\nThis action cannot be undone!`
+                : `Are you sure you want to delete the section "${currentSection}"?`;
+            
+            if (confirm(message)) {
+                delete trackerSections[currentSection];
+                currentSection = null;
+                saveConfiguration();
+                
+                // If there are remaining sections, switch to the first one
+                const remainingSections = Object.keys(trackerSections);
+                if (remainingSections.length > 0) {
+                    showSection(remainingSections[0]);
+                } else {
+                    document.getElementById('studentControls').style.display = 'none';
+                    document.getElementById('previewMessage').style.display = 'block';
+                    renderTableHeaders();
+                }
+                renderSectionTabs();
+            }
+        }
+        
+        // Export Full Save as JSON
+        function exportFullSave() {
+            const saveData = {
+                exportDate: new Date().toISOString(),
+                version: '3.0',
+                config: activeConfig,
+                sections: trackerSections
+            };
+            
+            const blob = new Blob([JSON.stringify(saveData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CAP_Tracker_Save_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Import JSON with smart merge - uses assignment IDs for reliable matching
+        function handleJSONImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.config || !importedData.sections) {
+                        alert('Invalid save file format. Please select a valid CAP Tracker save file.');
+                        return;
+                    }
+                    
+                    // Merge configuration - use imported if current is empty
+                    if (activeConfig.assignments.length === 0 && importedData.config.assignments.length > 0) {
+                        activeConfig = importedData.config;
+                    }
+                    
+                    // Build a lookup of imported assignment IDs for conversion
+                    const importedAssignments = importedData.config.assignments || [];
+                    
+                    // Helper: convert imported student's completed data to keyed format
+                    function normalizeCompleted(importedCompleted) {
+                        if (!importedCompleted) return {};
+                        
+                        // Already keyed object format
+                        if (!Array.isArray(importedCompleted)) {
+                            return importedCompleted;
+                        }
+                        
+                        // Old positional array format - use IMPORTED config's assignment order
+                        const keyed = {};
+                        importedCompleted.forEach((val, idx) => {
+                            if (idx < importedAssignments.length) {
+                                keyed[importedAssignments[idx].id] = !!val;
+                            }
+                        });
+                        return keyed;
+                    }
+                    
+                    // Smart merge sections
+                    let studentsAdded = 0;
+                    let studentsUpdated = 0;
+                    let sectionsAdded = 0;
+                    
+                    Object.keys(importedData.sections).forEach(sectionName => {
+                        if (!trackerSections[sectionName]) {
+                            trackerSections[sectionName] = [];
+                            sectionsAdded++;
+                        }
+                        
+                        const importedStudents = importedData.sections[sectionName];
+                        
+                        importedStudents.forEach(importedStudent => {
+                            const importedCompleted = normalizeCompleted(importedStudent.completed);
+                            
+                            // Find existing student by name
+                            const existingIdx = trackerSections[sectionName].findIndex(
+                                s => s.name.toLowerCase() === importedStudent.name.toLowerCase()
+                            );
+                            
+                            if (existingIdx === -1) {
+                                // New student - add them with keyed data
+                                const completed = {};
+                                activeConfig.assignments.forEach(a => {
+                                    completed[a.id] = importedCompleted[a.id] || false;
+                                });
+                                
+                                trackerSections[sectionName].push({
+                                    name: importedStudent.name,
+                                    completed: completed,
+                                    notes: importedStudent.notes || ''
+                                });
+                                studentsAdded++;
+                            } else {
+                                // Existing student - merge by assignment ID
+                                const existing = trackerSections[sectionName][existingIdx];
+                                let wasUpdated = false;
+                                
+                                // Ensure existing data is keyed (not array)
+                                if (Array.isArray(existing.completed)) {
+                                    const keyed = {};
+                                    existing.completed.forEach((val, idx) => {
+                                        if (idx < activeConfig.assignments.length) {
+                                            keyed[activeConfig.assignments[idx].id] = !!val;
+                                        }
+                                    });
+                                    existing.completed = keyed;
+                                }
+                                
+                                // Merge: if either has TRUE for an assignment ID, result is TRUE
+                                Object.keys(importedCompleted).forEach(assignmentId => {
+                                    if (importedCompleted[assignmentId] && !existing.completed[assignmentId]) {
+                                        existing.completed[assignmentId] = true;
+                                        wasUpdated = true;
+                                    }
+                                });
+                                
+                                // Ensure all current config assignments exist in the student
+                                activeConfig.assignments.forEach(a => {
+                                    if (existing.completed[a.id] === undefined) {
+                                        existing.completed[a.id] = importedCompleted[a.id] || false;
+                                    }
+                                });
+                                
+                                // Keep existing notes if present, otherwise use imported
+                                if (!existing.notes && importedStudent.notes) {
+                                    existing.notes = importedStudent.notes;
+                                    wasUpdated = true;
+                                }
+                                
+                                if (wasUpdated) studentsUpdated++;
+                            }
+                        });
+                    });
+                    
+                    saveConfiguration();
+                    renderSectionTabs();
+                    if (currentSection) {
+                        renderTable();
+                    }
+                    
+                    alert(`Import Complete!\n\n• Sections added: ${sectionsAdded}\n• Students added: ${studentsAdded}\n• Students updated: ${studentsUpdated}\n\nCompleted assignments have been merged by assignment name - students now have credit for all assignments marked complete in either file.`);
+                    
+                } catch (err) {
+                    console.error('Import error:', err);
+                    alert('Error reading file. Please ensure it is a valid JSON save file.');
+                }
+            };
+            
+            reader.readAsText(file);
+            event.target.value = ''; // Reset file input
+        }
+        
+        // Export Student Summary as CSV
+        function exportStudentSummary() {
+            if (Object.keys(trackerSections).length === 0) {
+                alert('No sections to export!');
+                return;
+            }
+            
+            // Build CSV header
+            let csv = 'Section,Student Name,Total Points,Target Points,Status,Categories Met,Category Requirement Met,Completed Assignments,Notes\n';
+            
+            // Process all sections
+            Object.keys(trackerSections).forEach(sectionName => {
+                trackerSections[sectionName].forEach(student => {
+                    let total = 0;
+                    const categories = new Set();
+                    const completedAssignments = [];
+                    
+                    activeConfig.assignments.forEach(assignment => {
+                        if (student.completed[assignment.id]) {
+                            total += assignment.points;
+                            categories.add(assignment.category);
+                            completedAssignments.push(assignment.name);
+                        }
+                    });
+                    
+                    const pointsMet = total >= activeConfig.targetPoints;
+                    const categoryMet = categories.size >= 2;
+                    const status = (pointsMet && categoryMet) ? 'COMPLETE' : 'IN PROGRESS';
+                    
+                    // Escape fields for CSV
+                    const escapedName = `"${student.name.replace(/"/g, '""')}"`;
+                    const escapedSection = `"${sectionName.replace(/"/g, '""')}"`;
+                    const escapedAssignments = `"${completedAssignments.join('; ').replace(/"/g, '""')}"`;
+                    const escapedNotes = `"${(student.notes || '').replace(/"/g, '""')}"`;
+                    
+                    csv += `${escapedSection},${escapedName},${total},${activeConfig.targetPoints},${status},${categories.size},${categoryMet ? 'Yes' : 'No'},${escapedAssignments},${escapedNotes}\n`;
+                });
+            });
+            
+            const blob = new Blob([csv], {type: 'text/csv'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CAP_Student_Summary_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Close modal on click outside
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('detailsModal')) {
+                closeModal();
+            }
+            if (event.target === document.getElementById('dataModal')) {
+                closeDataModal();
+            }
+        }
+    </script>
+</body>
+</html>
