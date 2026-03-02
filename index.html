@@ -216,40 +216,57 @@
             text-transform: uppercase;
             letter-spacing: 0.04em;
         }
-        .quotes-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+        /* Quote Carousel */
+        .quote-carousel {
+            position: relative;
             margin-top: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .quote-carousel-track {
+            position: relative;
+            min-height: 160px;
         }
         .student-quote {
             background: white;
             border: 1px solid var(--sand);
             border-left: 4px solid var(--amber);
             border-radius: 2px 6px 6px 2px;
-            padding: 20px 22px;
-            font-size: 0.95rem;
+            padding: 28px 30px;
+            font-size: 1.02rem;
             color: var(--slate);
-            line-height: 1.65;
+            line-height: 1.7;
             font-style: italic;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+        .student-quote.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
             position: relative;
         }
         .student-quote::before {
             content: '\201C';
             font-family: 'Libre Baskerville', serif;
-            font-size: 3rem;
+            font-size: 3.4rem;
             color: var(--amber);
-            opacity: 0.3;
+            opacity: 0.25;
             position: absolute;
-            top: 6px;
-            left: 10px;
+            top: 10px;
+            left: 14px;
             line-height: 1;
         }
         .student-quote p {
             position: relative;
             z-index: 1;
             margin: 0;
-            padding-left: 18px;
+            padding-left: 22px;
         }
         .student-quote .quote-tag {
             display: block;
@@ -259,8 +276,53 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-top: 10px;
-            padding-left: 18px;
+            margin-top: 12px;
+            padding-left: 22px;
+        }
+        .carousel-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .carousel-btn {
+            background: none;
+            border: 1px solid var(--sand);
+            border-radius: 50%;
+            width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 18px;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+            flex-shrink: 0;
+        }
+        .carousel-btn:hover { border-color: var(--amber); color: var(--navy); background: white; }
+        .carousel-dots {
+            display: flex;
+            gap: 7px;
+            align-items: center;
+        }
+        .carousel-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--sand);
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .carousel-dot.active {
+            background: var(--amber);
+            transform: scale(1.25);
+        }
+        .carousel-counter {
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 500;
+            min-width: 48px;
+            text-align: center;
         }
         .survey-note {
             font-size: 0.82rem;
@@ -329,7 +391,6 @@
         /* ===== TABLET ===== */
         @media (max-width: 768px) {
             .results-banner { grid-template-columns: repeat(2, 1fr); }
-            .quotes-grid { grid-template-columns: 1fr; }
             .about-card { padding: 28px; }
         }
 
@@ -369,11 +430,13 @@
             .steps li strong { font-size: 0.95rem; }
             .steps li p { font-size: 0.88rem; }
 
-            .student-quote { padding: 16px 18px; font-size: 0.9rem; }
-            .student-quote::before { font-size: 2.4rem; top: 4px; left: 6px; }
+            .student-quote { padding: 20px 18px; font-size: 0.92rem; }
+            .student-quote::before { font-size: 2.4rem; top: 4px; left: 8px; }
             .student-quote p { padding-left: 14px; }
 
-            .quotes-grid { grid-template-columns: 1fr; gap: 12px; }
+            .carousel-dots { gap: 5px; }
+            .carousel-dot { width: 7px; height: 7px; }
+            .carousel-btn { width: 34px; height: 34px; font-size: 16px; }
         }
 
         /* ===== VERY SMALL PHONES ===== */
@@ -458,62 +521,69 @@
             </div>
         </div>
 
-        <div class="quotes-grid">
-            <div class="student-quote">
-                <p>The activities made me actually think about how I interacted with my local government instead of just memorizing facts.</p>
-                <span class="quote-tag">— TCC Student</span>
+        <div class="quote-carousel" id="quoteCarousel">
+            <div class="quote-carousel-track">
+                <div class="student-quote active">
+                    <p>The activities made me actually think about how I interacted with my local government instead of just memorizing facts.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>It took them from a book concept into reality. I am a hands-on learner so I liked that this took me out of my computer and into the real world.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>I learned how easy it truly was to connect with my government. I didn't realize how we interact with our government on a daily basis.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>They made me engage more than I likely would have just memorizing things for tests.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>It helped bring our readings to life, and not just reading from a textbook. The CAP activities helped connect real life experience to the textbook readings.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>I was surprised to learn how easy it was to apply these concepts. I never would've even given some things a second thought if I wasn't actively looking for topics.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>The CAP assignments have changed my view on civic engagement because it requires me to look into how the government works on specific things. Reading chapters in a book isn't as engaging as the CAP assignments are.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>Civic engagement is not just a theory found in books; it's about directly observing, participating in, and caring about the decisions that affect the community you live in.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>Before our CAP activities, I hadn't thought about civic engagement being possible from our own home.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>Before taking this class, I was what SmartBooks considered a Voting Specialist — I only participated in the voting part of politics. This experience has completely changed my view of civic engagement! Never in a million years would I have taken the time to see how everything connected.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>Before this class I thought voting was the only way to participate politically, but through my CAP activities I realized how often I interact with the government without realizing.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>I have been in Texas for ten years, but I have never thought that city council meetings would exist. This semester's CAP activities completely changed my view of civic engagement. I have started following these meetings online and I am planning to attend in the future.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>Through my CAP activities, I realized there are a lot more accessible ways to engage, especially at the local level.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>Before this semester, I believed political participation mainly meant voting during major elections. The most accessible and impactful form of participation for me was attending a local city council meeting and submitting a public comment. I had never interacted directly with local government before this class.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
             </div>
-            <div class="student-quote">
-                <p>It took them from a book concept into reality. I am a hands-on learner so I liked that this took me out of my computer and into the real world.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>I learned how easy it truly was to connect with my government. I didn't realize how we interact with our government on a daily basis.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>They made me engage more than I likely would have just memorizing things for tests.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>It helped bring our readings to life, and not just reading from a textbook. The CAP activities helped connect real life experience to the textbook readings.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>I was surprised to learn how easy it was to apply these concepts. I never would've even given some things a second thought if I wasn't actively looking for topics.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>The CAP assignments have changed my view on civic engagement because it requires me to look into how the government works on specific things. Reading chapters in a book isn't as engaging as the CAP assignments are.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>Civic engagement is not just a theory found in books; it's about directly observing, participating in, and caring about the decisions that affect the community you live in.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>Before our CAP activities, I hadn't thought about civic engagement being possible from our own home.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>Before taking this class, I was what SmartBooks considered a Voting Specialist — I only participated in the voting part of politics. This experience has completely changed my view of civic engagement! Never in a million years would I have taken the time to see how everything connected.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>Before this class I thought voting was the only way to participate politically, but through my CAP activities I realized how often I interact with the government without realizing.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>I have been in Texas for ten years, but I have never thought that city council meetings would exist. This semester's CAP activities completely changed my view of civic engagement. I have started following these meetings online and I am planning to attend in the future.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>Through my CAP activities, I realized there are a lot more accessible ways to engage, especially at the local level.</p>
-                <span class="quote-tag">— TCC Student</span>
-            </div>
-            <div class="student-quote">
-                <p>Before this semester, I believed political participation mainly meant voting during major elections. The most accessible and impactful form of participation for me was attending a local city council meeting and submitting a public comment. I had never interacted directly with local government before this class.</p>
-                <span class="quote-tag">— TCC Student</span>
+            <div class="carousel-controls">
+                <button class="carousel-btn" id="prevQuote" aria-label="Previous quote">&#8249;</button>
+                <div class="carousel-dots" id="carouselDots"></div>
+                <button class="carousel-btn" id="nextQuote" aria-label="Next quote">&#8250;</button>
             </div>
         </div>
 
@@ -638,7 +708,7 @@
                 <p>I built CAP because I was tired of watching community college students disengage from government courses that relied on memorization and multiple-choice exams. These students are working adults, parents, first-generation college students — people who are already affected by government every day. They deserved better than Scantrons.</p>
                 <p>CAP is grounded in Self-Determination Theory, experiential learning theory, and authentic assessment research. It gives students real choices, connects course material to their actual lives, and replaces high-stakes testing with meaningful civic engagement.</p>
                 <p>If you're interested in using CAP, adapting it for your context, or collaborating on research, I'd love to hear from you.</p>
-                <p>📧 <a href="/cdn-cgi/l/email-protection#7f151e0d1a1b510c0b1a081e0d0b3f0b1c1c1b511a1b0a"><span class="__cf_email__" data-cfemail="3b515a495e5f15484f5e4c5a494f7b4f58585f155e5f4e">[email&#160;protected]</span></a><br>
+                <p>📧 <a href="mailto:jared.stewart@tccd.edu">jared.stewart@tccd.edu</a><br>
                 🏛️ <a href="https://www.tccd.edu" target="_blank">Tarrant County College</a></p>
             </div>
         </div>
@@ -651,4 +721,74 @@
     <strong>Civic Action Project (CAP)</strong><br>
     Created by Jared Stewart · Tarrant County College · Fort Worth, Texas<br><br>
     This work is shared as a free, open educational resource.
-    Adapt it,
+    Adapt it, improve it, and share it forward.<br>
+    📧 <a href="mailto:jared.stewart@tccd.edu">jared.stewart@tccd.edu</a>
+</footer>
+
+<script>
+(function() {
+    var track = document.querySelector('.quote-carousel-track');
+    var quotes = track.querySelectorAll('.student-quote');
+    var dotsContainer = document.getElementById('carouselDots');
+    var prevBtn = document.getElementById('prevQuote');
+    var nextBtn = document.getElementById('nextQuote');
+    var total = quotes.length;
+    var current = 0;
+    var timer;
+
+    // Build dots
+    for (var i = 0; i < total; i++) {
+        var dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', 'Go to quote ' + (i + 1));
+        (function(idx) {
+            dot.addEventListener('click', function() { goTo(idx); });
+        })(i);
+        dotsContainer.appendChild(dot);
+    }
+    var dots = dotsContainer.querySelectorAll('.carousel-dot');
+
+    function goTo(index) {
+        quotes[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = ((index % total) + total) % total;
+        quotes[current].classList.add('active');
+        dots[current].classList.add('active');
+        resetTimer();
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        timer = setInterval(function() { goTo(current + 1); }, 5000);
+    }
+
+    prevBtn.addEventListener('click', function() { goTo(current - 1); });
+    nextBtn.addEventListener('click', function() { goTo(current + 1); });
+
+    // Pause on hover
+    var carousel = document.getElementById('quoteCarousel');
+    carousel.addEventListener('mouseenter', function() { clearInterval(timer); });
+    carousel.addEventListener('mouseleave', resetTimer);
+
+    // Swipe support for mobile
+    var touchStartX = 0;
+    carousel.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        clearInterval(timer);
+    }, { passive: true });
+    carousel.addEventListener('touchend', function(e) {
+        var diff = touchStartX - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 40) {
+            goTo(diff > 0 ? current + 1 : current - 1);
+        } else {
+            resetTimer();
+        }
+    }, { passive: true });
+
+    // Start auto-play
+    resetTimer();
+})();
+</script>
+
+</body>
+</html>
