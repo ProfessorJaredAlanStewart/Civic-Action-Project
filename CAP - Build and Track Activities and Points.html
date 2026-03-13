@@ -736,6 +736,88 @@
             color: #666;
         }
         
+        /* Custom Assignment Section */
+        .category-custom .category-header {
+            background: linear-gradient(135deg, #607D8B 0%, #455A64 100%);
+        }
+        
+        .category-custom .category-content {
+            background: #f5f7f8;
+        }
+        
+        .custom-add-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 12px;
+            background: white;
+            border: 2px dashed #90A4AE;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .custom-add-form input, .custom-add-form select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: Georgia, serif;
+        }
+        
+        .custom-add-form input:focus, .custom-add-form select:focus {
+            outline: none;
+            border-color: #607D8B;
+            box-shadow: 0 0 5px rgba(96,125,139,0.3);
+        }
+        
+        .custom-add-form input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .custom-add-form input[type="number"] {
+            width: 80px;
+            text-align: center;
+        }
+        
+        .btn-add-custom {
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #607D8B 0%, #455A64 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: Georgia, serif;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-remove-custom {
+            padding: 6px 12px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-remove-custom:hover {
+            background: #d32f2f;
+        }
+        
+        .cat-custom { background-color: #f0f2f3; }
+        th.cat-custom { background: linear-gradient(180deg, #607D8B 0%, #455A64 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        td.cat-custom.is-done { background-color: #cfd8dc; }
+        
         /* ── Category-based column coloring ── */
         /* Higher Effort: warm rose */
         .cat-higher { background-color: #fff0f0; }
@@ -813,6 +895,7 @@
                         <li>Click "View Details" to see complete rubrics</li>
                         <li>Select assignments to include in your tracker</li>
                         <li>Customize point values as needed</li>
+                        <li>Add your own custom assignments (extra credit, bonus activities, etc.)</li>
                         <li>Click "Generate Tracker" to create your custom tracking system</li>
                     </ul>
                 </div>
@@ -826,7 +909,7 @@
                     <div class="config-stats">
                         <div class="config-stat">
                             <div class="config-stat-label">Total Available</div>
-                            <div class="config-stat-value">29</div>
+                            <div class="config-stat-value" id="totalAvailable">29</div>
                         </div>
                         <div class="config-stat">
                             <div class="config-stat-label">Selected Assignments</div>
@@ -898,6 +981,7 @@
                     <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:#c0392b;display:inline-block;"></span> Higher Effort</span>
                     <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:#d4930a;display:inline-block;"></span> Medium Effort</span>
                     <span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:#3a6a9e;display:inline-block;"></span> Quick Engagement</span>
+                    <span id="customLegend" style="display:none;"><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:#455A64;display:inline-block;"></span> Custom</span></span>
                 </div>
                 
                 <!-- The table is ALWAYS visible, showing the selected assignments -->
@@ -2094,9 +2178,14 @@
         let trackerSections = {};
         let currentSection = null;
         
+        // Custom assignments added by the instructor
+        let customAssignments = {};
+        let customCounter = 0;
+        
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
             console.log('Initializing CAP Tracker...');
+            loadCustomAssignments();
             buildAssignmentSections();
             loadSavedConfiguration();
             
@@ -2131,6 +2220,16 @@
             });
             // Then check/set the ones in activeConfig
             activeConfig.assignments.forEach(a => {
+                // If this is a custom assignment not yet in the UI, add it
+                if (a.id.startsWith('custom_') && !document.getElementById(`check-${a.id}`)) {
+                    if (customAssignments[a.id]) {
+                        const list = document.getElementById('customAssignmentList');
+                        const form = list.querySelector('.custom-add-form');
+                        const item = createAssignmentItem(a.id, customAssignments[a.id]);
+                        list.insertBefore(item, form);
+                    }
+                }
+                
                 const checkbox = document.getElementById(`check-${a.id}`);
                 const pointsInput = document.getElementById(`points-${a.id}`);
                 if (checkbox) {
@@ -2142,6 +2241,11 @@
                 }
             });
             document.getElementById('targetPoints').value = activeConfig.targetPoints;
+            
+            // Show custom legend if needed
+            const hasCustom = activeConfig.assignments.some(a => a.category === 'Custom');
+            document.getElementById('customLegend').style.display = hasCustom ? 'inline' : 'none';
+            
             updateSummary();
         }
         
@@ -2200,11 +2304,44 @@
             
             quickSection.appendChild(quickContent);
             container.appendChild(quickSection);
+            
+            // Custom Assignments Section
+            const customSection = document.createElement('div');
+            customSection.className = 'category-section category-custom';
+            customSection.innerHTML = '<div class="category-header">⚙️ Custom Assignments (Instructor-Created)</div>';
+            const customContent = document.createElement('div');
+            customContent.className = 'category-content';
+            customContent.id = 'customAssignmentList';
+            
+            // Render any already-defined custom assignments
+            Object.keys(customAssignments).forEach(id => {
+                customContent.appendChild(createAssignmentItem(id, customAssignments[id]));
+            });
+            
+            // Add form
+            const addForm = document.createElement('div');
+            addForm.className = 'custom-add-form';
+            addForm.innerHTML = `
+                <input type="text" id="customName" placeholder="Assignment name (e.g., Extra Credit Essay)">
+                <select id="customCategory">
+                    <option value="Higher Effort">Higher Effort</option>
+                    <option value="Medium Effort">Medium Effort</option>
+                    <option value="Quick Engagement">Quick Engagement</option>
+                    <option value="Custom">Custom</option>
+                </select>
+                <input type="number" id="customPoints" placeholder="Pts" value="10" min="1" max="100" style="width:80px;">
+                <button class="btn-add-custom" onclick="addCustomAssignment()">+ Add Assignment</button>
+            `;
+            customContent.appendChild(addForm);
+            
+            customSection.appendChild(customContent);
+            container.appendChild(customSection);
         }
         
         function createAssignmentItem(id, assignment) {
             const item = document.createElement('div');
             item.className = 'assignment-item';
+            item.id = `item-${id}`;
             
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -2241,7 +2378,115 @@
             item.appendChild(pointsSpan);
             item.appendChild(viewBtn);
             
+            // Add remove button for custom assignments
+            if (id.startsWith('custom_')) {
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn-remove-custom';
+                removeBtn.textContent = '✕ Remove';
+                removeBtn.onclick = (e) => { e.stopPropagation(); removeCustomAssignment(id); };
+                item.appendChild(removeBtn);
+            }
+            
             return item;
+        }
+        
+        function addCustomAssignment() {
+            const nameInput = document.getElementById('customName');
+            const categorySelect = document.getElementById('customCategory');
+            const pointsInput = document.getElementById('customPoints');
+            
+            const name = nameInput.value.trim();
+            const category = categorySelect.value;
+            const points = parseInt(pointsInput.value) || 10;
+            
+            if (!name) {
+                alert('Please enter an assignment name.');
+                return;
+            }
+            
+            // Generate unique ID
+            customCounter++;
+            const id = `custom_${Date.now()}_${customCounter}`;
+            
+            // Create the assignment object
+            const assignment = {
+                name: name,
+                category: category,
+                defaultPoints: points,
+                description: `Custom assignment created by instructor: ${name}`,
+                estimatedTime: 'Varies',
+                requirements: ['Complete as specified by your instructor'],
+                rubric: {
+                    'Instructor Criteria ✓': ['Meets requirements as defined by your instructor']
+                }
+            };
+            
+            // Add to both databases
+            customAssignments[id] = assignment;
+            completeAssignmentDatabase[id] = assignment;
+            
+            // Add to the UI (before the add-form)
+            const list = document.getElementById('customAssignmentList');
+            const form = list.querySelector('.custom-add-form');
+            const item = createAssignmentItem(id, assignment);
+            list.insertBefore(item, form);
+            
+            // Auto-check the new assignment
+            const checkbox = document.getElementById(`check-${id}`);
+            if (checkbox) checkbox.checked = true;
+            
+            // Clear the form
+            nameInput.value = '';
+            pointsInput.value = '10';
+            
+            // Save custom assignments to localStorage
+            saveCustomAssignments();
+            updateSummary();
+        }
+        
+        function removeCustomAssignment(id) {
+            if (!confirm(`Remove custom assignment "${customAssignments[id]?.name || id}"?`)) return;
+            
+            // Remove from databases
+            delete customAssignments[id];
+            delete completeAssignmentDatabase[id];
+            
+            // Remove from UI
+            const item = document.getElementById(`item-${id}`);
+            if (item) item.remove();
+            
+            // Remove from activeConfig if already generated
+            activeConfig.assignments = activeConfig.assignments.filter(a => a.id !== id);
+            
+            // Remove from all students' completed data
+            Object.keys(trackerSections).forEach(sectionName => {
+                trackerSections[sectionName].forEach(student => {
+                    delete student.completed[id];
+                });
+            });
+            
+            saveCustomAssignments();
+            saveConfiguration();
+            updateSummary();
+        }
+        
+        function saveCustomAssignments() {
+            localStorage.setItem('capTrackerCustomAssignments', JSON.stringify(customAssignments));
+        }
+        
+        function loadCustomAssignments() {
+            const saved = localStorage.getItem('capTrackerCustomAssignments');
+            if (saved) {
+                try {
+                    customAssignments = JSON.parse(saved);
+                    // Merge into the main database
+                    Object.keys(customAssignments).forEach(id => {
+                        completeAssignmentDatabase[id] = customAssignments[id];
+                    });
+                } catch (e) {
+                    console.error('Error loading custom assignments:', e);
+                }
+            }
         }
         
         function showDetails(assignmentId) {
@@ -2297,6 +2542,16 @@
                     if (data.config) activeConfig = data.config;
                     if (data.sections) trackerSections = data.sections;
                     
+                    // Load custom assignments from main save (supplements separate storage)
+                    if (data.customAssignments) {
+                        Object.keys(data.customAssignments).forEach(id => {
+                            if (!customAssignments[id]) {
+                                customAssignments[id] = data.customAssignments[id];
+                                completeAssignmentDatabase[id] = data.customAssignments[id];
+                            }
+                        });
+                    }
+                    
                     // MIGRATION: Convert old positional arrays to keyed objects
                     migrateCompletedData();
                 } catch (e) {
@@ -2349,6 +2604,7 @@
             
             document.getElementById('selectedCount').textContent = selected;
             document.getElementById('totalPoints').textContent = total;
+            document.getElementById('totalAvailable').textContent = Object.keys(completeAssignmentDatabase).length;
         }
         
         function selectAllAssignments() {
@@ -2392,8 +2648,13 @@
                 return;
             }
             
+            // Show/hide custom legend
+            const hasCustom = activeConfig.assignments.some(a => a.category === 'Custom');
+            document.getElementById('customLegend').style.display = hasCustom ? 'inline' : 'none';
+            
             console.log('Generated config:', activeConfig);
             saveConfiguration();
+            saveCustomAssignments();
             
             // Switch to tracker
             document.getElementById('setupPhase').classList.remove('active');
@@ -2430,6 +2691,7 @@
         function getCatClass(category) {
             if (category === 'Higher Effort') return 'cat-higher';
             if (category === 'Medium Effort') return 'cat-medium';
+            if (category === 'Custom') return 'cat-custom';
             return 'cat-quick';
         }
         
@@ -2819,7 +3081,8 @@
         function saveConfiguration() {
             localStorage.setItem('capTrackerCompleteData', JSON.stringify({
                 config: activeConfig,
-                sections: trackerSections
+                sections: trackerSections,
+                customAssignments: customAssignments
             }));
         }
         
@@ -2866,9 +3129,10 @@
         function exportFullSave() {
             const saveData = {
                 exportDate: new Date().toISOString(),
-                version: '3.0',
+                version: '4.0',
                 config: activeConfig,
-                sections: trackerSections
+                sections: trackerSections,
+                customAssignments: customAssignments
             };
             
             const blob = new Blob([JSON.stringify(saveData, null, 2)], {type: 'application/json'});
@@ -2893,6 +3157,17 @@
                     if (!importedData.config || !importedData.sections) {
                         alert('Invalid save file format. Please select a valid CAP Tracker save file.');
                         return;
+                    }
+                    
+                    // Import custom assignments if present
+                    if (importedData.customAssignments) {
+                        Object.keys(importedData.customAssignments).forEach(id => {
+                            if (!customAssignments[id]) {
+                                customAssignments[id] = importedData.customAssignments[id];
+                                completeAssignmentDatabase[id] = importedData.customAssignments[id];
+                            }
+                        });
+                        saveCustomAssignments();
                     }
                     
                     // Merge configuration - use imported if current is empty
