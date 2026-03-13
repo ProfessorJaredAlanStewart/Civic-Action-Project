@@ -317,13 +317,6 @@
             background: var(--amber);
             transform: scale(1.25);
         }
-        .carousel-counter {
-            font-size: 0.8rem;
-            color: var(--muted);
-            font-weight: 500;
-            min-width: 48px;
-            text-align: center;
-        }
         .survey-note {
             font-size: 0.82rem;
             color: var(--muted);
@@ -498,25 +491,25 @@
     <div class="container">
         <h2>What <span class="accent">Students</span> Say</h2>
         <p class="section-lead">
-            End-of-semester survey results from 38 community college students at Tarrant County College.
+            Survey results from 71 community college students across two semesters at Tarrant County College.
         </p>
 
         <div class="results-banner">
             <div class="result-card">
-                <div class="result-num green">89%</div>
-                <div class="result-desc">said CAP was better than traditional exams</div>
+                <div class="result-num green">94%</div>
+                <div class="result-desc">said CAP was better than traditional studying methods</div>
                 <div class="result-highlight">0% said worse</div>
             </div>
             <div class="result-card">
-                <div class="result-num blue">87%</div>
+                <div class="result-num blue">86%</div>
                 <div class="result-desc">rated their overall CAP experience Good or Excellent</div>
             </div>
             <div class="result-card">
-                <div class="result-num amber">58%</div>
-                <div class="result-desc">said no activity was "least valuable" — all were worthwhile</div>
+                <div class="result-num amber">70%</div>
+                <div class="result-desc">said CAP was "much better" than traditional methods — the strongest option</div>
             </div>
             <div class="result-card">
-                <div class="result-num navy">86%</div>
+                <div class="result-num navy">88%</div>
                 <div class="result-desc">found the Complete/Incomplete rubrics helpful</div>
             </div>
         </div>
@@ -579,6 +572,30 @@
                     <p>Before this semester, I believed political participation mainly meant voting during major elections. The most accessible and impactful form of participation for me was attending a local city council meeting and submitting a public comment. I had never interacted directly with local government before this class.</p>
                     <span class="quote-tag">— TCC Student</span>
                 </div>
+                <div class="student-quote">
+                    <p>It's the first time I've ever been able to remember something I've learned in school. I usually remember just enough to pass a test.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>How accessible getting involved in local government and my community is. Before, it seemed far off and confusing. Now I see it is regular people like me who choose to reach out in different ways.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>The most surprising thing I learned was that information is truly at the palm of our hands — it's just a matter of looking and dismissing the desire to turn to ignorance.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>Even the low effort activities showed such great insight into how government is always working even if we don't see it.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>They helped me see concepts play out in real time, making me understand concepts more deeply, not just at surface level.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
+                <div class="student-quote">
+                    <p>The most surprising thing I learned through the CAP activities was how much impact small actions can have — just listening, helping, or showing up can really make a difference in someone's day.</p>
+                    <span class="quote-tag">— TCC Student</span>
+                </div>
             </div>
             <div class="carousel-controls">
                 <button class="carousel-btn" id="prevQuote" aria-label="Previous quote">&#8249;</button>
@@ -588,7 +605,7 @@
         </div>
 
         <p class="survey-note">
-            Source: CAP Reflection Surveys, Fall 2025 &amp; Spring 2026 · Tarrant County College, Fort Worth, TX
+            Source: CAP Reflection Surveys, Fall 2025 &amp; Spring 2026 · n=71 · Tarrant County College, Fort Worth, TX
         </p>
     </div>
 </section>
@@ -736,7 +753,6 @@
     var current = 0;
     var timer;
 
-    // Build dots
     for (var i = 0; i < total; i++) {
         var dot = document.createElement('button');
         dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
@@ -765,12 +781,10 @@
     prevBtn.addEventListener('click', function() { goTo(current - 1); });
     nextBtn.addEventListener('click', function() { goTo(current + 1); });
 
-    // Pause on hover
     var carousel = document.getElementById('quoteCarousel');
     carousel.addEventListener('mouseenter', function() { clearInterval(timer); });
     carousel.addEventListener('mouseleave', resetTimer);
 
-    // Swipe support for mobile
     var touchStartX = 0;
     carousel.addEventListener('touchstart', function(e) {
         touchStartX = e.changedTouches[0].screenX;
@@ -785,7 +799,6 @@
         }
     }, { passive: true });
 
-    // Start auto-play
     resetTimer();
 })();
 </script>
