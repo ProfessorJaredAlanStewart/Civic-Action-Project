@@ -2964,44 +2964,76 @@
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result;
-                const lines = text.split('\n');
+                const text = e.target.result.replace(/^\uFEFF/, ''); // Strip BOM
+                const lines = text.split(/\r?\n/);
                 let studentsAdded = 0;
                 
-                // Skip header row
+                if (lines.length < 2) {
+                    alert('CSV file appears to be empty.');
+                    return;
+                }
+                
+                // Detect format from header row
+                const headerFields = parseCSVLine(lines[0]);
+                const headerLower = headerFields.map(h => h.replace(/['"]/g, '').trim().toLowerCase());
+                
+                // Format A: Section roster — single "student name" column, "Last, First M." format
+                // Format B: Gradebook — has columns like "Student", "First Name" at index 1, "Last Name" at index 3
+                const isRosterFormat = (headerFields.length <= 2 && headerLower.some(h => h.includes('student name')));
+                
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
                     
-                    // Parse CSV line - handles quoted fields properly
-                    const fields = parseCSVLine(line);
+                    let fullName = '';
                     
-                    if (fields.length >= 4) {
-                        // Extract First Name (index 1) and Last Name (index 3)
-                        const firstName = fields[1].replace(/['"]/g, '').trim();
-                        const lastName = fields[3].replace(/['"]/g, '').trim();
+                    if (isRosterFormat) {
+                        // Section roster: single column "Last, First M."
+                        const raw = line.replace(/^["']|["']$/g, '').trim();
+                        if (!raw) continue;
                         
-                        if (firstName && lastName) {
-                            const fullName = `${firstName} ${lastName}`;
-                            
-                            // Check if student already exists
-                            const exists = trackerSections[currentSection].some(
-                                student => student.name === fullName
-                            );
-                            
-                            if (!exists) {
-                                const completed = {};
-                                activeConfig.assignments.forEach(a => {
-                                    completed[a.id] = false;
-                                });
-                                trackerSections[currentSection].push({
-                                    name: fullName,
-                                    completed: completed,
-                                    notes: ''
-                                });
-                                studentsAdded++;
+                        // Parse "Last, First M." → "First Last"
+                        const commaIdx = raw.indexOf(',');
+                        if (commaIdx !== -1) {
+                            const lastName = raw.substring(0, commaIdx).trim();
+                            // Take first name only (drop middle initial)
+                            const restParts = raw.substring(commaIdx + 1).trim().split(/\s+/);
+                            const firstName = restParts[0] || '';
+                            fullName = `${firstName} ${lastName}`;
+                        } else {
+                            fullName = raw; // No comma — use as-is
+                        }
+                    } else {
+                        // Gradebook format: First Name at index 1, Last Name at index 3
+                        const fields = parseCSVLine(line);
+                        if (fields.length >= 4) {
+                            const firstName = fields[1].replace(/['"]/g, '').trim();
+                            const lastName = fields[3].replace(/['"]/g, '').trim();
+                            if (firstName && lastName) {
+                                fullName = `${firstName} ${lastName}`;
                             }
                         }
+                    }
+                    
+                    fullName = fullName.trim();
+                    if (!fullName) continue;
+                    
+                    // Check if student already exists (case-insensitive)
+                    const exists = trackerSections[currentSection].some(
+                        student => student.name.toLowerCase() === fullName.toLowerCase()
+                    );
+                    
+                    if (!exists) {
+                        const completed = {};
+                        activeConfig.assignments.forEach(a => {
+                            completed[a.id] = false;
+                        });
+                        trackerSections[currentSection].push({
+                            name: fullName,
+                            completed: completed,
+                            notes: ''
+                        });
+                        studentsAdded++;
                     }
                 }
                 
