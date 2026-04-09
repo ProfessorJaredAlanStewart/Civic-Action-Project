@@ -603,7 +603,7 @@
             <div style="display: flex; align-items: flex-start; gap: 12px;">
                 <span style="font-size: 1.5em; line-height: 1;">⚠️</span>
                 <div>
-                    <strong style="color: #7c6200; font-size: 1.02em;">Your instructor may not use all 29 activities.</strong>
+                    <strong style="color: #7c6200; font-size: 1.02em;">Your instructor may not use all 39 activities.</strong>
                     <p style="color: #8a7200; font-size: 0.92em; margin: 4px 0 0 0; line-height: 1.5;">
                         The CAP is customizable — your professor chooses which activities to offer and may adjust point values. 
                         <strong>Always check your Canvas (or LMS) course for the specific assignments available in your section.</strong> 
@@ -630,7 +630,7 @@
                 <!-- Higher Effort Section -->
                 <div class="category-section category-high">
                     <div class="category-header" onclick="toggleCategory(this)">
-                        <span>🔴 Higher Effort Activities (20-30 points each) — 10 Assignments</span>
+                        <span>🔴 Higher Effort Activities (20-30 points each) — 14 Assignments</span>
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div class="category-content" id="high-content"></div>
@@ -639,7 +639,7 @@
                 <!-- Medium Effort Section -->
                 <div class="category-section category-medium">
                     <div class="category-header" onclick="toggleCategory(this)">
-                        <span>🟡 Medium Effort Activities (10-15 points each) — 10 Assignments</span>
+                        <span>🟡 Medium Effort Activities (10-15 points each) — 14 Assignments</span>
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div class="category-content" id="medium-content"></div>
@@ -648,7 +648,7 @@
                 <!-- Quick Engagement Section -->
                 <div class="category-section category-quick">
                     <div class="category-header" onclick="toggleCategory(this)">
-                        <span>🟢 Quick Engagement Activities (5-8 points each) — 9 Assignments</span>
+                        <span>🟢 Quick Engagement Activities (5-8 points each) — 11 Assignments</span>
                         <span class="toggle-icon">▼</span>
                     </div>
                     <div class="category-content" id="quick-content"></div>
@@ -680,7 +680,7 @@
                         </div>
                     </div>
                     <p style="font-size: 0.85em; color: #888; margin-top: 14px; font-style: italic; text-align: center;">
-                        These paths assume all 29 activities are available. Your instructor may offer a different selection — adjust your plan accordingly.
+                        These paths assume all 39 activities are available. Your instructor may offer a different selection — adjust your plan accordingly.
                     </p>
                 </div>
             </div>
@@ -736,7 +736,7 @@
     </div>
 
     <script>
-        // Complete assignment database with all 29 assignments
+        // Complete assignment database with all 39 assignments (29 original + 10 safety-focused)
         const assignments = {
             // Higher Effort (10 assignments)
             meeting: {
@@ -800,7 +800,33 @@
                 description: "Organize voter registration at 3+ locations"
             },
             
-            // Medium Effort (10 assignments)
+            // Higher Effort - Safety-Focused
+            safetyFoodSecurity: {
+                name: "Food Security Resource Navigation",
+                category: "high",
+                defaultPoints: 20,
+                description: "Investigate food assistance resources available to community college students (SNAP eligibility, campus foo..."
+            },
+            safetyCrisisTraining: {
+                name: "Crisis Resource Training",
+                category: "high",
+                defaultPoints: 25,
+                description: "Complete a training or orientation session with a local organization that addresses domestic violence, sexu..."
+            },
+            safetyEmergencyMgmt: {
+                name: "Emergency Management Agency Visit",
+                category: "high",
+                defaultPoints: 25,
+                description: "Arrange a visit to or interview with a representative from Tarrant County Emergency Management, Fort Worth..."
+            },
+            safetyPolicyBrief: {
+                name: "Campus Safety Policy Brief",
+                category: "high",
+                defaultPoints: 30,
+                description: "Obtain and analyze TCC's Clery Act crime statistics and campus safety policies."
+            },
+            
+            // Medium Effort (14 assignments)
             scavenger: {
                 name: "Government Services Scavenger Hunt",
                 category: "medium",
@@ -862,7 +888,33 @@
                 description: "Research a failed/over-budget government project"
             },
             
-            // Quick Engagement (9 assignments)
+            // Medium Effort - Safety-Focused
+            safetyTenant: {
+                name: "Tenant Safety Rights Investigation",
+                category: "medium",
+                defaultPoints: 10,
+                description: "Research Texas tenant rights related to safety (required locks, smoke detectors, security devices, landlord..."
+            },
+            safetyWorkplace: {
+                name: "Workplace Safety Deep Dive",
+                category: "medium",
+                defaultPoints: 15,
+                description: "Research OSHA's role in protecting workers, then investigate safety requirements specific to your current o..."
+            },
+            safetyTraffic: {
+                name: "Community Traffic Safety Analysis",
+                category: "medium",
+                defaultPoints: 15,
+                description: "Identify a dangerous intersection, crosswalk, or road segment in your daily commute or neighborhood."
+            },
+            safetyFinancial: {
+                name: "Financial Predator Mapping",
+                category: "medium",
+                defaultPoints: 15,
+                description: "Research predatory financial services targeting vulnerable populations (payday lenders, title loans, rent-t..."
+            },
+            
+            // Quick Engagement (11 assignments)
             reflect1: {
                 name: "Personal Impact Reflection #1",
                 category: "quick",
@@ -916,6 +968,20 @@
                 category: "quick",
                 defaultPoints: 8,
                 description: "Fourth 60-second video demonstrating mastery"
+            },
+            
+            // Quick Engagement - Safety-Focused
+            safetyEmergencyAudit: {
+                name: "Campus Emergency Preparedness Audit",
+                category: "quick",
+                defaultPoints: 8,
+                description: "Complete the college's emergency notification sign-up (TCC Alert), then physically locate and photograph th..."
+            },
+            safetyKnowRights: {
+                name: "Know Your Rights: Police Encounter Preparation",
+                category: "quick",
+                defaultPoints: 8,
+                description: "Review your legal rights during three types of police encounters (traffic stop, pedestrian stop, home visit..."
             }
         };
         

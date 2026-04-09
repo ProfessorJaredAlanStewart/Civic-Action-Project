@@ -891,7 +891,7 @@
                 <div class="setup-instructions">
                     <h2>📋 Setup Instructions</h2>
                     <ul>
-                        <li>Browse all 29 assignments across three effort levels</li>
+                        <li>Browse all 39 assignments across three effort levels</li>
                         <li>Click "View Details" to see complete rubrics</li>
                         <li>Select assignments to include in your tracker</li>
                         <li>Customize point values as needed</li>
@@ -909,7 +909,7 @@
                     <div class="config-stats">
                         <div class="config-stat">
                             <div class="config-stat-label">Total Available</div>
-                            <div class="config-stat-value" id="totalAvailable">29</div>
+                            <div class="config-stat-value" id="totalAvailable">39</div>
                         </div>
                         <div class="config-stat">
                             <div class="config-stat-label">Selected Assignments</div>
@@ -1066,7 +1066,7 @@
     </div>
     
     <script>
-        // Complete assignment database with FULL rubrics for ALL 29 assignments
+        // Complete assignment database with FULL rubrics for ALL 39 assignments (29 original + 10 safety-focused)
         const completeAssignmentDatabase = {
             meeting: {
                 name: "Government Meeting Attendance",
@@ -2165,6 +2165,377 @@
                         "Written component shows deep understanding"
                     ]
                 }
+            },
+            
+            // === SAFETY-FOCUSED ASSIGNMENTS (Ballard et al., 2016) ===
+            // Added: 10 assignments addressing the safety theme that produced the
+            // strongest civic engagement effects in Ballard's research. The category
+            // of action matters: safety-focused civic projects yielded the largest
+            // gains in civic commitment, self-efficacy, and action civics knowledge.
+            
+            safetyEmergencyAudit: {
+                name: "Campus Emergency Preparedness Audit",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Complete the college's emergency notification sign-up (TCC Alert), then physically locate and photograph three emergency resources on your campus (AED locations, emergency call boxes, evacuation maps, tornado shelter areas). Reflect on whether the campus adequately communicates safety resources to students. Builds awareness of how institutions protect citizens and meets students where they spend their week.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Sign up for TCC Alert (or equivalent campus emergency notification)",
+                    "Photograph three different emergency resources on campus",
+                    "Provide caption identifying the location of each",
+                    "Write a 150-word reflection on campus safety communication",
+                ],
+                rubric: {
+                    "Documentation ✓": [
+                        "Screenshot of TCC Alert enrollment confirmation provided",
+                        "Three photos of distinct campus emergency resources",
+                        "Each photo captioned with specific building and location",
+                        "Photos are original (taken by student)"
+                    ],
+                    "Reflection (150 words) ✓": [
+                        "Meets word count requirement",
+                        "Evaluates whether campus communicates safety resources adequately",
+                        "Identifies at least one specific strength or gap",
+                        "Connects to course concepts about institutional responsibility"
+                    ]
+                }
+            },
+            
+            safetyKnowRights: {
+                name: "Know Your Rights: Police Encounter Preparation",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Review your legal rights during three types of police encounters (traffic stop, pedestrian stop, home visit) using resources from the ACLU or similar organizations. Create a wallet card or phone note summarizing key phrases and rights. Reflect on what you learned and how this knowledge affects your sense of safety. Builds constitutional literacy through personally relevant application.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "Research rights during traffic stop, pedestrian stop, and home visit",
+                    "Use credible sources (ACLU, state bar association, or similar)",
+                    "Create a wallet card or phone note with key rights and phrases",
+                    "Write a 200-word reflection",
+                    "List sources consulted",
+                ],
+                rubric: {
+                    "Research and Sources ✓": [
+                        "Three encounter types covered (traffic, pedestrian, home)",
+                        "At least 2 credible sources cited",
+                        "Sources are authoritative (ACLU, bar association, government, etc.)",
+                        "Information is accurate and current"
+                    ],
+                    "Wallet Card or Phone Note ✓": [
+                        "Photo or screenshot of finished card or note provided",
+                        "Key constitutional rights summarized clearly",
+                        "Useful phrases included for each encounter type",
+                        "Format is practical and accessible"
+                    ],
+                    "Reflection (200 words) ✓": [
+                        "Meets word count requirement",
+                        "Connects to specific constitutional amendments (4th, 5th, 6th)",
+                        "Reflects on how knowledge affects sense of safety",
+                        "Goes beyond surface-level summary"
+                    ]
+                }
+            },
+            
+            safetyTenant: {
+                name: "Tenant Safety Rights Investigation",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Research Texas tenant rights related to safety (required locks, smoke detectors, security devices, landlord entry notice, right to repair and deduct). Identify the government agency that handles tenant complaints in Tarrant County and document the process for reporting violations. Builds practical legal literacy directly relevant to community college students who are renters.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Research at least three Texas tenant safety rights",
+                    "Provide legal citations (statute or code section)",
+                    "Identify relevant complaint agency in Tarrant County",
+                    "Document step-by-step reporting process",
+                    "Submit one-page summary",
+                ],
+                rubric: {
+                    "Research Quality ✓": [
+                        "Three or more tenant safety rights identified",
+                        "Each right has a legal citation (Texas Property Code or similar)",
+                        "Sources are credible and current",
+                        "Information is accurate"
+                    ],
+                    "Agency Identification ✓": [
+                        "Correct Tarrant County or local complaint agency identified",
+                        "Contact information provided (phone, address, website)",
+                        "Step-by-step reporting process documented",
+                        "Process is clear enough to actually follow"
+                    ],
+                    "Course Connection ✓": [
+                        "Connects to course concepts about regulation or civil law",
+                        "Shows understanding of how laws protect residents",
+                        "Identifies the government level responsible (state or local)"
+                    ]
+                }
+            },
+            
+            safetyWorkplace: {
+                name: "Workplace Safety Deep Dive",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Research OSHA's role in protecting workers, then investigate safety requirements specific to your current or intended occupation. Identify how to file a workplace safety complaint and what protections exist against retaliation. Interview one working adult about a workplace safety concern they have experienced. Connects federal regulatory action to lived workplace experience.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Research OSHA's role and authority",
+                    "Identify safety requirements for your occupation (current or intended)",
+                    "Document the complaint process and whistleblower protections",
+                    "Interview one working adult about a workplace safety concern",
+                    "Write a 400-word report",
+                ],
+                rubric: {
+                    "OSHA Research ✓": [
+                        "OSHA's role and federal authority clearly explained",
+                        "Occupation-specific safety requirements identified",
+                        "Complaint filing process documented accurately",
+                        "Whistleblower or anti-retaliation protections explained"
+                    ],
+                    "Worker Interview ✓": [
+                        "Interview with a working adult conducted",
+                        "Date and interviewee role documented (name not required)",
+                        "Concrete safety concern discussed",
+                        "Interviewee perspective integrated into report"
+                    ],
+                    "Report (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Connects findings to federal regulatory authority",
+                        "Discusses how worker advocacy historically shaped safety law",
+                        "Shows analytical depth beyond summary"
+                    ]
+                }
+            },
+            
+            safetyTraffic: {
+                name: "Community Traffic Safety Analysis",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Identify a dangerous intersection, crosswalk, or road segment in your daily commute or neighborhood. Document the hazard with photos or video. Research who is responsible for traffic safety improvements (city, county, TxDOT) and find the formal process for requesting safety improvements. Draft a formal request letter to the appropriate agency. Activates the full action civics cycle: identify, research, act.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Identify a specific dangerous location in your daily life",
+                    "Document the hazard with photos or video",
+                    "Research the responsible government agency",
+                    "Draft a ready-to-send formal request letter",
+                    "Write a 200-word reflection",
+                ],
+                rubric: {
+                    "Hazard Documentation ✓": [
+                        "Specific location identified with address or coordinates",
+                        "Photos or video clearly show the hazard",
+                        "Brief explanation of why the location is dangerous",
+                        "Personal connection to commute or neighborhood demonstrated"
+                    ],
+                    "Agency Research ✓": [
+                        "Correct agency identified (city, county, or TxDOT)",
+                        "Contact information provided",
+                        "Formal request process documented",
+                        "Multi-jurisdictional considerations noted where relevant"
+                    ],
+                    "Formal Request Letter ✓": [
+                        "Letter is professional and ready to send",
+                        "Includes specific location and hazard description",
+                        "Makes a clear ask",
+                        "References supporting evidence"
+                    ],
+                    "Reflection (200 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses citizen petition processes",
+                        "Connects to local government responsibilities",
+                        "Shows understanding of how infrastructure decisions are made"
+                    ]
+                }
+            },
+            
+            safetyFinancial: {
+                name: "Financial Predator Mapping",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Research predatory financial services targeting vulnerable populations (payday lenders, title loans, rent-to-own, for-profit colleges). Map locations of such businesses within 2 miles of your campus or home. Investigate what regulations exist (or do not) in Texas compared to one other state. Analyze whether current laws adequately protect consumers and what role government should play.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Research at least 4 types of predatory financial services",
+                    "Map locations within 2 miles of campus or home",
+                    "Compare Texas regulations with one other state",
+                    "Write a 400-word analysis",
+                ],
+                rubric: {
+                    "Research and Mapping ✓": [
+                        "Four or more types of predatory services identified",
+                        "Map shows locations within 2-mile radius",
+                        "Map is annotated with business types",
+                        "Original screenshot or hand-drawn map (not stock image)"
+                    ],
+                    "Comparative Regulation ✓": [
+                        "Texas regulations on predatory lending documented",
+                        "One other state's regulations documented for comparison",
+                        "Specific legal differences identified",
+                        "Sources cited"
+                    ],
+                    "Analysis (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Evaluates current consumer protection landscape",
+                        "Identifies specific gaps in protection",
+                        "Takes a clear position on government's role",
+                        "Connects to state vs. federal regulation concepts"
+                    ]
+                }
+            },
+            
+            safetyFoodSecurity: {
+                name: "Food Security Resource Navigation",
+                category: "Higher Effort",
+                defaultPoints: 20,
+                description: "Investigate food assistance resources available to community college students (SNAP eligibility, campus food pantries, community resources). Determine eligibility requirements, application processes, and barriers students face. Visit one resource in person and document the experience. Reflect on how accessible these safety-net programs are for students.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Identify at least 5 food assistance options for TCC students",
+                    "Document eligibility, application process, location, and hours for each",
+                    "Visit one resource in person (food pantry, SNAP office, WIC clinic, etc.)",
+                    "Document the visit (photo, business card, or staff contact)",
+                    "Write a 400-word reflection",
+                ],
+                rubric: {
+                    "Resource Guide ✓": [
+                        "Five or more food assistance options listed",
+                        "Eligibility requirements documented for each",
+                        "Application process described for each",
+                        "Location and hours included",
+                        "Information is accurate and current"
+                    ],
+                    "In-Person Visit ✓": [
+                        "Visit to one resource completed",
+                        "Documentation provided (photo, card, or contact)",
+                        "Date and location recorded",
+                        "Respectful and professional approach demonstrated"
+                    ],
+                    "Reflection (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses accessibility and barriers",
+                        "Connects to federal nutrition program policy",
+                        "Reflects on the politics of public assistance",
+                        "Shows empathy and analytical depth"
+                    ]
+                }
+            },
+            
+            safetyCrisisTraining: {
+                name: "Crisis Resource Training",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Complete a training or orientation session with a local organization that addresses domestic violence, sexual assault, or crisis intervention (SafeHaven of Tarrant County, Rape Crisis Center, NAMI, Crisis Text Line, or similar). Learn about available resources and how to support someone in crisis. Combines safety-focused civic engagement with sustained relational engagement and structured service preparation.",
+                estimatedTime: "4-6 hours",
+                requirements: [
+                    "Complete a training or orientation with an approved organization",
+                    "Obtain documentation of completion (certificate, email, signed letter)",
+                    "Understand the public policy and funding context",
+                    "Write a 500-word reflection",
+                ],
+                rubric: {
+                    "Training Completion ✓": [
+                        "Documentation of training provided (certificate, email, or letter)",
+                        "Organization is legitimate and addresses crisis intervention",
+                        "Date of training documented",
+                        "Scope of training explained"
+                    ],
+                    "Policy Context ✓": [
+                        "Connects services to relevant federal law (VAWA, etc.)",
+                        "Discusses how federal funding flows to local services",
+                        "Identifies the role of nonprofits in public safety",
+                        "Mandatory reporting laws acknowledged where relevant"
+                    ],
+                    "Reflection (500 words) ✓": [
+                        "Meets word count requirement",
+                        "Describes specific knowledge gained",
+                        "Discusses how this knowledge could help others",
+                        "Shows empathy and ethical maturity",
+                        "Connects to course concepts about government-nonprofit relationships"
+                    ]
+                }
+            },
+            
+            safetyEmergencyMgmt: {
+                name: "Emergency Management Agency Visit",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Arrange a visit to or interview with a representative from Tarrant County Emergency Management, Fort Worth Office of Emergency Management, or a local fire department's community outreach division. Prepare five questions about how they prepare for disasters, coordinate with other agencies, and communicate with the public. Builds direct understanding of intergovernmental coordination and emergency preparedness.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Arrange visit or interview with emergency management agency",
+                    "Prepare 5 substantive questions",
+                    "Document the visit (photo, email, or signed confirmation)",
+                    "Summarize responses received",
+                    "Write a 500-word reflection",
+                ],
+                rubric: {
+                    "Arrangement and Documentation ✓": [
+                        "Visit or interview successfully arranged",
+                        "Documentation provided (photo, email exchange, or confirmation)",
+                        "Agency clearly identified",
+                        "Representative role identified"
+                    ],
+                    "Questions and Responses ✓": [
+                        "Five prepared questions submitted",
+                        "Questions are substantive and not boilerplate",
+                        "Responses summarized clearly",
+                        "Specific examples or details captured"
+                    ],
+                    "Reflection (500 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses intergovernmental coordination (federal, state, local)",
+                        "Addresses public communication during emergencies",
+                        "Identifies what surprised you",
+                        "Connects to FEMA and federalism concepts"
+                    ]
+                }
+            },
+            
+            safetyPolicyBrief: {
+                name: "Campus Safety Policy Brief",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Obtain and analyze TCC's Clery Act crime statistics and campus safety policies. Compare TCC's safety resources and reporting with one other Texas community college. Attend a campus safety event or meet with TCC Police. Develop three evidence-based recommendations for improving student safety and produce a formal 2-3 page policy brief suitable for presentation to campus administration. The flagship safety assignment: full action civics cycle plus policy advocacy.",
+                estimatedTime: "5-7 hours",
+                requirements: [
+                    "Review TCC's Annual Security Report (Clery Act data)",
+                    "Compare with one other Texas community college",
+                    "Attend a campus safety event OR meet with TCC Police",
+                    "Develop three evidence-based recommendations",
+                    "Produce a 2-3 page policy brief",
+                    "Write a 200-word process reflection",
+                ],
+                rubric: {
+                    "Data Analysis ✓": [
+                        "TCC Annual Security Report reviewed",
+                        "Key crime statistics summarized accurately",
+                        "Patterns or concerns identified",
+                        "Comparison institution selected and justified"
+                    ],
+                    "Comparative Research ✓": [
+                        "Peer Texas community college identified",
+                        "Comparable Clery data obtained",
+                        "Specific differences in safety resources documented",
+                        "Analytical (not just descriptive) comparison"
+                    ],
+                    "Direct Engagement ✓": [
+                        "Attended campus safety event OR met with TCC Police",
+                        "Documentation provided (photo, email, sign-in sheet)",
+                        "Insights from engagement integrated into brief"
+                    ],
+                    "Policy Brief (2-3 pages) ✓": [
+                        "Executive summary included",
+                        "Analysis of TCC's current safety landscape",
+                        "Three specific, evidence-based recommendations",
+                        "Recommendations are actionable and realistic",
+                        "Professional formatting suitable for administration",
+                        "References Clery Act as federal mandate"
+                    ],
+                    "Process Reflection (200 words) ✓": [
+                        "Meets word count requirement",
+                        "Reflects on policy brief writing process",
+                        "Discusses challenges encountered",
+                        "Connects to student advocacy concepts"
+                    ]
+                }
             }
         };
         
@@ -2257,12 +2628,13 @@
             // Higher Effort Section
             const highSection = document.createElement('div');
             highSection.className = 'category-section category-high';
-            highSection.innerHTML = '<div class="category-header">🔴 Higher Effort Activities (20-30 points) - 10 Assignments</div>';
+            highSection.innerHTML = '<div class="category-header">🔴 Higher Effort Activities (20-30 points) - 14 Assignments</div>';
             const highContent = document.createElement('div');
             highContent.className = 'category-content';
             
             ['meeting', 'interview1', 'interview2', 'directory', 'mythvideo', 
-             'publiccomment', 'civicorg', 'naturalization', 'ridealong', 'voterdrive'].forEach(id => {
+             'publiccomment', 'civicorg', 'naturalization', 'ridealong', 'voterdrive',
+             'safetyFoodSecurity', 'safetyCrisisTraining', 'safetyEmergencyMgmt', 'safetyPolicyBrief'].forEach(id => {
                 if (completeAssignmentDatabase[id]) {
                     highContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
                 }
@@ -2274,12 +2646,13 @@
             // Medium Effort Section
             const mediumSection = document.createElement('div');
             mediumSection.className = 'category-section category-medium';
-            mediumSection.innerHTML = '<div class="category-header">🟡 Medium Effort Activities (10-15 points) - 10 Assignments</div>';
+            mediumSection.innerHTML = '<div class="category-header">🟡 Medium Effort Activities (10-15 points) - 14 Assignments</div>';
             const mediumContent = document.createElement('div');
             mediumContent.className = 'category-content';
             
             ['scavenger', 'clip1', 'clip2', 'clip3', 'journal1', 
-             'journal2', 'journal3', 'detective', 'democracy', 'failure'].forEach(id => {
+             'journal2', 'journal3', 'detective', 'democracy', 'failure',
+             'safetyTenant', 'safetyWorkplace', 'safetyTraffic', 'safetyFinancial'].forEach(id => {
                 if (completeAssignmentDatabase[id]) {
                     mediumContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
                 }
@@ -2291,12 +2664,13 @@
             // Quick Engagement Section
             const quickSection = document.createElement('div');
             quickSection.className = 'category-section category-quick';
-            quickSection.innerHTML = '<div class="category-header">🟢 Quick Engagement Activities (5-8 points) - 9 Assignments</div>';
+            quickSection.innerHTML = '<div class="category-header">🟢 Quick Engagement Activities (5-8 points) - 11 Assignments</div>';
             const quickContent = document.createElement('div');
             quickContent.className = 'category-content';
             
             ['reflect1', 'reflect2', 'reflect3', 'reflect4', 'reflect5',
-             'video1', 'video2', 'video3', 'video4'].forEach(id => {
+             'video1', 'video2', 'video3', 'video4',
+             'safetyEmergencyAudit', 'safetyKnowRights'].forEach(id => {
                 if (completeAssignmentDatabase[id]) {
                     quickContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
                 }

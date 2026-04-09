@@ -8,7 +8,7 @@
 
 ## What is CAP?
 
-The Civic Action Project is a menu-based assessment system designed for community college government courses (GOVT 2305/2306). Instead of high-stakes exams, students earn **100 points** by choosing from **29 civic engagement activities** across three effort tiers — worth **40% of the course grade**.
+The Civic Action Project is a menu-based assessment system designed for community college government courses (GOVT 2305/2306). Instead of high-stakes exams, students earn **100 points** by choosing from **39 civic engagement activities** across three effort tiers — worth **40% of the course grade**.
 
 Students attend government meetings, interview community members, create public service directories, analyze news coverage, record video reflections, and more. They choose the combination that fits their schedule, interests, and learning style.
 
@@ -23,7 +23,7 @@ EdD Candidate, Educational Technology Leadership · Tarleton State University
 | Resource | Description |
 |----------|-------------|
 | [**CAP Student Tracker**](CAP_Tracker.html) | Interactive HTML tracker with multi-section support, Canvas gradebook sync, and data backup |
-| [**Complete Assignment Guide**](CAP_Full_Assignment.pdf) | All 29 activities with descriptions, requirements, and student-facing instructions |
+| [**Complete Assignment Guide**](CAP_Full_Assignment.pdf) | All 39 activities with descriptions, requirements, and student-facing instructions |
 | [**Rubrics**](CAP_Rubrics.pdf) | Complete/Incomplete rubrics for every activity |
 | [**Implementation Guide**](Implementation_Guide.pdf) | Week-by-week setup, Canvas configuration, checkpoint system, and grading tips |
 | [**Canvas Setup Instructions**](Canvas_Setup_Instructions.pdf) | Step-by-step guide for assignment groups and "drop lowest" scoring |
@@ -36,9 +36,9 @@ EdD Candidate, Educational Technology Leadership · Tarleton State University
 
 | Category | Points | Activities | Examples |
 |----------|--------|------------|----------|
-| **Higher Effort** | 20–30 pts | 10 | Government meeting attendance, civic interviews, public services directory |
-| **Medium Effort** | 10–15 pts | 10 | Government scavenger hunt, news connections, civic journals |
-| **Quick Engagement** | 5–8 pts | 9 | Personal impact reflections, 60-second government videos |
+| **Higher Effort** | 20–30 pts | 14 | Government meeting attendance, civic interviews, public services directory |
+| **Medium Effort** | 10–15 pts | 14 | Government scavenger hunt, news connections, civic journals |
+| **Quick Engagement** | 5–8 pts | 11 | Personal impact reflections, 60-second government videos |
 
 Students must complete activities from **at least 2 different categories**.
 
@@ -60,6 +60,11 @@ CAP is grounded in:
 - **Experiential Learning Theory** (Kolb) — learning through direct civic experience
 - **Authentic Assessment** — replacing memorization with real-world application
 - **Action Civics** (Kahne, Westheimer, Levinson) — participatory citizenship education
+- **Safety-Focused Civic Action** (Ballard, Cohen & Littenberg-Tobias, 2016) — empirical finding that safety-themed civic projects produce the strongest gains in civic commitment, self-efficacy, and knowledge
+
+### April 2026 Update: Safety-Focused Assignments
+
+Ten new assignments were added to address the safety theme that produced the strongest civic engagement effects in Ballard et al.'s research. These assignments — Campus Emergency Audit, Know Your Rights, Tenant Safety Rights, Workplace Safety, Traffic Safety Analysis, Financial Predator Mapping, Food Security Navigation, Crisis Resource Training, Emergency Management Visit, and Campus Safety Policy Brief — meet community college students where they live by addressing the safety concerns of commuters, working adults, parents, renters, and individuals navigating financial pressure. Total assignment count is now 39, with 597 possible points and the 100-point student requirement unchanged.
 
 This project serves as the centerpiece of an EdD dissertation at Tarleton State University examining how experiential civic engagement affects student outcomes in community college government courses.
 
