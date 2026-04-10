@@ -704,6 +704,18 @@
         .total-cell {
             font-weight: bold;
             font-size: 16px;
+            position: sticky;
+            right: 0;
+            z-index: 50;
+            background: #f8f8f8;
+            box-shadow: -2px 0 4px rgba(0,0,0,0.1);
+            min-width: 90px;
+        }
+        
+        th.total-cell {
+            z-index: 101;
+            background: linear-gradient(135deg, #e8e8e8 0%, #d8d8d8 100%);
+            box-shadow: -2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .total-success {
@@ -942,6 +954,9 @@
         #tableBody tr.row-selected td.student-name {
             background-color: #fdd835 !important;
             color: #1a1a1a;
+        }
+        #tableBody tr.row-selected td.total-cell {
+            background-color: #fdd835 !important;
         }
         #tableBody tr .student-name {
             cursor: pointer;
@@ -3183,6 +3198,7 @@
             
             // Total column
             const totalHeader = document.createElement('th');
+            totalHeader.className = 'total-cell';
             totalHeader.textContent = 'Total Points';
             headerRow.appendChild(totalHeader);
             
@@ -3308,7 +3324,7 @@
             });
             
             // Additional columns
-            headerRow.innerHTML += '<th>Total Points</th><th>Categories</th><th>Notes</th><th>Actions</th>';
+            headerRow.innerHTML += '<th class="total-cell">Total Points</th><th>Categories</th><th>Notes</th><th>Actions</th>';
             header.appendChild(headerRow);
             
             // Create student rows
