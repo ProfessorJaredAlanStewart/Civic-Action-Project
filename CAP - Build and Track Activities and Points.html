@@ -833,21 +833,20 @@
         /* ── Category-based column coloring ── */
         /* Higher Effort: warm rose */
         .cat-higher { background-color: #fff0f0; }
-        .cat-higher.col-alt { background-color: #fce4e4; }
         th.cat-higher { background: linear-gradient(180deg, #d4423f 0%, #c0392b 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        th.cat-higher.col-alt { background: linear-gradient(180deg, #c13835 0%, #a93226 100%); }
         
         /* Medium Effort: warm amber */
         .cat-medium { background-color: #fffbf0; }
-        .cat-medium.col-alt { background-color: #fdf1d6; }
         th.cat-medium { background: linear-gradient(180deg, #e8a317 0%, #d4930a 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        th.cat-medium.col-alt { background: linear-gradient(180deg, #d49512 0%, #bb8108 100%); }
         
         /* Quick Engagement: cool steel blue */
         .cat-quick { background-color: #f0f4fa; }
-        .cat-quick.col-alt { background-color: #dfe8f3; }
         th.cat-quick { background: linear-gradient(180deg, #4a7fb5 0%, #3a6a9e 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        th.cat-quick.col-alt { background: linear-gradient(180deg, #3f6fa3 0%, #315c89 100%); }
+        
+        /* ── Crisp vertical divider between every assignment column ── */
+        td.activity-cell, th.cat-higher, th.cat-medium, th.cat-quick, th.cat-custom {
+            border-left: 2px solid #333;
+        }
         
         /* ── High-contrast completion marks ── */
         .completed {
@@ -866,15 +865,8 @@
         
         /* Tinted backgrounds when completed per category */
         td.cat-higher.is-done { background-color: #fcd5d5; }
-        td.cat-higher.col-alt.is-done { background-color: #f5c4c4; }
         td.cat-medium.is-done { background-color: #fcebc8; }
-        td.cat-medium.col-alt.is-done { background-color: #f5dfb3; }
         td.cat-quick.is-done  { background-color: #d0deef; }
-        td.cat-quick.col-alt.is-done { background-color: #c0d1e6; }
-        
-        /* Custom alternating */
-        .cat-custom.col-alt { background-color: #e4e8ea; }
-        td.cat-custom.col-alt.is-done { background-color: #c0cacf; }
         
         .not-completed {
             color: #bbb;
@@ -3184,16 +3176,6 @@
             return 'cat-quick';
         }
         
-        // Precompute which columns get the alternating shade within their category
-        function getColAltMap(assignments) {
-            const counters = {};
-            return assignments.map(a => {
-                const cat = a.category;
-                counters[cat] = (counters[cat] || 0) + 1;
-                return counters[cat] % 2 === 0 ? 'col-alt' : '';
-            });
-        }
-        
         function renderTableHeaders() {
             // This function ALWAYS shows the assignment columns, even with no sections
             const header = document.getElementById('tableHeader');
@@ -3211,11 +3193,10 @@
             nameHeader.textContent = 'Student Name';
             headerRow.appendChild(nameHeader);
             
-            // Assignment columns - colored by CATEGORY with alternating shading
-            const altMap = getColAltMap(activeConfig.assignments);
-            activeConfig.assignments.forEach((assignment, i) => {
+            // Assignment columns - colored by CATEGORY
+            activeConfig.assignments.forEach((assignment) => {
                 const th = document.createElement('th');
-                th.className = getCatClass(assignment.category) + (altMap[i] ? ' ' + altMap[i] : '');
+                th.className = getCatClass(assignment.category);
                 th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
                 headerRow.appendChild(th);
             });
@@ -3339,11 +3320,10 @@
             nameHeader.textContent = 'Student Name';
             headerRow.appendChild(nameHeader);
             
-            // Assignment columns with alternating shading
-            const altMap = getColAltMap(activeConfig.assignments);
-            activeConfig.assignments.forEach((assignment, i) => {
+            // Assignment columns
+            activeConfig.assignments.forEach((assignment) => {
                 const th = document.createElement('th');
-                th.className = getCatClass(assignment.category) + (altMap[i] ? ' ' + altMap[i] : '');
+                th.className = getCatClass(assignment.category);
                 th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
                 headerRow.appendChild(th);
             });
@@ -3372,10 +3352,9 @@
                     activeConfig.assignments.forEach((assignment, aIdx) => {
                         const cell = document.createElement('td');
                         const catCls = getCatClass(assignment.category);
-                        const altCls = altMap[aIdx] ? ' ' + altMap[aIdx] : '';
                         
                         const completed = student.completed[assignment.id] || false;
-                        cell.className = `${catCls}${altCls} activity-cell${completed ? ' is-done' : ''}`;
+                        cell.className = `${catCls} activity-cell${completed ? ' is-done' : ''}`;
                         cell.innerHTML = `<span class="${completed ? 'completed' : 'not-completed'}">${completed ? '✓' : '○'}</span>`;
                         cell.onclick = () => toggleActivity(sIdx, assignment.id);
                         
