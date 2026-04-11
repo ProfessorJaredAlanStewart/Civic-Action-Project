@@ -843,9 +843,9 @@
         .cat-quick { background-color: #f0f4fa; }
         th.cat-quick { background: linear-gradient(180deg, #4a7fb5 0%, #3a6a9e 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
         
-        /* ── Crisp vertical divider between every assignment column ── */
-        td.activity-cell, th.cat-higher, th.cat-medium, th.cat-quick, th.cat-custom {
-            border-left: 2px solid #333;
+        /* ── Bold vertical divider at category boundaries ── */
+        .cat-boundary {
+            border-left: 3px solid #222 !important;
         }
         
         /* ── High-contrast completion marks ── */
@@ -3176,6 +3176,11 @@
             return 'cat-quick';
         }
         
+        // Get the base group name for an assignment (strip trailing " #N")
+        function getGroupName(name) {
+            return name.replace(/\s*#\d+$/, '');
+        }
+        
         function renderTableHeaders() {
             // This function ALWAYS shows the assignment columns, even with no sections
             const header = document.getElementById('tableHeader');
@@ -3194,11 +3199,17 @@
             headerRow.appendChild(nameHeader);
             
             // Assignment columns - colored by CATEGORY
+            let prevGroup = null;
             activeConfig.assignments.forEach((assignment) => {
                 const th = document.createElement('th');
                 th.className = getCatClass(assignment.category);
+                const group = getGroupName(assignment.name);
+                if (prevGroup !== null && group !== prevGroup) {
+                    th.classList.add('cat-boundary');
+                }
                 th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
                 headerRow.appendChild(th);
+                prevGroup = group;
             });
             
             // Total column
@@ -3320,10 +3331,19 @@
             nameHeader.textContent = 'Student Name';
             headerRow.appendChild(nameHeader);
             
+            // Precompute which columns are assignment-group boundaries
+            const boundarySet = new Set();
+            for (let i = 1; i < activeConfig.assignments.length; i++) {
+                if (getGroupName(activeConfig.assignments[i].name) !== getGroupName(activeConfig.assignments[i-1].name)) {
+                    boundarySet.add(i);
+                }
+            }
+            
             // Assignment columns
-            activeConfig.assignments.forEach((assignment) => {
+            activeConfig.assignments.forEach((assignment, i) => {
                 const th = document.createElement('th');
                 th.className = getCatClass(assignment.category);
+                if (boundarySet.has(i)) th.classList.add('cat-boundary');
                 th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
                 headerRow.appendChild(th);
             });
@@ -3355,6 +3375,7 @@
                         
                         const completed = student.completed[assignment.id] || false;
                         cell.className = `${catCls} activity-cell${completed ? ' is-done' : ''}`;
+                        if (boundarySet.has(aIdx)) cell.classList.add('cat-boundary');
                         cell.innerHTML = `<span class="${completed ? 'completed' : 'not-completed'}">${completed ? '✓' : '○'}</span>`;
                         cell.onclick = () => toggleActivity(sIdx, assignment.id);
                         
