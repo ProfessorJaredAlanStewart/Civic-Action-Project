@@ -1656,7 +1656,7 @@
 
                 <div class="about-section">
                     <h3>How to submit</h3>
-                    <p>Each assignment has a Submit button. Tap it, choose photo / video / written response, capture or compose, then tap Send to Canvas. Your phone's share sheet will appear — pick Files, Photos, or your Canvas Student app to complete the submission inside Canvas.</p>
+                    <p>Each assignment has a Submit button. Tap it, choose what you're attaching (photo, video, written response, or other file), pick from your phone's gallery, then either tap Open Canvas (recommended) or Share Files to finish the submission inside Canvas.</p>
                 </div>
 
                 <div class="about-section">
@@ -1733,8 +1733,8 @@
     </div>
 
     <!-- Hidden file inputs -->
-    <input type="file" id="filePhoto" class="file-input-hidden" accept="image/*" capture="environment">
-    <input type="file" id="fileVideo" class="file-input-hidden" accept="video/*" capture="environment">
+    <input type="file" id="filePhoto" class="file-input-hidden" accept="image/*">
+    <input type="file" id="fileVideo" class="file-input-hidden" accept="video/*">
     <input type="file" id="fileGeneric" class="file-input-hidden" multiple>
 
     <!-- Toast -->
@@ -3607,8 +3607,8 @@
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h2.5l1.5-2h6l1.5 2H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3.5"/></svg>
                         </span>
                         <span class="type-text">
-                            <strong>Photo</strong>
-                            <span>Camera opens — take a picture</span>
+                            <strong>Add a photo</strong>
+                            <span>Pick from your phone's photo gallery</span>
                         </span>
                     </button>
                     <button class="submit-type-card" data-type="video">
@@ -3616,8 +3616,8 @@
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l5-3v10l-5-3M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
                         </span>
                         <span class="type-text">
-                            <strong>Video</strong>
-                            <span>Record a video reflection</span>
+                            <strong>Add a video</strong>
+                            <span>Record with your camera app first, then pick it here</span>
                         </span>
                     </button>
                     <button class="submit-type-card" data-type="text">
@@ -3625,7 +3625,7 @@
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12h6M9 16h6"/></svg>
                         </span>
                         <span class="type-text">
-                            <strong>Written</strong>
+                            <strong>Written response</strong>
                             <span>Type a reflection or response</span>
                         </span>
                     </button>
@@ -3692,11 +3692,11 @@
                 `
                 : '';
 
-            // Replay buttons for retake on photo / video
+            // Replay buttons for picking a different photo / video
             const retakeHtml = isMedia && flow.mediaUrl
                 ? `<button class="add-file-btn" id="retakeBtn">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                    Re-${flow.type === 'photo' ? 'take' : 'record'} ${flow.type}
+                    Pick a different ${flow.type}
                 </button>`
                 : '';
 
@@ -3750,7 +3750,7 @@
                     return;
                 }
                 if ((flow.type === 'photo' || flow.type === 'video') && !flow.mediaFile) {
-                    showToast('Please capture ' + (flow.type === 'photo' ? 'a photo' : 'a video') + ' first');
+                    showToast('Please pick ' + (flow.type === 'photo' ? 'a photo' : 'a video') + ' first');
                     return;
                 }
                 if (flow.type === 'files' && flow.extraFiles.length === 0) {
@@ -3854,64 +3854,147 @@
                 ${filesListHtml}
 
                 <div class="canvas-instructions">
-                    <strong>Two-step submission</strong>
-                    Tapping Send saves your file. Then you'll open Canvas to attach it — Android's share sheet doesn't always show the Canvas app, so saving the file to your phone is the most reliable path.
-                    <ol>
-                        <li>Tap <em>Send to Canvas</em> below — pick <em>Save</em>, <em>Save to Files</em>, or <em>Drive</em>.</li>
-                        <li>The next screen will give you a button to open Canvas Student.</li>
-                        <li>In Canvas, find this assignment, tap Submit, choose Upload File, pick the file you just saved.</li>
+                    <strong>Two ways to send to Canvas — pick whichever is easier:</strong>
+                    <ol style="list-style: none; padding-left: 0; margin-top: 8px;">
+                        <li style="margin-bottom: 8px;"><strong style="color: var(--navy); display:inline; font-family: var(--display);">Open Canvas</strong> &mdash; launches Canvas Student (or canvas.tccd.edu). Find this assignment, tap Submit Assignment → Upload File, pick from your Photos. Your written reflection (if any) is copied to your clipboard so you can paste it into Canvas.</li>
+                        <li><strong style="color: var(--navy); display:inline; font-family: var(--display);">Share files</strong> &mdash; uses your phone's share sheet. If you see Canvas Student, pick it. Otherwise pick Save / Drive / Files, then open Canvas to upload.</li>
                     </ol>
                 </div>
 
                 <p style="font-family: var(--display); font-style: italic; font-size: 13px; color: var(--ink-muted); text-align: center; margin-top: 14px;">
-                    Your work is never sent to or stored by this app — it goes straight from your phone to Canvas.
+                    Your work never leaves your phone via this app — it goes straight to Canvas through whichever path you pick.
                 </p>
             `;
 
-            actions.innerHTML = `
-                <button class="btn btn-secondary" id="reviewBack">Back</button>
-                <button class="btn btn-accent" id="sendShare">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v9"/></svg>
-                    Send to Canvas
-                </button>
-            `;
+            // Decide which actions to show. Pure-text submissions need the share sheet
+            // to deliver the .txt file; for file-bearing submissions, the direct Canvas
+            // path works because the files already live in the student's gallery.
+            const hasFiles = !!flow.mediaFile || (flow.extraFiles && flow.extraFiles.length > 0);
+            const hasText = !!(flow.text && flow.text.trim());
+
+            if (hasFiles) {
+                // Both paths offered
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" id="reviewBack">Back</button>
+                    <button class="btn btn-secondary" id="sendShare" style="flex: 1;">Share Files</button>
+                    <button class="btn btn-accent" id="openCanvasDirect" style="flex: 1.2;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        Open Canvas
+                    </button>
+                `;
+            } else if (hasText) {
+                // Text-only — share sheet is the only way to deliver the .txt file.
+                // We still offer Open Canvas as an option, but warn the user that the
+                // text needs to be pasted manually.
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" id="reviewBack">Back</button>
+                    <button class="btn btn-secondary" id="openCanvasDirect" style="flex: 1;">Open Canvas</button>
+                    <button class="btn btn-accent" id="sendShare" style="flex: 1.2;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v9"/></svg>
+                        Share .txt
+                    </button>
+                `;
+            } else {
+                // Nothing to send
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" id="reviewBack">Back</button>
+                    <button class="btn btn-secondary" disabled style="flex: 1; opacity: 0.5;">Nothing to send</button>
+                `;
+            }
 
             $('#reviewBack').addEventListener('click', () => {
                 flow.step = 'capture';
                 renderSubmitStep();
             });
 
-            $('#sendShare').addEventListener('click', () => doShare());
+            const shareBtn = $('#sendShare');
+            if (shareBtn) shareBtn.addEventListener('click', () => doShare());
+
+            const directBtn = $('#openCanvasDirect');
+            if (directBtn) directBtn.addEventListener('click', () => doDirectCanvas());
         }
         else if (flow.step === 'sent') {
-            const wasShared = flow.shareMethod === 'share';
-            const verb = wasShared ? 'shared' : 'saved to your phone';
+            const method = flow.shareMethod; // 'share' | 'download' | 'direct'
             const isCompleted = !!state.completed[key];
+            const hasFiles = !!flow.mediaFile || (flow.extraFiles && flow.extraFiles.length > 0);
+            const hasText = !!(flow.text && flow.text.trim());
+
+            // List of file names to remind them what to attach
+            const fileNames = [];
+            if (flow.mediaFile) fileNames.push(flow.mediaFile.name);
+            (flow.extraFiles || []).forEach(f => fileNames.push(f.name));
+            const fileListHtml = fileNames.length
+                ? `<div style="background: var(--paper-warm); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; margin: 12px 0;">
+                    <div style="font-family: var(--ui); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-muted); margin-bottom: 6px;">Files to upload in Canvas</div>
+                    ${fileNames.map(n => `<div style="font-size: 14px; color: var(--ink); padding: 3px 0; word-break: break-all;">📄 ${escapeHtml(n)}</div>`).join('')}
+                </div>`
+                : '';
+
+            // Headline + subtitle vary by path taken
+            let headline, subtitle, instructions;
+            if (method === 'direct') {
+                headline = 'Canvas should be opening';
+                subtitle = hasText && flow.textCopied
+                    ? 'Your reflection is on your clipboard — paste it into Canvas. Your files are still in your Photos.'
+                    : hasText
+                    ? 'Your files are still in your Photos. Note: clipboard copy didn\'t work — re-open the app to view your reflection.'
+                    : 'Your files are still in your Photos, ready to attach in Canvas.';
+                instructions = `
+                    <strong>Finish in Canvas</strong>
+                    <ol>
+                        <li>If Canvas didn't open, tap <em>Open Canvas</em> below.</li>
+                        <li>Find <em>${escapeHtml(a.name)}</em> in your course.</li>
+                        <li>Tap <em>Submit Assignment</em>.</li>
+                        ${hasFiles ? `<li>Tap <em>Upload File</em>, pick from your Photos${fileNames.length ? ' (' + escapeHtml(fileNames.slice(0,2).join(', ')) + (fileNames.length > 2 ? '…' : '') + ')' : ''}.</li>` : ''}
+                        ${hasText && flow.textCopied ? `<li>Long-press the text box and paste your reflection.</li>` : ''}
+                        <li>Tap <em>Submit Assignment</em> in Canvas to finalize.</li>
+                    </ol>
+                `;
+            } else {
+                // 'share' or 'download'
+                headline = 'Step 1 of 2 done';
+                subtitle = method === 'share'
+                    ? 'Your files are shared. Now attach them in Canvas to finish the submission.'
+                    : 'Your files are saved to your phone. Now attach them in Canvas to finish.';
+                const verb = method === 'share' ? 'shared' : 'saved';
+                instructions = `
+                    <strong>Step 2: Attach in Canvas</strong>
+                    <ol>
+                        <li>Tap <em>Open Canvas</em> below.</li>
+                        <li>Find <em>${escapeHtml(a.name)}</em> in your course.</li>
+                        <li>Tap <em>Submit Assignment</em>, then <em>Upload File</em>.</li>
+                        <li>Pick the file you just ${verb} (look for one named <code style="font-family: var(--body); background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 3px; font-size: 12px;">CAP_…</code>).</li>
+                    </ol>
+                `;
+            }
 
             body.innerHTML = `
                 <div style="text-align: center; padding: 36px 16px 8px;">
                     <div style="width: 72px; height: 72px; margin: 0 auto 16px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: bold;">✓</div>
-                    <h2 style="font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.25; color: var(--ink); margin-bottom: 6px;">Step 1 of 2 done</h2>
-                    <p style="font-family: var(--body); font-size: 15px; color: var(--ink-muted); max-width: 320px; margin: 0 auto;">Your file is ${verb}. Now you need to attach it inside Canvas.</p>
+                    <h2 style="font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.25; color: var(--ink); margin-bottom: 6px;">${headline}</h2>
+                    <p style="font-family: var(--body); font-size: 15px; color: var(--ink-muted); max-width: 340px; margin: 0 auto;">${subtitle}</p>
                 </div>
 
+                ${method === 'direct' && hasFiles ? fileListHtml : ''}
+
                 <div class="canvas-instructions" style="margin-top: 20px;">
-                    <strong>Step 2: Attach the file in Canvas</strong>
-                    <ol>
-                        <li>Tap <em>Open Canvas Student</em> below.</li>
-                        <li>Find <em>${escapeHtml(a.name)}</em> in your course.</li>
-                        <li>Tap <em>Submit Assignment</em>, then <em>Upload File</em>.</li>
-                        <li>Pick the file you just ${verb.split(' ')[0]} (look for one named <code style="font-family: var(--body); background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 3px; font-size: 12px;">CAP_…</code>).</li>
-                    </ol>
+                    ${instructions}
                 </div>
 
                 <button class="btn btn-accent" id="openCanvasBig" style="width: 100%; margin-top: 20px; padding: 16px;">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    Open Canvas Student
+                    ${method === 'direct' ? 'Open Canvas (again)' : 'Open Canvas Student'}
                 </button>
 
+                ${hasText && method === 'direct' && flow.textCopied ? `
+                    <button class="btn btn-secondary" id="recopyTextBtn" style="width: 100%; margin-top: 8px;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        Copy reflection text again
+                    </button>
+                ` : ''}
+
                 <p style="font-family: var(--display); font-style: italic; font-size: 13px; color: var(--ink-muted); text-align: center; margin: 14px 0;">
-                    On Android, tapping above will offer to open the Canvas app if you have it installed, or canvas.tccd.edu in your browser otherwise.
+                    On Android, tapping above will offer to open the Canvas app if you have it installed.
                 </p>
             `;
 
@@ -3923,10 +4006,20 @@
             `;
 
             $('#openCanvasBig').addEventListener('click', () => {
-                // Open Canvas — the URL will trigger the Canvas Student app via
-                // app links if it's installed, or open in the default browser.
                 window.open('https://canvas.tccd.edu', '_blank');
             });
+
+            const recopyBtn = $('#recopyTextBtn');
+            if (recopyBtn) {
+                recopyBtn.addEventListener('click', async () => {
+                    try {
+                        await navigator.clipboard.writeText(flow.text);
+                        showToast('Reflection copied to clipboard', 2200);
+                    } catch (e) {
+                        showToast('Could not copy — please retry', 2200);
+                    }
+                });
+            }
 
             $('#closeSentBtn').addEventListener('click', () => {
                 closeSubmit();
@@ -4049,6 +4142,57 @@ ${flow.text}
         clearPendingCapture(); // submission has happened
         state.submitFlow.step = 'sent';
         renderSubmitStep();
+    }
+
+    /* ---------- DIRECT CANVAS PATH (no share sheet) ----------
+       The student picks a file from their gallery, so the file already lives
+       on their phone — no need to push it through the share sheet. We just
+       need to (a) copy any written reflection to their clipboard so they can
+       paste it in Canvas, (b) open canvas.tccd.edu (which Android will
+       offer to handle with the Canvas Student app if installed), and (c)
+       walk them through what to do once they're inside Canvas. */
+    async function doDirectCanvas() {
+        const flow = state.submitFlow;
+        const key = state.currentAssignmentKey;
+        const a = completeAssignmentDatabase[key];
+
+        // If they wrote a reflection, copy it to the clipboard so they can
+        // paste straight into Canvas's text submission box.
+        let textCopied = false;
+        if (flow.text && flow.text.trim()) {
+            const studentName = state.studentName || 'CAP Student';
+            const today = new Date().toISOString().slice(0, 10);
+            const blob = `Civic Action Project — ${a.name}
+Student: ${studentName}
+Date: ${today}
+
+${flow.text}`;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(blob);
+                    textCopied = true;
+                }
+            } catch (e) {
+                // Clipboard API may fail in some contexts (e.g., older browsers,
+                // permissions). Continue without clipboard copy — student can
+                // still re-open the app to copy text manually.
+                console.warn('Clipboard write failed', e);
+            }
+        }
+
+        flow.shareMethod = 'direct';
+        flow.textCopied = textCopied;
+
+        clearPendingCapture();
+        flow.step = 'sent';
+        renderSubmitStep();
+
+        // Open Canvas in a new tab. On Android, if Canvas Student is registered
+        // as a handler for canvas.tccd.edu app links, the user will be offered
+        // the choice to open in the app. Otherwise the browser opens.
+        setTimeout(() => {
+            window.open('https://canvas.tccd.edu', '_blank');
+        }, 200);
     }
 
     /* ---------- TRACK VIEW ---------- */
