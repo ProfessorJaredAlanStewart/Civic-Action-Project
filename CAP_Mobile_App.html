@@ -1741,6 +1741,8 @@
     <div class="toast" id="toast"></div>
 
     <script>
+
+
     /* ==========================================================
        CIVIC ACTION PROJECT — APP LOGIC
        ========================================================== */
@@ -3241,6 +3243,9 @@
     };
 
     /* ---------- PERSISTENCE ---------- */
+    const PENDING_KEY = 'cap_pending_submit_v1';
+    const PENDING_MAX_AGE_MS = 30 * 60 * 1000; // 30 minutes — covers long video sessions
+
     function loadState() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -3263,6 +3268,50 @@
             }));
         } catch (e) {
             console.warn('Could not save state', e);
+        }
+    }
+
+    /* ---------- PENDING SUBMISSION RECOVERY ----------
+       Android Chrome may kill the browser tab when launching the camera intent,
+       causing a full page reload when the user returns. Without persistence the
+       captured file lands in nothing. We stamp the submission context into
+       localStorage so the app can reopen the right modal at the right step on
+       reload, and warn the user if their file was lost so they can re-record. */
+    function savePendingCapture() {
+        if (!state.currentAssignmentKey) return;
+        try {
+            localStorage.setItem(PENDING_KEY, JSON.stringify({
+                assignmentKey: state.currentAssignmentKey,
+                type: state.submitFlow.type || null,
+                text: state.submitFlow.text || '',
+                step: state.submitFlow.step || 'choose',
+                timestamp: Date.now()
+            }));
+        } catch (e) { /* quota or private mode — ignore */ }
+    }
+
+    function clearPendingCapture() {
+        try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+    }
+
+    function readPendingCapture() {
+        try {
+            const raw = localStorage.getItem(PENDING_KEY);
+            if (!raw) return null;
+            const p = JSON.parse(raw);
+            if (!p || !p.assignmentKey) return null;
+            if (Date.now() - (p.timestamp || 0) > PENDING_MAX_AGE_MS) {
+                clearPendingCapture();
+                return null;
+            }
+            if (!completeAssignmentDatabase[p.assignmentKey]) {
+                clearPendingCapture();
+                return null;
+            }
+            return p;
+        } catch (e) {
+            clearPendingCapture();
+            return null;
         }
     }
 
@@ -3536,6 +3585,7 @@
             try { URL.revokeObjectURL(state.submitFlow.mediaUrl); } catch(e){}
         }
         $('#submitModal').classList.remove('active');
+        clearPendingCapture();
     }
 
     function renderSubmitStep() {
@@ -3596,6 +3646,8 @@
                 b.addEventListener('click', () => {
                     const t = b.dataset.type;
                     flow.type = t;
+                    // Persist context BEFORE camera launch — Android may kill the tab
+                    savePendingCapture();
                     if (t === 'photo') $('#filePhoto').click();
                     else if (t === 'video') $('#fileVideo').click();
                     else if (t === 'files') $('#fileGeneric').click();
@@ -3715,13 +3767,22 @@
                     const words = ta.value.trim().split(/\s+/).filter(Boolean).length;
                     $('#wordCount').innerHTML = `<strong>${words}</strong> word${words === 1 ? '' : 's'}`;
                 };
-                ta.addEventListener('input', updateWords);
+                ta.addEventListener('input', () => {
+                    state.submitFlow.text = ta.value;
+                    updateWords();
+                    // Light throttle — save at most every 2 seconds while typing
+                    clearTimeout(ta._save);
+                    ta._save = setTimeout(savePendingCapture, 2000);
+                });
                 updateWords();
             }
 
             const retakeBtn = $('#retakeBtn');
             if (retakeBtn) {
                 retakeBtn.addEventListener('click', () => {
+                    // Save current text before camera launch
+                    if ($('#submitText')) state.submitFlow.text = $('#submitText').value;
+                    savePendingCapture();
                     if (flow.type === 'photo') $('#filePhoto').click();
                     else if (flow.type === 'video') $('#fileVideo').click();
                 });
@@ -3729,7 +3790,11 @@
 
             const addFilesBtn = $('#addFilesBtn');
             if (addFilesBtn) {
-                addFilesBtn.addEventListener('click', () => $('#fileGeneric').click());
+                addFilesBtn.addEventListener('click', () => {
+                    if ($('#submitText')) state.submitFlow.text = $('#submitText').value;
+                    savePendingCapture();
+                    $('#fileGeneric').click();
+                });
             }
 
             $$('.attached-file .remove-btn').forEach(b => {
@@ -3789,12 +3854,12 @@
                 ${filesListHtml}
 
                 <div class="canvas-instructions">
-                    <strong>Next: hand off to Canvas</strong>
-                    When you tap Send, your phone's share sheet appears with your submission ready to go.
+                    <strong>Two-step submission</strong>
+                    Tapping Send saves your file. Then you'll open Canvas to attach it — Android's share sheet doesn't always show the Canvas app, so saving the file to your phone is the most reliable path.
                     <ol>
-                        <li>Pick <em>Canvas Student</em>, <em>Files</em>, or <em>Save to Files</em>.</li>
-                        <li>Open the Canvas Student app and navigate to this assignment.</li>
-                        <li>Tap Submit, choose Upload File, and pick the file you just saved.</li>
+                        <li>Tap <em>Send to Canvas</em> below — pick <em>Save</em>, <em>Save to Files</em>, or <em>Drive</em>.</li>
+                        <li>The next screen will give you a button to open Canvas Student.</li>
+                        <li>In Canvas, find this assignment, tap Submit, choose Upload File, pick the file you just saved.</li>
                     </ol>
                 </div>
 
@@ -3817,6 +3882,72 @@
             });
 
             $('#sendShare').addEventListener('click', () => doShare());
+        }
+        else if (flow.step === 'sent') {
+            const wasShared = flow.shareMethod === 'share';
+            const verb = wasShared ? 'shared' : 'saved to your phone';
+            const isCompleted = !!state.completed[key];
+
+            body.innerHTML = `
+                <div style="text-align: center; padding: 36px 16px 8px;">
+                    <div style="width: 72px; height: 72px; margin: 0 auto 16px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: bold;">✓</div>
+                    <h2 style="font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.25; color: var(--ink); margin-bottom: 6px;">Step 1 of 2 done</h2>
+                    <p style="font-family: var(--body); font-size: 15px; color: var(--ink-muted); max-width: 320px; margin: 0 auto;">Your file is ${verb}. Now you need to attach it inside Canvas.</p>
+                </div>
+
+                <div class="canvas-instructions" style="margin-top: 20px;">
+                    <strong>Step 2: Attach the file in Canvas</strong>
+                    <ol>
+                        <li>Tap <em>Open Canvas Student</em> below.</li>
+                        <li>Find <em>${escapeHtml(a.name)}</em> in your course.</li>
+                        <li>Tap <em>Submit Assignment</em>, then <em>Upload File</em>.</li>
+                        <li>Pick the file you just ${verb.split(' ')[0]} (look for one named <code style="font-family: var(--body); background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 3px; font-size: 12px;">CAP_…</code>).</li>
+                    </ol>
+                </div>
+
+                <button class="btn btn-accent" id="openCanvasBig" style="width: 100%; margin-top: 20px; padding: 16px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    Open Canvas Student
+                </button>
+
+                <p style="font-family: var(--display); font-style: italic; font-size: 13px; color: var(--ink-muted); text-align: center; margin: 14px 0;">
+                    On Android, tapping above will offer to open the Canvas app if you have it installed, or canvas.tccd.edu in your browser otherwise.
+                </p>
+            `;
+
+            actions.innerHTML = `
+                <button class="btn btn-secondary" id="closeSentBtn">Close</button>
+                <button class="btn ${isCompleted ? 'btn-secondary' : 'btn-primary'}" id="markDoneSentBtn" ${isCompleted ? 'disabled style="opacity:0.6;"' : ''}>
+                    ${isCompleted ? '✓ Already marked done' : 'Mark this assignment done'}
+                </button>
+            `;
+
+            $('#openCanvasBig').addEventListener('click', () => {
+                // Open Canvas — the URL will trigger the Canvas Student app via
+                // app links if it's installed, or open in the default browser.
+                window.open('https://canvas.tccd.edu', '_blank');
+            });
+
+            $('#closeSentBtn').addEventListener('click', () => {
+                closeSubmit();
+                closeDetail();
+            });
+
+            $('#markDoneSentBtn').addEventListener('click', () => {
+                if (!state.completed[key]) {
+                    state.completed[key] = {
+                        points: a.defaultPoints,
+                        dateISO: new Date().toISOString(),
+                        name: a.name,
+                        category: a.category
+                    };
+                    saveState();
+                    showToast(`Marked done — ${a.defaultPoints} points earned`);
+                }
+                closeSubmit();
+                closeDetail();
+                renderBrowse();
+            });
         }
     }
 
@@ -3898,7 +4029,7 @@ ${flow.text}
         }
 
         if (!shared) {
-            // Fallback: download files individually + open Canvas in new tab
+            // Fallback: download files individually
             filesToShare.forEach((f) => {
                 const url = URL.createObjectURL(f);
                 const link = document.createElement('a');
@@ -3909,35 +4040,15 @@ ${flow.text}
                 document.body.removeChild(link);
                 setTimeout(() => URL.revokeObjectURL(url), 4000);
             });
-            showToast('Files saved — open Canvas to attach', 4000);
-            // Sequence the dialogs so they don't collide
-            setTimeout(() => {
-                if (confirm('Open Canvas now to upload?')) {
-                    window.open('https://canvas.tccd.edu', '_blank');
-                }
-                offerMarkComplete(key, a);
-            }, 700);
+            state.submitFlow.shareMethod = 'download';
         } else {
-            showToast('Shared — finish in Canvas', 3000);
-            setTimeout(() => offerMarkComplete(key, a), 900);
+            state.submitFlow.shareMethod = 'share';
         }
-    }
 
-    function offerMarkComplete(key, a) {
-        if (!state.completed[key]) {
-            if (confirm('Mark "' + a.name + '" as done in your tracker?')) {
-                state.completed[key] = {
-                    points: a.defaultPoints,
-                    dateISO: new Date().toISOString(),
-                    name: a.name,
-                    category: a.category
-                };
-                saveState();
-                renderBrowse();
-            }
-        }
-        closeSubmit();
-        closeDetail();
+        // Move to the post-share "next steps" screen instead of an abrupt toast+confirm
+        clearPendingCapture(); // submission has happened
+        state.submitFlow.step = 'sent';
+        renderSubmitStep();
     }
 
     /* ---------- TRACK VIEW ---------- */
@@ -4092,6 +4203,10 @@ ${flow.text}
             else if (state.submitFlow.step === 'capture') {
                 state.submitFlow.step = 'choose';
                 renderSubmitStep();
+            } else if (state.submitFlow.step === 'sent') {
+                // Submission already happened — back means close
+                closeSubmit();
+                closeDetail();
             } else {
                 state.submitFlow.step = 'capture';
                 renderSubmitStep();
@@ -4150,6 +4265,66 @@ ${flow.text}
 
         renderBrowse();
         maybeShowIosHint();
+        maybeResumeSubmission();
+
+        // Persist text state when the page is about to be hidden (Android may
+        // kill the tab when the camera intent takes over).
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                const ta = document.getElementById('submitText');
+                if (ta) state.submitFlow.text = ta.value;
+                if (state.currentAssignmentKey && $('#submitModal').classList.contains('active')) {
+                    savePendingCapture();
+                }
+            }
+        });
+    }
+
+    /* If the user was mid-submission when the page reloaded (typically because
+       Android killed the tab during a camera intent), restore the modal flow
+       so they don't silently land on the home screen with their work lost. */
+    function maybeResumeSubmission() {
+        const pending = readPendingCapture();
+        if (!pending) return;
+
+        const a = completeAssignmentDatabase[pending.assignmentKey];
+        if (!a) return;
+
+        // Restore context
+        state.currentAssignmentKey = pending.assignmentKey;
+
+        // Open detail (silently — animation is fine, it cues the user)
+        openDetail(pending.assignmentKey);
+
+        // Then open submit and seed the resumed type/text
+        setTimeout(() => {
+            openSubmit(); // this resets submitFlow
+            state.submitFlow.type = pending.type || null;
+            state.submitFlow.text = pending.text || '';
+            if (pending.type) {
+                state.submitFlow.step = 'capture';
+            }
+            renderSubmitStep();
+
+            // Try to recover the file if Chrome preserved it on the input
+            // (rare on Android after a tab kill, but harmless to check).
+            let recovered = false;
+            if (pending.type === 'video') {
+                const f = $('#fileVideo').files && $('#fileVideo').files[0];
+                if (f) { handleMediaCaptured(f, 'video'); recovered = true; }
+            } else if (pending.type === 'photo') {
+                const f = $('#filePhoto').files && $('#filePhoto').files[0];
+                if (f) { handleMediaCaptured(f, 'photo'); recovered = true; }
+            }
+
+            if (!recovered && (pending.type === 'photo' || pending.type === 'video')) {
+                const word = pending.type === 'photo' ? 'photo' : 'video';
+                const verb = pending.type === 'photo' ? 'take' : 'record';
+                showToast(`Returned to your submission. Tap Re-${verb} to capture your ${word} again.`, 6000);
+            } else if (!recovered) {
+                showToast('Resumed your submission', 3000);
+            }
+        }, 120);
     }
 
     function handleMediaCaptured(file, type) {
@@ -4174,6 +4349,10 @@ ${flow.text}
             navigator.serviceWorker.register('./sw.js').catch(() => { /* no SW deployed — ok */ });
         });
     }
+
+    
+
+    
 
     </script>
 </body>
