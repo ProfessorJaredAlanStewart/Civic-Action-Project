@@ -1,0 +1,32 @@
+{
+  "name": "Civic Action Project",
+  "short_name": "CAP",
+  "description": "Tarrant County College Government — Civic Action Project. Browse all 39 assignments, view rubrics, and submit work to Canvas from your phone.",
+  "start_url": "./CAP_Mobile_App.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f4ec",
+  "theme_color": "#f8f4ec",
+  "categories": ["education"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

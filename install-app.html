@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install the CAP Mobile App — Civic Action Project</title>
+    <meta name="description" content="Install the Civic Action Project mobile app on your iPhone or Android device. Browse all 39 assignments, view rubrics, and submit work directly to Canvas.">
+    <link rel="icon" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1a2744;
+            --slate: #334155;
+            --ink: #1e293b;
+            --warm: #92400e;
+            --amber: #d97706;
+            --cream: #fefbf4;
+            --sand: #e8e0d0;
+            --rule: #d4cabb;
+            --muted: #6b7280;
+            --red-accent: #b91c1c;
+            --blue-accent: #1d4ed8;
+            --green-accent: #15803d;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 17px;
+        }
+        a { color: var(--warm); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .topbar {
+            background: var(--navy);
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            padding: 8px 0;
+            letter-spacing: 0.04em;
+            text-align: center;
+        }
+        .topbar a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+        }
+        .topbar a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(170deg, var(--navy) 0%, #2a3f5f 50%, #3b5278 100%);
+            color: white;
+            padding: 60px 24px 70px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 20% 30%, rgba(217,119,6,0.08) 0%, transparent 40%),
+                              radial-gradient(circle at 80% 70%, rgba(255,255,255,0.04) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 48px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-eyebrow {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--amber);
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+        .hero h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.6rem;
+            line-height: 1.15;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 18px;
+        }
+        .hero h1 .accent {
+            color: var(--amber);
+            font-style: italic;
+        }
+        .hero p {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.85);
+            max-width: 540px;
+            margin-bottom: 28px;
+        }
+        .hero-direct-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            color: var(--navy);
+            font-weight: 600;
+            font-size: 15px;
+            padding: 12px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.2s;
+        }
+        .hero-direct-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+        .hero-direct-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* QR card on hero */
+        .qr-card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px 18px 14px;
+            text-align: center;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+        }
+        .qr-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+        }
+        .qr-card .qr-label {
+            margin-top: 10px;
+            font-family: 'Libre Baskerville', serif;
+            font-style: italic;
+            color: var(--navy);
+            font-size: 14px;
+        }
+        .qr-card .qr-sub {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* Section */
+        section { padding: 60px 0; }
+        section.tight { padding: 40px 0; }
+        section.alt { background: white; border-top: 1px solid var(--sand); border-bottom: 1px solid var(--sand); }
+        h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            color: var(--navy);
+            font-weight: 700;
+        }
+        h2 .accent { color: var(--warm); font-style: italic; }
+        .section-lead {
+            font-size: 1.1rem;
+            color: var(--slate);
+            max-width: 720px;
+            margin-bottom: 36px;
+        }
+
+        /* Install steps grid */
+        .install-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+        .platform-card {
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            border-radius: 10px;
+            padding: 28px 28px 24px;
+        }
+        .platform-card.alt {
+            background: white;
+        }
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 18px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid var(--sand);
+        }
+        .platform-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .platform-ios { background: #f1f5f9; color: var(--navy); }
+        .platform-android { background: #dcfce7; color: #15803d; }
+        .platform-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+        .platform-header h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.4rem;
+            color: var(--navy);
+            line-height: 1.2;
+        }
+        .platform-header .sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        .step-list {
+            list-style: none;
+            counter-reset: step;
+        }
+        .step-list li {
+            counter-increment: step;
+            padding-left: 44px;
+            position: relative;
+            margin-bottom: 18px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .step-list li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            background: var(--warm);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .step-list li strong {
+            color: var(--navy);
+            font-weight: 600;
+        }
+        .step-list code {
+            font-size: 0.92em;
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: 'Source Sans 3', monospace;
+            color: var(--warm);
+        }
+        .platform-card.alt .step-list code {
+            background: var(--cream);
+        }
+        .step-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--cream);
+            border: 1px solid var(--sand);
+            border-radius: 4px;
+            width: 22px;
+            height: 22px;
+            margin: 0 2px;
+            vertical-align: middle;
+        }
+        .step-icon svg { width: 14px; height: 14px; }
+
+        /* Features grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-top: 18px;
+        }
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #fef3c7;
+            color: var(--warm);
+            border-radius: 8px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .feature-icon.b { background: #dbeafe; color: var(--blue-accent); }
+        .feature-icon.g { background: #dcfce7; color: var(--green-accent); }
+        .feature-icon.r { background: #fee2e2; color: var(--red-accent); }
+        .feature h4 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.05rem;
+            color: var(--navy);
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+        .feature p {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid var(--sand);
+            padding: 16px 0;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-item h4 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1rem;
+            color: var(--navy);
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+        .faq-item p {
+            font-size: 15px;
+            color: var(--slate);
+        }
+
+        /* Privacy note */
+        .privacy-note {
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            border-left: 4px solid var(--green-accent);
+            padding: 18px 22px;
+            border-radius: 4px;
+            margin-top: 28px;
+        }
+        .privacy-note h4 {
+            font-family: 'Libre Baskerville', serif;
+            color: #064e3b;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        .privacy-note p {
+            color: #065f46;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--navy);
+            color: rgba(255,255,255,0.7);
+            padding: 36px 24px 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        footer a { color: var(--amber); }
+
+        /* Mobile */
+        @media (max-width: 760px) {
+            .hero { padding: 40px 20px 50px; }
+            .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+            .hero h1 { font-size: 2rem; }
+            .qr-card { max-width: 240px; margin: 0 auto; }
+            section { padding: 40px 0; }
+            .install-grid { grid-template-columns: 1fr; gap: 18px; }
+            h2 { font-size: 1.6rem; }
+            .features { grid-template-columns: 1fr; }
+            .platform-card { padding: 22px 20px 18px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="index.html">← Back to Civic Action Project</a>
+</div>
+
+<header class="hero">
+    <div class="container hero-grid">
+        <div>
+            <div class="hero-eyebrow">CAP Mobile App</div>
+            <h1>Carry the project<br><span class="accent">in your pocket</span></h1>
+            <p>Browse all 39 CAP assignments, view rubrics on the go, and submit work directly to Canvas — straight from your phone. Built for students taking GOVT 2305 and 2306 at Tarrant County College.</p>
+            <a href="CAP_Mobile_App.html" class="hero-direct-link">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                Open the app now
+            </a>
+        </div>
+        <div class="qr-card">
+            <img src="data:image/png;base64,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" alt="QR code linking to the CAP mobile app">
+            <div class="qr-label">Scan with your phone</div>
+            <div class="qr-sub">Camera app on iPhone, any QR scanner on Android</div>
+        </div>
+    </div>
+</header>
+
+<section class="alt">
+    <div class="container">
+        <h2>Install on your <span class="accent">phone</span></h2>
+        <p class="section-lead">Two minutes, no app store, no account. Once installed, it lives on your home screen like any other app.</p>
+
+        <div class="install-grid">
+
+            <!-- iPhone -->
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon platform-ios">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    </div>
+                    <div>
+                        <h3>iPhone & iPad</h3>
+                        <div class="sub">iOS 14 or later · Safari required</div>
+                    </div>
+                </div>
+                <ol class="step-list">
+                    <li><strong>Open this page in Safari.</strong> If you're reading this in Chrome, switch to Safari first — Apple only allows installation through Safari.</li>
+                    <li><strong>Tap the Share button</strong>
+                        <span class="step-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v9"/></svg></span>
+                        at the bottom of Safari (the square with an upward arrow).
+                    </li>
+                    <li><strong>Scroll down</strong> in the share menu and tap <code>Add to Home Screen</code>.</li>
+                    <li><strong>Confirm the name</strong> "CAP" and tap <code>Add</code> in the top-right corner.</li>
+                    <li><strong>Find the CAP icon</strong> on your home screen and tap to open. The app launches in full-screen mode — no browser bars.</li>
+                </ol>
+            </div>
+
+            <!-- Android -->
+            <div class="platform-card alt">
+                <div class="platform-header">
+                    <div class="platform-icon platform-android">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24c-2.86-1.21-6.08-1.21-8.94 0L5.65 5.67c-.19-.29-.58-.38-.87-.2-.28.18-.37.54-.22.83L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52zM7 15.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm10 0c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
+                    </div>
+                    <div>
+                        <h3>Android</h3>
+                        <div class="sub">Android 8 or later · Chrome recommended</div>
+                    </div>
+                </div>
+                <ol class="step-list">
+                    <li><strong>Open this page in Chrome.</strong> Samsung Internet and Firefox Mobile work too, but Chrome gives the smoothest install experience.</li>
+                    <li><strong>Look for an "Install app" prompt</strong> at the bottom of the screen. If you see it, tap <code>Install</code> and you're done.</li>
+                    <li><strong>If no prompt appears</strong>, tap the three-dot menu in the top-right corner of Chrome.</li>
+                    <li><strong>Tap</strong> <code>Install app</code> or <code>Add to Home screen</code> from the menu.</li>
+                    <li><strong>Confirm</strong> by tapping <code>Install</code>. The CAP icon appears on your home screen and in your app drawer.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="privacy-note">
+            <h4>Your work stays private</h4>
+            <p>This app never sends your photos, videos, or written work to any server. Submissions go straight from your phone to Canvas through your phone's built-in share menu — exactly the same way you'd send a photo to a friend. The app stores only your progress (which assignments you've completed) in your phone's local storage.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2>What's <span class="accent">inside</span></h2>
+        <p class="section-lead">Every CAP assignment, every rubric criterion, and your progress — designed to fit in your hand.</p>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon b">📋</div>
+                <div>
+                    <h4>All 39 assignments, full rubrics</h4>
+                    <p>Browse by effort tier, search by keyword, see exactly what each criterion requires before you start.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon g">📸</div>
+                <div>
+                    <h4>Capture from inside the app</h4>
+                    <p>Tap Submit and your phone's native camera opens — record video, snap photos, type written reflections.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon r">📊</div>
+                <div>
+                    <h4>Live progress tracker</h4>
+                    <p>See your point total, multi-category requirement status, and completed work in one place.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">↗</div>
+                <div>
+                    <h4>Hand-off to Canvas</h4>
+                    <p>One tap shares your submission to Canvas Student or your phone's file manager — finish the upload there.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="alt tight">
+    <div class="container">
+        <h2>Common <span class="accent">questions</span></h2>
+
+        <div class="faq-item">
+            <h4>Is this on the App Store or Google Play?</h4>
+            <p>No, and it doesn't need to be. CAP is a "Progressive Web App" — installs straight from your browser to your home screen. Faster to update, no account required, free of any ads or tracking.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>Will it work without the internet?</h4>
+            <p>After your first visit, yes. The app caches itself on your phone so you can browse rubrics anywhere. You'll only need a connection to actually submit something.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>Does it replace the Canvas Student app?</h4>
+            <p>No — they work together. CAP shows you the rubric and helps you capture your work. You still submit through Canvas Student (or Canvas web) so it lands in the gradebook.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>What if I get a new phone?</h4>
+            <p>Just open the URL on the new phone and reinstall. Your progress lives on whichever device you use, since nothing is stored in the cloud.</p>
+        </div>
+
+        <div class="faq-item">
+            <h4>Something's broken or confusing.</h4>
+            <p>Email Professor Stewart at <a href="mailto:jared.stewart@tccd.edu">jared.stewart@tccd.edu</a> with what happened and (if possible) what kind of phone you're using.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>Civic Action Project · Tarrant County College Government · Built by Professor Jared Stewart</p>
+        <p style="margin-top: 8px;"><a href="index.html">← Return to the CAP main site</a></p>
+    </div>
+</footer>
+
+</body>
+</html>
