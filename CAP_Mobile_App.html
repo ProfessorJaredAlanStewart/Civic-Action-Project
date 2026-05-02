@@ -140,10 +140,10 @@
         .masthead h1 {
             font-family: var(--display);
             font-weight: 700;
-            font-size: 24px;
-            line-height: 1;
+            font-size: 22px;
+            line-height: 1.05;
             color: var(--ink);
-            letter-spacing: -0.01em;
+            letter-spacing: -0.015em;
         }
 
         .masthead h1 .accent {
@@ -666,6 +666,56 @@
             line-height: 0.9;
             margin: 4px 6px 0 0;
             color: var(--oxblood);
+        }
+
+        /* Prepare-media banner — shown on assignments needing photo/video so
+           students record/take their media BEFORE coming to submit. */
+        .prep-banner {
+            background: var(--gold-bg);
+            border-left: 4px solid var(--gold);
+            border-radius: 0 6px 6px 0;
+            padding: 14px 16px 14px 18px;
+            margin: 0 0 22px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .prep-banner-icon {
+            font-size: 22px;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .prep-banner-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .prep-banner-title {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--ink);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .prep-banner-text {
+            font-family: var(--body);
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+        }
+        .prep-banner-text strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+        .prep-banner ol {
+            margin: 8px 0 0 18px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+        }
+        .prep-banner ol li {
+            margin-bottom: 4px;
         }
 
         /* Requirements checklist */
@@ -1583,8 +1633,7 @@
         <!-- HEADER -->
         <header class="app-header" id="appHeader">
             <div class="masthead">
-                <h1>Civic <span class="accent">Action</span></h1>
-                <span class="masthead-meta">Vol. 1</span>
+                <h1>Civic <span class="accent">Action</span> Project</h1>
             </div>
             <div class="masthead-tagline">Tarrant County College — Government</div>
         </header>
@@ -3330,6 +3379,24 @@
         return key.startsWith('safety');
     }
 
+    /* Detect what kinds of media an assignment expects, so we can show students
+       the right preparation guidance on the detail screen. We scan the full
+       text of the assignment (name + description + requirements + rubric items)
+       since that's where the signal lives. */
+    function detectMediaTypes(a) {
+        const haystack = [
+            a.name || '',
+            a.description || '',
+            (a.requirements || []).join(' '),
+            Object.values(a.rubric || {}).flat().join(' ')
+        ].join(' ').toLowerCase();
+
+        const needsVideo = /\bvideo\b|\brecord(ing)?\b|\bfootage\b|\binterview\b/.test(haystack)
+                          && !/transcript only|notes only/.test(haystack);
+        const needsPhoto = /\bphoto(s|graph)?\b|\bimage(s|ry)?\b|\bscreenshot\b|\bpicture\b/.test(haystack);
+        return { needsVideo, needsPhoto };
+    }
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text || '';
@@ -3486,6 +3553,48 @@
 
         const isComplete = !!state.completed[key];
 
+        // Build the prepare-media banner if this assignment needs photo or video
+        const media = detectMediaTypes(a);
+        let prepBannerHtml = '';
+        if (media.needsVideo || media.needsPhoto) {
+            let titleText, mediaWord, mediaWordCap, captureVerb, captureVerbCap;
+            if (media.needsVideo && media.needsPhoto) {
+                titleText = 'Record videos and take photos before submitting';
+                mediaWord = 'video or photo';
+                mediaWordCap = 'Video or Photo';
+                captureVerb = 'record/take';
+                captureVerbCap = 'Record or take';
+            } else if (media.needsVideo) {
+                titleText = 'Record your video before submitting';
+                mediaWord = 'video';
+                mediaWordCap = 'Video';
+                captureVerb = 'record';
+                captureVerbCap = 'Record';
+            } else {
+                titleText = 'Take your photos before submitting';
+                mediaWord = 'photo';
+                mediaWordCap = 'Photo';
+                captureVerb = 'take';
+                captureVerbCap = 'Take';
+            }
+            prepBannerHtml = `
+                <div class="prep-banner">
+                    <div class="prep-banner-icon">${media.needsVideo ? '🎥' : '📸'}</div>
+                    <div class="prep-banner-body">
+                        <div class="prep-banner-title">${titleText}</div>
+                        <div class="prep-banner-text">
+                            This app does <strong>not</strong> record from inside the assignment. Use your phone's regular camera app first, then come back to attach what you captured.
+                            <ol>
+                                <li>${captureVerbCap} your ${mediaWord} using your phone's <strong>built-in Camera app</strong>.</li>
+                                <li>Return to this CAP app and tap <strong>Submit</strong> below.</li>
+                                <li>Choose <strong>Add a ${mediaWord.split(' ')[0]}</strong> &mdash; pick your file from the gallery.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         $('#detailBody').innerHTML = `
             <div class="detail-hero">
                 <div class="detail-cat">${escapeHtml(a.category)}</div>
@@ -3496,6 +3605,8 @@
                     <div class="stat"><strong>${(a.requirements || []).length}</strong><span>Requirements</span></div>
                 </div>
             </div>
+
+            ${prepBannerHtml}
 
             <div class="detail-section">
                 <h3>About this assignment</h3>
