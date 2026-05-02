@@ -1,0 +1,4614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#f8f4ec">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CAP">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title>Civic Action Project</title>
+
+    <!-- Inline manifest as data URI for single-file deployment -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Civic Action Project","short_name":"CAP","description":"Tarrant County College Government — Civic Action Project","start_url":".","display":"standalone","orientation":"portrait","background_color":"%23f8f4ec","theme_color":"%23f8f4ec","icons":[{"src":"data:image/svg%2Bxml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 fill=%22%23f8f4ec%22/%3E%3Ctext x=%2296%22 y=%22118%22 font-family=%22Georgia,serif%22 font-size=%22120%22 font-weight=%22bold%22 fill=%22%238B2635%22 text-anchor=%22middle%22%3ECAP%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml","purpose":"any"}]}'>
+
+    <link rel="apple-touch-icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="%23f8f4ec"/><text x="96" y="118" font-family="Georgia,serif" font-size="80" font-weight="bold" fill="%238B2635" text-anchor="middle">CAP</text></svg>'>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================
+           CIVIC ACTION PROJECT — STUDENT APP
+           Editorial / Civic Field Guide aesthetic
+           ========================================================== */
+
+        :root {
+            /* Paper palette */
+            --paper: #f8f4ec;
+            --paper-warm: #f1ebdc;
+            --paper-edge: #e8e0cc;
+            --rule: #d4cdb8;
+            --rule-soft: #e3dcc7;
+
+            /* Ink */
+            --ink: #1a1a1a;
+            --ink-soft: #3a3a3a;
+            --ink-muted: #6b6b65;
+            --ink-faint: #9b9b95;
+
+            /* Civic accents */
+            --oxblood: #8B2635;
+            --oxblood-soft: #a64453;
+            --oxblood-bg: #f3e3e5;
+            --navy: #1a3a5c;
+            --navy-soft: #325677;
+            --navy-bg: #e3eaf2;
+            --gold: #b8935a;
+            --gold-soft: #d1b07a;
+            --gold-bg: #f4ead7;
+            --sage: #5d6d4a;
+            --sage-bg: #e8ede0;
+
+            /* Functional */
+            --success: #2d7a4a;
+            --success-bg: #e1f0e6;
+            --warn: #c97e2a;
+            --danger: #b32424;
+
+            /* Layout */
+            --tab-height: 64px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --max-content: 720px;
+
+            /* Type */
+            --display: 'Libre Baskerville', Georgia, 'Times New Roman', serif;
+            --body: Georgia, 'Times New Roman', serif;
+            --ui: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--body);
+            font-size: 16px;
+            line-height: 1.55;
+            color: var(--ink);
+            background: var(--paper);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        input, textarea {
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        /* ==========================================================
+           APP SHELL
+           ========================================================== */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            position: relative;
+        }
+
+        /* Header */
+        .app-header {
+            padding: calc(var(--safe-top) + 14px) 20px 12px;
+            background: var(--paper);
+            border-bottom: 1px solid var(--rule);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .app-header::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            bottom: -3px;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        .masthead {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .masthead h1 {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 22px;
+            line-height: 1.05;
+            color: var(--ink);
+            letter-spacing: -0.015em;
+        }
+
+        .masthead h1 .accent {
+            color: var(--oxblood);
+        }
+
+        .masthead-meta {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--ink-muted);
+        }
+
+        .masthead-tagline {
+            font-family: var(--display);
+            font-style: italic;
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 4px;
+        }
+
+        /* Main scroll area */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 24px);
+        }
+
+        .view {
+            display: none;
+            max-width: var(--max-content);
+            margin: 0 auto;
+            padding: 16px 20px 32px;
+        }
+
+        .view.active {
+            display: block;
+            animation: viewIn 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        @keyframes viewIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================
+           BOTTOM TAB BAR
+           ========================================================== */
+        .tab-bar {
+            display: flex;
+            align-items: stretch;
+            background: var(--paper);
+            border-top: 1px solid var(--rule);
+            padding-bottom: var(--safe-bottom);
+            height: calc(var(--tab-height) + var(--safe-bottom));
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 30;
+            box-shadow: 0 -1px 0 var(--rule-soft), 0 -8px 24px -16px rgba(26, 26, 26, 0.15);
+        }
+
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-muted);
+            padding: 8px 4px 0;
+            transition: color 120ms;
+            position: relative;
+        }
+
+        .tab-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke-width: 1.6;
+        }
+
+        .tab-btn.active {
+            color: var(--oxblood);
+        }
+
+        .tab-btn.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 2px;
+            background: var(--oxblood);
+        }
+
+        .tab-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ==========================================================
+           BROWSE: SEARCH + FILTERS
+           ========================================================== */
+        .search-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .search-input {
+            flex: 1;
+            font-family: var(--body);
+            font-size: 16px;
+            background: var(--paper-warm);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 11px 14px;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 120ms;
+        }
+
+        .search-input:focus {
+            border-color: var(--ink-muted);
+            background: #fff;
+        }
+
+        .search-input::placeholder {
+            color: var(--ink-faint);
+            font-style: italic;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            margin: 0 -20px 18px;
+            padding: 0 20px 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-row::-webkit-scrollbar { display: none; }
+
+        .filter-chip {
+            flex-shrink: 0;
+            font-family: var(--ui);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            background: transparent;
+            color: var(--ink-muted);
+            border: 1px solid var(--rule);
+            padding: 6px 12px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 120ms;
+        }
+
+        .filter-chip.active {
+            background: var(--ink);
+            color: var(--paper);
+            border-color: var(--ink);
+        }
+
+        .filter-chip:active {
+            transform: scale(0.96);
+        }
+
+        /* ==========================================================
+           ASSIGNMENT CARDS
+           ========================================================== */
+        .section-label {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--ink-muted);
+            margin: 22px 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        .assignment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .assignment-card {
+            background: var(--paper);
+            border-bottom: 1px solid var(--rule);
+            padding: 16px 0;
+            cursor: pointer;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 6px 14px;
+            align-items: start;
+            transition: background 120ms;
+            position: relative;
+        }
+
+        .assignment-card:active {
+            background: var(--paper-warm);
+        }
+
+        .assignment-card:first-child {
+            padding-top: 0;
+        }
+
+        .card-cat {
+            grid-column: 1 / 2;
+            font-family: var(--ui);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--ink-muted);
+        }
+
+        .card-cat .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--ink-faint);
+        }
+
+        .card-cat.cat-higher .dot { background: var(--oxblood); }
+        .card-cat.cat-medium .dot { background: var(--navy); }
+        .card-cat.cat-quick .dot { background: var(--gold); }
+        .card-cat.cat-safety .dot { background: var(--sage); }
+
+        .card-title {
+            grid-column: 1 / 2;
+            font-family: var(--display);
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.25;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+        }
+
+        .card-meta {
+            grid-column: 1 / 2;
+            font-family: var(--body);
+            font-size: 13px;
+            font-style: italic;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .card-points {
+            grid-column: 2 / 3;
+            grid-row: 1 / 4;
+            font-family: var(--display);
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--ink);
+            text-align: right;
+            min-width: 56px;
+            position: relative;
+            padding-top: 4px;
+        }
+
+        .card-points .pts-label {
+            display: block;
+            font-family: var(--ui);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .assignment-card.completed .card-title,
+        .assignment-card.completed .card-points {
+            color: var(--ink-muted);
+        }
+
+        .assignment-card.completed .card-title {
+            text-decoration: line-through;
+            text-decoration-color: var(--rule);
+        }
+
+        .assignment-card .completed-stamp {
+            position: absolute;
+            top: 16px;
+            right: 0;
+            font-family: var(--display);
+            font-size: 10px;
+            font-style: italic;
+            color: var(--success);
+            background: var(--success-bg);
+            padding: 3px 8px;
+            border-radius: 3px;
+            display: none;
+        }
+
+        .assignment-card.completed .card-points {
+            display: none;
+        }
+
+        .assignment-card.completed .completed-stamp {
+            display: block;
+        }
+
+        /* ==========================================================
+           DETAIL MODAL (full screen)
+           ========================================================== */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: var(--paper);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            animation: modalIn 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes modalIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: calc(var(--safe-top) + 12px) 16px 12px;
+            background: var(--paper);
+            border-bottom: 1px solid var(--rule);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .modal-back {
+            background: transparent;
+            border: none;
+            color: var(--ink);
+            font-family: var(--ui);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 12px 8px 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: -6px;
+        }
+
+        .modal-back svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        .modal-title-mini {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--ink-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 50%;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 20px 120px;
+        }
+
+        .modal-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 14px 20px calc(14px + var(--safe-bottom));
+            background: var(--paper);
+            border-top: 1px solid var(--rule);
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 -1px 0 var(--rule-soft), 0 -8px 24px -16px rgba(26, 26, 26, 0.15);
+        }
+
+        /* ==========================================================
+           DETAIL CONTENT
+           ========================================================== */
+        .detail-hero {
+            padding: 24px 0 18px;
+            border-bottom: 2px solid var(--ink);
+            margin-bottom: 18px;
+        }
+
+        .detail-cat {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--ink-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .detail-cat::before {
+            content: '';
+            width: 28px;
+            height: 1px;
+            background: var(--ink);
+        }
+
+        .detail-title {
+            font-family: var(--display);
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.015em;
+            color: var(--ink);
+            margin-bottom: 14px;
+        }
+
+        .detail-stats {
+            display: flex;
+            gap: 18px;
+            font-family: var(--ui);
+            font-size: 12px;
+            color: var(--ink-muted);
+        }
+
+        .detail-stats .stat strong {
+            display: block;
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1;
+        }
+
+        .detail-stats .stat span {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            margin-top: 4px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section h3 {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--ink-muted);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .detail-description {
+            font-family: var(--body);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--ink-soft);
+        }
+
+        .detail-description::first-letter {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 44px;
+            float: left;
+            line-height: 0.9;
+            margin: 4px 6px 0 0;
+            color: var(--oxblood);
+        }
+
+        /* Prepare-media banner — shown on assignments needing photo/video so
+           students record/take their media BEFORE coming to submit. */
+        .prep-banner {
+            background: var(--gold-bg);
+            border-left: 4px solid var(--gold);
+            border-radius: 0 6px 6px 0;
+            padding: 14px 16px 14px 18px;
+            margin: 0 0 22px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .prep-banner-icon {
+            font-size: 22px;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .prep-banner-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .prep-banner-title {
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--ink);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .prep-banner-text {
+            font-family: var(--body);
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+        }
+        .prep-banner-text strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+        .prep-banner ol {
+            margin: 8px 0 0 18px;
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+        }
+        .prep-banner ol li {
+            margin-bottom: 4px;
+        }
+
+        /* Requirements checklist */
+        .req-list {
+            list-style: none;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--rule-soft);
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+        }
+
+        .req-item:last-child {
+            border-bottom: none;
+        }
+
+        .req-checkbox {
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            border: 1.5px solid var(--ink-muted);
+            border-radius: 4px;
+            margin-top: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--paper);
+            transition: all 120ms;
+        }
+
+        .req-item.checked .req-checkbox {
+            background: var(--oxblood);
+            border-color: var(--oxblood);
+        }
+
+        .req-item.checked .req-checkbox::after {
+            content: '✓';
+            color: var(--paper);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .req-item.checked {
+            color: var(--ink-muted);
+        }
+
+        .req-item.checked .req-text {
+            text-decoration: line-through;
+            text-decoration-color: var(--rule);
+        }
+
+        /* Rubric */
+        .rubric-criteria {
+            background: var(--paper-warm);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .rubric-criteria-title {
+            font-family: var(--display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .rubric-criteria-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .rubric-criteria-item {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--ink-soft);
+            padding-left: 22px;
+            position: relative;
+        }
+
+        .rubric-criteria-item::before {
+            content: '□';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--oxblood);
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        /* ==========================================================
+           BUTTONS
+           ========================================================== */
+        .btn {
+            font-family: var(--ui);
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            padding: 14px 22px;
+            cursor: pointer;
+            transition: transform 120ms, background 120ms;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--ink);
+            color: var(--paper);
+            flex: 1;
+        }
+
+        .btn-primary:active {
+            background: var(--oxblood);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--rule);
+        }
+
+        .btn-secondary:active {
+            background: var(--paper-warm);
+        }
+
+        .btn-accent {
+            background: var(--oxblood);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            flex: 1;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+        }
+
+        /* ==========================================================
+           SUBMIT FLOW
+           ========================================================== */
+        .submit-step {
+            display: none;
+        }
+
+        .submit-step.active {
+            display: block;
+        }
+
+        .submit-intro {
+            margin-bottom: 24px;
+        }
+
+        .submit-intro h2 {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.25;
+            margin-bottom: 6px;
+        }
+
+        .submit-intro p {
+            font-family: var(--body);
+            font-size: 15px;
+            color: var(--ink-muted);
+        }
+
+        .submit-type-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .submit-type-card {
+            background: var(--paper-warm);
+            border: 1.5px solid var(--rule);
+            border-radius: 8px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            text-align: left;
+            font-family: var(--body);
+            transition: all 120ms;
+            width: 100%;
+        }
+
+        .submit-type-card:active {
+            transform: scale(0.98);
+            background: var(--paper-edge);
+        }
+
+        .submit-type-card .icon-wrap {
+            width: 48px;
+            height: 48px;
+            background: var(--paper);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1.5px solid var(--ink);
+        }
+
+        .submit-type-card .icon-wrap svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.6;
+        }
+
+        .submit-type-card .type-text {
+            flex: 1;
+        }
+
+        .submit-type-card .type-text strong {
+            display: block;
+            font-family: var(--display);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .submit-type-card .type-text span {
+            display: block;
+            font-size: 13px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        .file-input-hidden {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 200px;
+            font-family: var(--body);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--ink);
+            background: #fff;
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 14px;
+            resize: vertical;
+            outline: none;
+            transition: border-color 120ms;
+        }
+
+        .text-area:focus {
+            border-color: var(--ink);
+        }
+
+        .word-count {
+            font-family: var(--ui);
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .word-count strong {
+            color: var(--ink);
+        }
+
+        .word-count.met strong {
+            color: var(--success);
+        }
+
+        /* Preview */
+        .preview-area {
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--paper-warm);
+            border: 1px dashed var(--rule);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .preview-area video,
+        .preview-area img {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: 4px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .preview-info {
+            font-family: var(--ui);
+            font-size: 12px;
+            color: var(--ink-muted);
+            margin-top: 10px;
+        }
+
+        .preview-info strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        /* Files attached */
+        .attached-files {
+            margin-top: 14px;
+        }
+
+        .attached-file {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--paper-warm);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .attached-file svg {
+            width: 18px;
+            height: 18px;
+            color: var(--ink-muted);
+            flex-shrink: 0;
+        }
+
+        .attached-file .fname {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: var(--ui);
+            color: var(--ink);
+        }
+
+        .attached-file .fsize {
+            font-family: var(--ui);
+            font-size: 12px;
+            color: var(--ink-muted);
+        }
+
+        .attached-file .remove-btn {
+            background: transparent;
+            border: none;
+            color: var(--ink-muted);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 2px 6px;
+        }
+
+        .add-file-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px dashed var(--rule);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: var(--ui);
+            font-size: 14px;
+            color: var(--ink-muted);
+            cursor: pointer;
+            width: 100%;
+            justify-content: center;
+            margin-top: 6px;
+        }
+
+        .add-file-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Final review */
+        .review-summary {
+            background: var(--paper-warm);
+            border-left: 3px solid var(--oxblood);
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .review-summary h4 {
+            font-family: var(--display);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .review-summary p {
+            font-size: 13px;
+            color: var(--ink-muted);
+            font-family: var(--ui);
+        }
+
+        .review-text-block {
+            background: var(--paper);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--ink-soft);
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-bottom: 12px;
+        }
+
+        .canvas-instructions {
+            background: var(--navy-bg);
+            border-left: 3px solid var(--navy);
+            padding: 14px 16px;
+            margin: 18px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .canvas-instructions strong {
+            color: var(--navy);
+            display: block;
+            font-family: var(--display);
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .canvas-instructions ol {
+            margin: 8px 0 0 18px;
+            font-size: 13px;
+            color: var(--ink-soft);
+        }
+
+        .canvas-instructions ol li {
+            margin-bottom: 3px;
+        }
+
+        /* ==========================================================
+           TRACK VIEW
+           ========================================================== */
+        .progress-hero {
+            text-align: center;
+            padding: 24px 0 28px;
+            border-bottom: 2px solid var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .progress-label {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--ink-muted);
+            margin-bottom: 10px;
+        }
+
+        .progress-number {
+            font-family: var(--display);
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--oxblood);
+            letter-spacing: -0.02em;
+        }
+
+        .progress-of {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--ink-muted);
+            font-style: italic;
+        }
+
+        .progress-bar-container {
+            margin: 20px auto 6px;
+            max-width: 280px;
+            background: var(--paper-edge);
+            height: 6px;
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--oxblood);
+            border-radius: 100px;
+            transition: width 400ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .progress-percent {
+            font-family: var(--ui);
+            font-size: 12px;
+            color: var(--ink-muted);
+        }
+
+        .category-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .cat-stat {
+            background: var(--paper-warm);
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+
+        .cat-stat .cat-name {
+            font-family: var(--ui);
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--ink-muted);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .cat-stat .cat-points {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .cat-stat.higher .cat-points { color: var(--oxblood); }
+        .cat-stat.medium .cat-points { color: var(--navy); }
+        .cat-stat.quick .cat-points { color: var(--gold); }
+
+        .cat-stat .cat-pts-label {
+            font-family: var(--ui);
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--ink-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 3px;
+        }
+
+        .requirement-banner {
+            padding: 14px 16px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            line-height: 1.5;
+            font-family: var(--body);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .requirement-banner.met {
+            background: var(--success-bg);
+            color: #1c5230;
+            border: 1px solid #b8d6c2;
+        }
+
+        .requirement-banner.unmet {
+            background: var(--gold-bg);
+            color: #6b4d18;
+            border: 1px solid #d8c193;
+        }
+
+        .requirement-banner svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .requirement-banner strong {
+            display: block;
+            font-family: var(--display);
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .completed-list h3 {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--ink-muted);
+            margin-bottom: 12px;
+        }
+
+        .completed-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--ink-muted);
+            font-style: italic;
+            font-family: var(--display);
+            line-height: 1.5;
+        }
+
+        .completed-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--rule-soft);
+        }
+
+        .completed-row:last-child {
+            border-bottom: none;
+        }
+
+        .completed-mark {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        .completed-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .completed-info .ctitle {
+            font-family: var(--display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+
+        .completed-info .cdate {
+            font-family: var(--ui);
+            font-size: 11px;
+            color: var(--ink-muted);
+            margin-top: 2px;
+        }
+
+        .completed-pts {
+            font-family: var(--display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--oxblood);
+        }
+
+        .undo-btn {
+            background: transparent;
+            border: none;
+            color: var(--ink-muted);
+            cursor: pointer;
+            font-family: var(--ui);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 6px 8px;
+        }
+
+        /* ==========================================================
+           ABOUT VIEW
+           ========================================================== */
+        .about-hero {
+            text-align: center;
+            padding: 32px 0 24px;
+            border-bottom: 2px solid var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .about-mark {
+            font-family: var(--display);
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--oxblood);
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .about-hero h2 {
+            font-family: var(--display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-top: 6px;
+        }
+
+        .about-hero p {
+            font-family: var(--display);
+            font-style: italic;
+            font-size: 14px;
+            color: var(--ink-muted);
+            margin-top: 6px;
+        }
+
+        .about-section {
+            margin-bottom: 24px;
+        }
+
+        .about-section h3 {
+            font-family: var(--ui);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--ink-muted);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .about-section p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--ink-soft);
+            margin-bottom: 10px;
+        }
+
+        .about-section a {
+            color: var(--oxblood);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .about-section a:active {
+            text-decoration: underline;
+        }
+
+        .name-input-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .name-input-wrap label {
+            font-family: var(--ui);
+            font-size: 12px;
+            color: var(--ink-muted);
+            font-weight: 600;
+        }
+
+        .name-input-wrap input {
+            font-family: var(--body);
+            font-size: 16px;
+            padding: 11px 14px;
+            border: 1px solid var(--rule);
+            border-radius: 6px;
+            background: var(--paper-warm);
+            outline: none;
+            color: var(--ink);
+        }
+
+        .name-input-wrap input:focus {
+            border-color: var(--ink);
+            background: #fff;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--rule);
+            color: var(--danger);
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-family: var(--ui);
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .reset-btn:active {
+            background: var(--paper-warm);
+        }
+
+        /* ==========================================================
+           TOAST
+           ========================================================== */
+        .toast {
+            position: fixed;
+            top: calc(var(--safe-top) + 14px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--ink);
+            color: var(--paper);
+            padding: 12px 20px;
+            border-radius: 100px;
+            font-family: var(--ui);
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 6px 24px rgba(26, 26, 26, 0.25);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 200ms ease, visibility 280ms;
+            max-width: calc(100% - 40px);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--ink-muted);
+            font-family: var(--display);
+            font-style: italic;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* ==========================================================
+           DESKTOP REFINEMENTS
+           ========================================================== */
+        @media (min-width: 720px) {
+            .masthead h1 { font-size: 28px; }
+            .detail-title { font-size: 32px; }
+            .submit-type-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .filter-row {
+                flex-wrap: wrap;
+                overflow: visible;
+                margin: 0 0 18px;
+                padding: 0;
+            }
+        }
+
+        /* iOS PWA install prompt */
+        .ios-install-hint {
+            position: fixed;
+            bottom: calc(var(--tab-height) + var(--safe-bottom) + 12px);
+            left: 12px;
+            right: 12px;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-family: var(--ui);
+            font-size: 13px;
+            line-height: 1.45;
+            z-index: 50;
+            display: none;
+            box-shadow: 0 8px 24px rgba(26, 26, 26, 0.3);
+        }
+
+        .ios-install-hint.show {
+            display: block;
+            animation: viewIn 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
+        }
+
+        .ios-install-hint strong {
+            display: block;
+            font-family: var(--display);
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .ios-install-hint .close-hint {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: var(--paper);
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.6;
+            padding: 4px 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- HEADER -->
+        <header class="app-header" id="appHeader">
+            <div class="masthead">
+                <h1>Civic <span class="accent">Action</span> Project</h1>
+            </div>
+            <div class="masthead-tagline">Tarrant County College — Government</div>
+        </header>
+
+        <!-- MAIN -->
+        <main>
+            <!-- BROWSE VIEW -->
+            <section class="view active" id="view-browse">
+                <div class="search-row">
+                    <input type="search" class="search-input" id="searchInput" placeholder="Search assignments..." autocomplete="off">
+                </div>
+                <div class="filter-row" id="filterRow">
+                    <button class="filter-chip active" data-filter="all">All</button>
+                    <button class="filter-chip" data-filter="higher">Higher Effort</button>
+                    <button class="filter-chip" data-filter="medium">Medium</button>
+                    <button class="filter-chip" data-filter="quick">Quick</button>
+                    <button class="filter-chip" data-filter="incomplete">Not Done</button>
+                    <button class="filter-chip" data-filter="completed">Done</button>
+                </div>
+                <div id="assignmentList"></div>
+            </section>
+
+            <!-- TRACK VIEW -->
+            <section class="view" id="view-track">
+                <div class="progress-hero">
+                    <div class="progress-label">Total points earned</div>
+                    <div>
+                        <span class="progress-number" id="totalPoints">0</span>
+                        <span class="progress-of"> / 100</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBar" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-percent" id="progressPercent">0% complete</div>
+                </div>
+
+                <div class="category-stats" id="categoryStats"></div>
+
+                <div id="requirementBanner"></div>
+
+                <div class="completed-list">
+                    <h3>Completed assignments</h3>
+                    <div id="completedList"></div>
+                </div>
+            </section>
+
+            <!-- ABOUT VIEW -->
+            <section class="view" id="view-about">
+                <div class="about-hero">
+                    <div class="about-mark">CAP</div>
+                    <h2>Civic Action Project</h2>
+                    <p>Government in action, not abstraction</p>
+                </div>
+
+                <div class="about-section">
+                    <h3>About this app</h3>
+                    <p>This app puts every CAP assignment, every rubric criterion, and your progress in your pocket. Browse the menu, review what each assignment requires, capture photos or videos in the moment, and hand off to Canvas to submit.</p>
+                    <p>Submissions never touch our servers. Files go straight from your phone to Canvas through your phone's share sheet — same way you'd send a photo to a friend.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3>Your name</h3>
+                    <p style="font-size: 14px;">This appears on shared submissions to make grading easier for your professor.</p>
+                    <div class="name-input-wrap">
+                        <label for="studentNameInput">Full name</label>
+                        <input type="text" id="studentNameInput" placeholder="e.g. Maya Rodriguez" autocomplete="name">
+                    </div>
+                </div>
+
+                <div class="about-section">
+                    <h3>How to submit</h3>
+                    <p>Each assignment has a Submit button. Tap it, choose what you're attaching (photo, video, written response, or other file), pick from your phone's gallery, then either tap Open Canvas (recommended) or Share Files to finish the submission inside Canvas.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3>Instructor</h3>
+                    <p>Professor Jared Stewart<br>
+                    <a href="mailto:jared.stewart@tccd.edu">jared.stewart@tccd.edu</a></p>
+                </div>
+
+                <div class="about-section">
+                    <h3>Reset</h3>
+                    <p style="font-size: 13px;">Clear all locally stored progress and start fresh. This cannot be undone.</p>
+                    <button class="reset-btn" id="resetBtn">Reset all data</button>
+                </div>
+
+                <div class="about-section" style="text-align: center; padding-top: 12px;">
+                    <p style="font-family: var(--display); font-style: italic; font-size: 12px; color: var(--ink-faint); margin: 0;">v1.0 · Built for the CAP community</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- TAB BAR -->
+        <nav class="tab-bar">
+            <button class="tab-btn active" data-view="browse">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                Browse
+            </button>
+            <button class="tab-btn" data-view="track">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6h6v13M5 19v-9h4M15 19h4v-6"/></svg>
+                Track
+            </button>
+            <button class="tab-btn" data-view="about">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v.01M11 12h1v4h1"/></svg>
+                About
+            </button>
+        </nav>
+
+        <!-- iOS install hint -->
+        <div class="ios-install-hint" id="iosHint">
+            <button class="close-hint" id="closeHint">×</button>
+            <strong>Add to Home Screen</strong>
+            Tap the share icon at the bottom of Safari, then "Add to Home Screen" to use CAP like an app.
+        </div>
+    </div>
+
+    <!-- DETAIL MODAL -->
+    <div class="modal" id="detailModal">
+        <div class="modal-header">
+            <button class="modal-back" id="detailBack">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Back
+            </button>
+            <span class="modal-title-mini" id="detailMini"></span>
+            <span style="width:60px;"></span>
+        </div>
+        <div class="modal-body" id="detailBody"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" id="markCompleteBtn">Mark Done</button>
+            <button class="btn btn-primary" id="openSubmitBtn">Submit →</button>
+        </div>
+    </div>
+
+    <!-- SUBMIT MODAL -->
+    <div class="modal" id="submitModal">
+        <div class="modal-header">
+            <button class="modal-back" id="submitBack">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Back
+            </button>
+            <span class="modal-title-mini" id="submitMini"></span>
+            <span style="width:60px;"></span>
+        </div>
+        <div class="modal-body" id="submitBody"></div>
+        <div class="modal-actions" id="submitActions"></div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="filePhoto" class="file-input-hidden" accept="image/*">
+    <input type="file" id="fileVideo" class="file-input-hidden" accept="video/*">
+    <input type="file" id="fileGeneric" class="file-input-hidden" multiple>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+
+
+    /* ==========================================================
+       CIVIC ACTION PROJECT — APP LOGIC
+       ========================================================== */
+
+    /* ---------- ASSIGNMENT DATA: pasted verbatim from existing tracker ---------- */
+    const completeAssignmentDatabase = {
+            meeting: {
+                name: "Government Meeting Attendance",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Attend a public government meeting (city council, school board, county commissioners, planning commission, or similar legitimate public body) and write a structured 500-word reflection connecting your observations to course concepts. This activity helps students see how theoretical government concepts play out in real decisions affecting their communities.",
+                estimatedTime: "3-4 hours total",
+                requirements: [
+                    "Attend a legitimate public government meeting",
+                    "Write a 500-word minimum reflection",
+                    "Provide proof of attendance (photo, program, screenshot, signed sheet)",
+                    "Identify at least 3 specific issues discussed",
+                    "Connect observations to at least 2 course concepts"
+                ],
+                rubric: {
+                    "Attendance Evidence ✓": [
+                        "Proof of attendance provided (photo, program, screenshot, signed sheet, etc.)",
+                        "Meeting date clearly identified",
+                        "Meeting location clearly identified",
+                        "Meeting was a legitimate public government meeting (city council, school board, county commissioners, planning commission, etc.)"
+                    ],
+                    "Reflection Quality (500 words minimum) ✓": [
+                        "Meets or exceeds 500-word requirement",
+                        "Demonstrates actual attendance with specific details about meeting content",
+                        "Identifies at least 3 specific issues discussed during the meeting",
+                        "Makes clear connections to at least 2 course concepts (federalism, representation, checks and balances, etc.)",
+                        "Shows analysis beyond basic summary (personal insights, surprises, questions raised)",
+                        "Uses proper grammar and organization"
+                    ],
+                    "Course Connection ✓": [
+                        "Explicitly connects observations to specific concepts from readings/lectures",
+                        "Goes beyond surface-level connections to show deeper understanding"
+                    ]
+                }
+            },
+            
+            interview1: {
+                name: "Civic Interview Series #1",
+                category: "Higher Effort",
+                defaultPoints: 20,
+                description: "Conduct a structured 15-20 minute interview with a community member about how government impacts their work, business, or daily life. This activity helps students understand that government affects everyone differently and develops their ability to gather and analyze primary source information.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Conduct a 15-20 minute interview",
+                    "Provide recording/transcript OR detailed notes",
+                    "Write a 300-word analysis",
+                    "Ask all required questions plus additional meaningful questions",
+                    "Clearly identify interviewee's role/background"
+                ],
+                rubric: {
+                    "Interview Documentation ✓": [
+                        "Interview lasted 15-20 minutes (or detailed notes indicate substantial conversation)",
+                        "Recording/transcript OR detailed notes provided",
+                        "Interviewee's role/background clearly identified",
+                        "All required questions asked plus additional meaningful questions"
+                    ],
+                    "Required Questions Addressed ✓": [
+                        "How does government regulation directly impact your work/life?",
+                        "Have changes in policy at any level affected you in the past few years?",
+                        "Do you feel your interests are well-represented in government decisions?",
+                        "What government policies would you change if you could?"
+                    ],
+                    "Analysis Component (300 words minimum) ✓": [
+                        "Meets word count requirement",
+                        "Identifies key insights from the interview",
+                        "Connects interviewee's experiences to course concepts",
+                        "Shows thoughtful reflection on what was learned",
+                        "Demonstrates understanding of how government impacts different groups"
+                    ]
+                }
+            },
+            
+            interview2: {
+                name: "Civic Interview Series #2",
+                category: "Higher Effort",
+                defaultPoints: 20,
+                description: "Conduct a second interview with a DIFFERENT community member from Interview #1. This allows students to compare perspectives and understand how government impacts different sectors or demographics in varied ways.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Interview DIFFERENT person than Interview #1",
+                    "Conduct a 15-20 minute interview",
+                    "Provide recording/transcript OR detailed notes",
+                    "Write a 300-word analysis",
+                    "Compare perspectives between interviews"
+                ],
+                rubric: {
+                    "Interview Documentation ✓": [
+                        "Different person interviewed than Interview #1",
+                        "Interview lasted 15-20 minutes",
+                        "Recording/transcript OR detailed notes provided",
+                        "Interviewee's role/background clearly identified"
+                    ],
+                    "Required Questions Addressed ✓": [
+                        "How does government regulation directly impact your work/life?",
+                        "Have changes in policy at any level affected you in the past few years?",
+                        "Do you feel your interests are well-represented in government decisions?",
+                        "What government policies would you change if you could?"
+                    ],
+                    "Analysis Component (300 words minimum) ✓": [
+                        "Meets word count requirement",
+                        "Identifies key insights from Interview #2",
+                        "Compares perspectives between Interview #1 and Interview #2",
+                        "Shows thoughtful reflection",
+                        "Demonstrates understanding of varied government impacts"
+                    ]
+                }
+            },
+            
+            directory: {
+                name: "Public Services Directory",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Create a comprehensive guide documenting at least 10 government services available to a specific audience (college students, families, small businesses, seniors, etc.). This activity helps students discover the breadth of government services while creating a useful resource for their community.",
+                estimatedTime: "4-5 hours",
+                requirements: [
+                    "Research minimum 10 different government services",
+                    "Include services from federal, state, and local levels",
+                    "Provide accurate contact information for each service",
+                    "Create user-friendly guide format",
+                    "Include eligibility requirements and application processes",
+                    "Focus on a specific target audience"
+                ],
+                rubric: {
+                    "Scope and Research ✓": [
+                        "Includes minimum 10 different government services",
+                        "Services span multiple levels of government (federal, state, local)",
+                        "Focus area clearly identified (students, families, small business, etc.)",
+                        "All services relevant to target audience"
+                    ],
+                    "Information Quality ✓": [
+                        "Accurate contact information (phone, website, address)",
+                        "Eligibility requirements clearly explained",
+                        "Application/access process described",
+                        "Hours of operation included where relevant",
+                        "Cost information provided if applicable"
+                    ],
+                    "Presentation and Usability ✓": [
+                        "Well-organized and easy to navigate",
+                        "Professional formatting",
+                        "Clear categories or sections",
+                        "Includes helpful tips for accessing services",
+                        "Could actually be used by someone needing these services"
+                    ]
+                }
+            },
+            
+            mythvideo: {
+                name: "Myth Busting Video",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Create a 3-5 minute video that debunks a common misconception about government using credible research. This activity helps students develop media literacy, research skills, and the ability to communicate complex information clearly.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Create a 3-5 minute video",
+                    "Research and cite minimum 3 credible sources",
+                    "Include visual aids to enhance understanding",
+                    "Clearly state the myth and explain the truth",
+                    "Upload to Canvas Studio or provide shareable link"
+                ],
+                rubric: {
+                    "Research Quality ✓": [
+                        "Minimum 3 credible sources cited",
+                        "Sources are authoritative (government sites, academic, reputable news)",
+                        "Sources are recent and relevant",
+                        "Myth is clearly stated at the beginning",
+                        "Correct information is thoroughly explained with evidence"
+                    ],
+                    "Video Production ✓": [
+                        "Video is 3-5 minutes in length",
+                        "Audio is clear and understandable",
+                        "Visual aids enhance understanding (charts, graphics, examples)",
+                        "Video has clear introduction, body, and conclusion",
+                        "Production quality allows content to be easily understood"
+                    ],
+                    "Content and Course Connection ✓": [
+                        "Misconception directly relates to course topics",
+                        "Student demonstrates clear understanding of correct information",
+                        "Explains WHY this misconception exists",
+                        "Shows why understanding the truth matters",
+                        "Makes explicit connections to course readings or lectures"
+                    ]
+                }
+            },
+            
+            publiccomment: {
+                name: "Public Comment Champion",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Research a local issue, prepare public comments following official meeting rules, and deliver those comments at 2 different government meetings. This activity provides firsthand experience with civic participation and helps students understand the public comment process.",
+                estimatedTime: "4-5 hours total",
+                requirements: [
+                    "Research issue thoroughly with credible sources",
+                    "Prepare professional public comments (2-3 minutes)",
+                    "Deliver comments at 2 different meetings",
+                    "Document meeting procedures and responses",
+                    "Write 600-word comparative reflection"
+                ],
+                rubric: {
+                    "Research and Preparation ✓": [
+                        "Issue thoroughly researched with credible sources",
+                        "Comments follow meeting's time limits and rules",
+                        "Professional, respectful tone maintained",
+                        "Clear ask or position stated",
+                        "Supporting evidence included"
+                    ],
+                    "Delivery and Documentation ✓": [
+                        "Comments delivered at 2 different meetings",
+                        "Meetings were legitimate government bodies",
+                        "Proof of participation provided",
+                        "Other citizens' comments documented",
+                        "Officials' responses recorded"
+                    ],
+                    "Reflection (600 words) ✓": [
+                        "Meets word count requirement",
+                        "Compares effectiveness of comments at both meetings",
+                        "Analyzes officials' responsiveness",
+                        "Connects to concepts of citizen participation",
+                        "Evaluates impact of public comment process",
+                        "Shows understanding of democratic engagement"
+                    ]
+                }
+            },
+            
+            civicorg: {
+                name: "Civic Organization Immersion",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Volunteer minimum 10 hours with a civic organization to understand how citizens organize to influence government. This activity provides deep insight into grassroots democracy and advocacy strategies.",
+                estimatedTime: "10+ hours volunteer time plus documentation",
+                requirements: [
+                    "Volunteer minimum 10 hours with approved civic organization",
+                    "Attend at least one organizational meeting",
+                    "Help with one project or event",
+                    "Interview leadership about advocacy strategies",
+                    "Create 'How to Get Involved' guide for other students"
+                ],
+                rubric: {
+                    "Volunteer Documentation ✓": [
+                        "10+ hours completed and verified",
+                        "Organization is legitimate civic group",
+                        "Multiple activities documented",
+                        "Photos or supervisor verification provided",
+                        "Consistent engagement shown"
+                    ],
+                    "Organizational Understanding ✓": [
+                        "Meeting attendance documented",
+                        "Project/event participation described",
+                        "Organization's mission clearly understood",
+                        "Relationship with government explained",
+                        "Advocacy methods identified"
+                    ],
+                    "Leadership Interview ✓": [
+                        "Interview with leader/officer conducted",
+                        "Questions about advocacy strategies asked",
+                        "Challenges facing organization discussed",
+                        "Success stories documented",
+                        "Insights about civic engagement gained"
+                    ],
+                    "Student Guide Creation ✓": [
+                        "Professional 'How to Get Involved' guide created",
+                        "Contact information included",
+                        "Meeting times and locations provided",
+                        "Volunteer opportunities explained",
+                        "Could actually be used by another student"
+                    ]
+                }
+            },
+            
+            naturalization: {
+                name: "Naturalization Ceremony Witness",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Attend a citizenship naturalization ceremony and interview new citizens about their journey to understand the meaning of citizenship. This activity helps students appreciate civic participation from immigrant perspectives.",
+                estimatedTime: "3-4 hours plus writing",
+                requirements: [
+                    "Attend public naturalization ceremony at courthouse",
+                    "Document the ceremony process and oath",
+                    "Interview 2-3 new citizens about their journey",
+                    "Research citizenship test requirements",
+                    "Write 600-word reflection on meaning of citizenship"
+                ],
+                rubric: {
+                    "Ceremony Attendance ✓": [
+                        "Attendance at actual naturalization ceremony verified",
+                        "Date, time, and location documented",
+                        "Number of new citizens noted",
+                        "Ceremony procedures described",
+                        "Oath of Allegiance text included"
+                    ],
+                    "Citizen Interviews ✓": [
+                        "2-3 new citizens interviewed",
+                        "Countries of origin identified",
+                        "Journey to citizenship discussed",
+                        "Reasons for seeking citizenship explored",
+                        "Challenges in process documented",
+                        "Respectful, sensitive approach shown"
+                    ],
+                    "Citizenship Test Research ✓": [
+                        "Current test requirements researched",
+                        "Sample questions reviewed",
+                        "Pass rates and statistics found",
+                        "Preparation resources identified",
+                        "Difficulty level assessed"
+                    ],
+                    "Reflection (600 words) ✓": [
+                        "Meets word count requirement",
+                        "Personal definition of citizenship developed",
+                        "Compares natural-born vs. naturalized perspectives",
+                        "Connects to course concepts about civic participation",
+                        "Shows empathy and understanding",
+                        "Meaningful insights about American identity"
+                    ]
+                }
+            },
+            
+            ridealong: {
+                name: "Ride-Along Documentary",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Arrange and document a ride-along or job shadow with a government employee to see policy implementation at street level. This activity provides unique insight into bureaucracy in action.",
+                estimatedTime: "4-6 hours plus documentation",
+                requirements: [
+                    "Arrange ride-along with government employee",
+                    "Document full shift (4-6 hours)",
+                    "Create photo essay showing 'day in the life'",
+                    "Interview employee about policy implementation",
+                    "Write 500-word analysis of street-level bureaucracy"
+                ],
+                rubric: {
+                    "Arrangement and Preparation ✓": [
+                        "Proper permissions obtained",
+                        "Background check/waivers completed if required",
+                        "Appropriate dress and behavior",
+                        "Safety protocols followed",
+                        "Employee role clearly identified"
+                    ],
+                    "Shift Documentation ✓": [
+                        "4-6 hour shift completed",
+                        "Multiple activities observed",
+                        "Challenges documented",
+                        "Citizen interactions noted",
+                        "Decision-making processes observed"
+                    ],
+                    "Photo Essay Creation ✓": [
+                        "8-10 quality photos taken",
+                        "Permission obtained for photos",
+                        "Captions explain government work",
+                        "'Day in the life' story told visually",
+                        "Professional presentation"
+                    ],
+                    "Employee Interview ✓": [
+                        "How policies affect daily work discussed",
+                        "Discretion in implementation explored",
+                        "Biggest challenges identified",
+                        "Public misconceptions addressed",
+                        "Job satisfaction factors discussed"
+                    ],
+                    "Analysis (500 words) ✓": [
+                        "Meets word count requirement",
+                        "Street-level bureaucracy concept applied",
+                        "Policy vs. practice gaps identified",
+                        "Employee discretion analyzed",
+                        "Connects to course concepts",
+                        "Shows understanding of implementation challenges"
+                    ]
+                }
+            },
+            
+            voterdrive: {
+                name: "Voter Registration Drive",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Organize and run a voter registration drive to understand civic engagement and democratic participation. This hands-on activity teaches students about barriers to voting and electoral participation.",
+                estimatedTime: "6-8 hours across multiple events",
+                requirements: [
+                    "Get trained as volunteer deputy registrar (where applicable)",
+                    "Set up registration at 3+ locations",
+                    "Register at least 10 new voters (or document attempts)",
+                    "Create social media campaign for promotion",
+                    "Analyze barriers to registration in community"
+                ],
+                rubric: {
+                    "Training and Preparation ✓": [
+                        "Proper training completed (or state requirements met)",
+                        "Registration forms and materials obtained",
+                        "Legal requirements understood",
+                        "Nonpartisan approach maintained",
+                        "Locations strategically chosen"
+                    ],
+                    "Registration Events ✓": [
+                        "3+ registration events held",
+                        "Different locations used (campus, stores, events)",
+                        "Professional setup maintained",
+                        "Engagement strategies documented",
+                        "Weather/challenges overcome"
+                    ],
+                    "Registration Results ✓": [
+                        "10+ registrations or substantial attempts documented",
+                        "Demographics of registrants noted (anonymously)",
+                        "Common questions recorded",
+                        "Reasons for not registering documented",
+                        "Follow-up information provided"
+                    ],
+                    "Social Media Campaign ✓": [
+                        "3+ social media posts created",
+                        "Registration deadlines highlighted",
+                        "Location/times promoted",
+                        "Engagement metrics tracked",
+                        "Nonpartisan tone maintained"
+                    ],
+                    "Barriers Analysis ✓": [
+                        "Common registration barriers identified",
+                        "Demographics of non-registered analyzed",
+                        "Solutions proposed",
+                        "Comparison to national trends",
+                        "Connects to voting rights concepts"
+                    ]
+                }
+            },
+            
+            scavenger: {
+                name: "Government Services Scavenger Hunt",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Over a 2-week period, document 5 different government services or regulations you encounter in daily life. This activity helps students recognize the pervasive presence of government even when it's invisible.",
+                estimatedTime: "2-3 hours total",
+                requirements: [
+                    "Document exactly 5 government services",
+                    "Take photos of each interaction",
+                    "Occur over minimum 2-week period",
+                    "Write 250-word reflection",
+                    "Identify government level for each"
+                ],
+                rubric: {
+                    "Documentation Requirements ✓": [
+                        "Exactly 5 different services documented",
+                        "Photo provided for each interaction",
+                        "Interactions occurred over minimum 2-week period",
+                        "Services represent diverse government functions"
+                    ],
+                    "Analysis for Each Service ✓": [
+                        "Correctly identifies which level of government is responsible",
+                        "Explains how the service is funded (if determinable)",
+                        "Describes impact on community",
+                        "Shows understanding of service's role in daily life"
+                    ],
+                    "Reflection Component (250 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses overall impact of government services",
+                        "Shows surprise/new awareness",
+                        "Makes connections to course concepts about federalism"
+                    ]
+                }
+            },
+            
+            clip1: {
+                name: "Interview Clip #1",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Create 2-3 minute video interview with peer/community member about government topics. This scaled-down interview allows for quick engagement.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Create 2-3 minute video",
+                    "Include 3 structured questions",
+                    "Feature on-camera introduction and conclusion",
+                    "Write 150-word analysis"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Video is 2-3 minutes in length",
+                        "Includes on-camera introduction by student",
+                        "Features interview with peer/community member",
+                        "Includes on-camera conclusion with student's analysis"
+                    ],
+                    "Interview Content ✓": [
+                        "Uses 3 structured questions about government topic",
+                        "Questions relate to course concepts",
+                        "Interviewee provides substantive responses",
+                        "Student demonstrates good interview skills"
+                    ],
+                    "Analysis Component ✓": [
+                        "Written analysis (150+ words) accompanies video",
+                        "Compares interviewee's views to course concepts",
+                        "Shows student's reflection on perspectives shared",
+                        "Demonstrates understanding of diverse viewpoints"
+                    ]
+                }
+            },
+            
+            clip2: {
+                name: "Interview Clip #2",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Second interview clip with different person. Same requirements as Clip #1.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Different interviewee than Clip #1",
+                    "Create 2-3 minute video",
+                    "Include 3 structured questions",
+                    "Write 150-word analysis"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Different person interviewed than Clip #1",
+                        "Video is 2-3 minutes in length",
+                        "Includes introduction and conclusion",
+                        "Clear audio and video quality"
+                    ],
+                    "Interview Content ✓": [
+                        "Uses 3 structured questions",
+                        "Questions relate to course concepts",
+                        "Substantive responses obtained",
+                        "Professional interview conduct"
+                    ],
+                    "Analysis Component ✓": [
+                        "Written analysis (150+ words)",
+                        "Compares perspectives from both interviews",
+                        "Shows reflection on different viewpoints",
+                        "Connects to course materials"
+                    ]
+                }
+            },
+            
+            clip3: {
+                name: "Interview Clip #3",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Third interview clip with different person. Same requirements as Clips #1 & #2.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Different interviewee than Clips #1 & #2",
+                    "Create 2-3 minute video",
+                    "Include 3 structured questions",
+                    "Write 150-word analysis comparing all three"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Different person than previous interviews",
+                        "Video is 2-3 minutes in length",
+                        "Professional presentation",
+                        "High-quality audio and video"
+                    ],
+                    "Interview Content ✓": [
+                        "Uses 3 structured questions",
+                        "Questions show progression/depth",
+                        "Meaningful responses captured",
+                        "Excellent interview skills demonstrated"
+                    ],
+                    "Analysis Component ✓": [
+                        "Written analysis (150+ words)",
+                        "Synthesizes insights from all three interviews",
+                        "Identifies patterns or contrasts",
+                        "Shows deep reflection on diverse perspectives"
+                    ]
+                }
+            },
+            
+            journal1: {
+                name: "News Connection Journal #1",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Connect current news article to course concepts and personal experience.",
+                estimatedTime: "1-1.5 hours",
+                requirements: [
+                    "Article from last 30 days",
+                    "Write 450 words total (3 sections)",
+                    "Include photo of local impact",
+                    "Link to original article"
+                ],
+                rubric: {
+                    "Article Requirements ✓": [
+                        "Article published within last 30 days",
+                        "Article relates clearly to course topics",
+                        "Link to original article provided",
+                        "Article from credible news source"
+                    ],
+                    "Written Components (450 words total) ✓": [
+                        "Article summary (150 words) - demonstrates understanding",
+                        "Course connections (150 words) - links to specific concepts",
+                        "Personal impact analysis (150 words) - explains relevance",
+                        "All sections meet word count requirements"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Photo or screenshot showing local impact",
+                        "Image is relevant and clearly connected",
+                        "Caption explains connection between image and article"
+                    ]
+                }
+            },
+            
+            journal2: {
+                name: "News Connection Journal #2",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Second news journal with different article. Same requirements as Journal #1.",
+                estimatedTime: "1-1.5 hours",
+                requirements: [
+                    "Different article than Journal #1",
+                    "Article from last 30 days",
+                    "Write 450 words total",
+                    "Include photo evidence"
+                ],
+                rubric: {
+                    "Article Requirements ✓": [
+                        "Different article than Journal #1",
+                        "Published within last 30 days",
+                        "Clear relevance to course topics",
+                        "From credible news source"
+                    ],
+                    "Written Components (450 words) ✓": [
+                        "Article summary (150 words)",
+                        "Course connections (150 words)",
+                        "Personal impact (150 words)",
+                        "Professional writing quality"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Relevant photo or screenshot",
+                        "Clear connection to article",
+                        "Appropriate caption included"
+                    ]
+                }
+            },
+            
+            journal3: {
+                name: "News Connection Journal #3",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Third news journal with different article. Same requirements as Journals #1 & #2.",
+                estimatedTime: "1-1.5 hours",
+                requirements: [
+                    "Different article than Journals #1 & #2",
+                    "Article from last 30 days",
+                    "Write 450 words total",
+                    "Include photo evidence"
+                ],
+                rubric: {
+                    "Article Requirements ✓": [
+                        "Different from previous journals",
+                        "Published within last 30 days",
+                        "Course connection apparent",
+                        "Credible source used"
+                    ],
+                    "Written Components (450 words) ✓": [
+                        "Summary shows understanding",
+                        "Course concepts properly connected",
+                        "Personal impact thoughtfully analyzed",
+                        "Excellent writing demonstrated"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Strong photo choice",
+                        "Direct relevance shown",
+                        "Professional presentation"
+                    ]
+                }
+            },
+            
+            detective: {
+                name: "Regulation Detective",
+                category: "Medium Effort",
+                defaultPoints: 12,
+                description: "Trace how government regulations affect a local business by documenting all required compliance and licensing.",
+                estimatedTime: "2.5-3 hours",
+                requirements: [
+                    "Choose a local restaurant, salon, daycare, or shop",
+                    "Interview owner about licenses, permits, inspections",
+                    "Photograph visible compliance (permits, grades, etc.)",
+                    "Create flowchart of all government touchpoints",
+                    "Write 400-word analysis on regulation vs. free enterprise"
+                ],
+                rubric: {
+                    "Business Selection and Access ✓": [
+                        "Appropriate local business chosen",
+                        "Owner/manager interview conducted",
+                        "Permission obtained for documentation",
+                        "Professional approach maintained"
+                    ],
+                    "Regulatory Documentation ✓": [
+                        "All required licenses identified",
+                        "Permit costs documented",
+                        "Inspection schedules noted",
+                        "Compliance costs estimated",
+                        "Multiple government levels identified"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Photos of posted permits/licenses",
+                        "Health grades or inspection certificates shown",
+                        "Compliance notices documented",
+                        "Clear, readable images"
+                    ],
+                    "Flowchart Creation ✓": [
+                        "Professional flowchart created",
+                        "All government touchpoints included",
+                        "Federal, state, local levels distinguished",
+                        "Timeline of compliance shown",
+                        "Easy to understand format"
+                    ],
+                    "Analysis (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Balance of regulation vs. free enterprise discussed",
+                        "Owner's perspective included",
+                        "Consumer protection considered",
+                        "Course concepts applied",
+                        "Thoughtful evaluation of tradeoffs"
+                    ]
+                }
+            },
+            
+            democracy: {
+                name: "Democracy in Action Video Series",
+                category: "Medium Effort",
+                defaultPoints: 12,
+                description: "Create 3-4 short social media videos teaching peers about democratic participation.",
+                estimatedTime: "2-3 hours total",
+                requirements: [
+                    "Create 3-4 videos (30-45 seconds each)",
+                    "Topics: voter registration, finding polling place, ballot info, contacting reps",
+                    "Platform-appropriate format (TikTok/Instagram style)",
+                    "Local information featured",
+                    "Track engagement metrics"
+                ],
+                rubric: {
+                    "Video Production ✓": [
+                        "3-4 videos created",
+                        "Each 30-45 seconds long",
+                        "Clear audio and visuals",
+                        "Platform-appropriate style",
+                        "Engaging presentation"
+                    ],
+                    "Content Requirements ✓": [
+                        "How to register to vote locally",
+                        "Finding polling place demonstrated",
+                        "Local ballot information explained",
+                        "Contacting representatives shown",
+                        "Accurate information provided"
+                    ],
+                    "Local Relevance ✓": [
+                        "Local registration deadlines included",
+                        "County clerk info provided",
+                        "Local election dates mentioned",
+                        "District representatives identified",
+                        "Community-specific details featured"
+                    ],
+                    "Engagement and Impact ✓": [
+                        "Videos actually posted (or ready to post)",
+                        "Engagement metrics tracked if posted",
+                        "Peer feedback gathered",
+                        "Shareable format created",
+                        "Call to action included"
+                    ]
+                }
+            },
+            
+            failure: {
+                name: "Government Failure Investigation",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Research a local government project that failed or went over budget to understand accountability and oversight.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Find news articles about failed/over-budget project",
+                    "Attempt FOIA request for documents",
+                    "Interview affected citizens",
+                    "Write 'lessons learned' report",
+                    "Connect to accountability concepts"
+                ],
+                rubric: {
+                    "Project Research ✓": [
+                        "Specific failed project identified",
+                        "Multiple news sources consulted",
+                        "Timeline of failure documented",
+                        "Budget overruns calculated",
+                        "Key players identified"
+                    ],
+                    "FOIA/Document Request ✓": [
+                        "FOIA request attempted (even if denied)",
+                        "Process documented",
+                        "Public documents found",
+                        "Meeting minutes reviewed if available",
+                        "Budget documents analyzed"
+                    ],
+                    "Citizen Impact ✓": [
+                        "2+ affected citizens interviewed",
+                        "Impact on community documented",
+                        "Tax implications discussed",
+                        "Alternative solutions explored",
+                        "Public sentiment captured"
+                    ],
+                    "Lessons Learned Report ✓": [
+                        "Professional report format",
+                        "Clear failure points identified",
+                        "Accountability gaps highlighted",
+                        "Recommendations provided",
+                        "Similar failures researched"
+                    ],
+                    "Course Connections ✓": [
+                        "Connects to accountability concepts",
+                        "Oversight mechanisms analyzed",
+                        "Transparency issues discussed",
+                        "Democratic checks evaluated",
+                        "Reform suggestions based on course material"
+                    ]
+                }
+            },
+            
+            reflect1: {
+                name: "Personal Impact Reflection #1",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Identify specific ways weekly topics directly affect your life.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Write 150-word reflection",
+                    "Include photo evidence",
+                    "Identify specific government policy/agency",
+                    "Connect to weekly topic"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Meets word count requirement",
+                        "Identifies specific government policy or agency",
+                        "Explains concrete impact on student's life",
+                        "Evaluates whether impact is positive, negative, or mixed",
+                        "Shows clear connection to weekly course topic"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Photo represents the government impact described",
+                        "Image is original (taken by student)",
+                        "Clear connection between photo and reflection"
+                    ],
+                    "Course Connection ✓": [
+                        "References specific course concepts or readings",
+                        "Goes beyond surface-level observation"
+                    ]
+                }
+            },
+            
+            reflect2: {
+                name: "Personal Impact Reflection #2",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Second reflection on different government impact.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Different topic than Reflection #1",
+                    "Write 150-word reflection",
+                    "Include photo evidence",
+                    "Connect to course"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Topic is different from Reflection #1",
+                        "Meets word count requirement",
+                        "Specific government impact identified",
+                        "Personal relevance explained",
+                        "Analysis shows growth from earlier reflection"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Appropriate photo choice",
+                        "Original work",
+                        "Clear relevance to topic"
+                    ],
+                    "Course Connection ✓": [
+                        "Stronger connections than Reflection #1",
+                        "Multiple concepts referenced"
+                    ]
+                }
+            },
+            
+            reflect3: {
+                name: "Personal Impact Reflection #3",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Third reflection on different government impact.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Different topic than previous reflections",
+                    "Write 150 words",
+                    "Include photo",
+                    "Show growth in understanding"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Unique topic from previous reflections",
+                        "150 word requirement met",
+                        "Specific examples provided",
+                        "Thoughtful analysis included",
+                        "Shows progression in thinking"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Strong photo choice",
+                        "Clear relevance to topic",
+                        "Original work"
+                    ],
+                    "Course Connection ✓": [
+                        "Multiple course concepts referenced",
+                        "Synthesis of ideas shown"
+                    ]
+                }
+            },
+            
+            reflect4: {
+                name: "Personal Impact Reflection #4",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Fourth reflection showing deeper understanding.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "New topic",
+                    "150 words",
+                    "Photo evidence",
+                    "Advanced analysis"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Fresh perspective on new topic",
+                        "Word count met",
+                        "Nuanced understanding demonstrated",
+                        "Critical thinking evident",
+                        "Sophisticated analysis"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Compelling image choice",
+                        "Creative connection shown",
+                        "High quality photo"
+                    ],
+                    "Course Connection ✓": [
+                        "Complex connections made",
+                        "Original insights provided"
+                    ]
+                }
+            },
+            
+            reflect5: {
+                name: "Personal Impact Reflection #5",
+                category: "Quick Engagement",
+                defaultPoints: 5,
+                description: "Final reflection demonstrating mastery.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Culminating topic",
+                    "150 words",
+                    "Photo evidence",
+                    "Synthesis of learning"
+                ],
+                rubric: {
+                    "Written Reflection (150 words) ✓": [
+                        "Sophisticated analysis",
+                        "Word count met",
+                        "Multiple perspectives considered",
+                        "Excellent writing quality",
+                        "Mastery demonstrated"
+                    ],
+                    "Visual Evidence ✓": [
+                        "Outstanding photo choice",
+                        "Perfect relevance",
+                        "Professional quality"
+                    ],
+                    "Course Connection ✓": [
+                        "Masterful connections to course",
+                        "Deep synthesis of semester learning"
+                    ]
+                }
+            },
+            
+            video1: {
+                name: "60-Second Government Impact #1",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Create concise video explaining government's impact on your week.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "60-second video (55-65 seconds)",
+                    "Identify specific government impact",
+                    "Include visual evidence",
+                    "Connect to course concept"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Video is approximately 60 seconds (55-65 seconds acceptable)",
+                        "Student clearly explains one government impact from their week",
+                        "Audio is clear and understandable",
+                        "Visual evidence included in video"
+                    ],
+                    "Content Quality ✓": [
+                        "Specific government impact identified (not vague)",
+                        "Connection to course concept clearly stated",
+                        "Shows understanding of government's role",
+                        "Demonstrates personal engagement with topic"
+                    ],
+                    "Presentation ✓": [
+                        "Format is engaging",
+                        "Student appears confident and knowledgeable",
+                        "Video flows logically",
+                        "Brief written explanation (2-3 sentences) provided"
+                    ]
+                }
+            },
+            
+            video2: {
+                name: "60-Second Government Impact #2",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Second 60-second video on different impact.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "Different topic than Video #1",
+                    "60-second video",
+                    "Visual evidence",
+                    "Course connection"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Different topic from Video #1",
+                        "60 seconds in length",
+                        "Clear audio and video",
+                        "Visual support included"
+                    ],
+                    "Content Quality ✓": [
+                        "New government impact shown",
+                        "Strong course connection",
+                        "Good understanding demonstrated",
+                        "Authentic engagement shown"
+                    ],
+                    "Presentation ✓": [
+                        "Improved delivery from Video #1",
+                        "Creative approach",
+                        "Professional presentation",
+                        "Written summary provided"
+                    ]
+                }
+            },
+            
+            video3: {
+                name: "60-Second Government Impact #3",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Third video with unique content.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "New topic",
+                    "60 seconds",
+                    "Strong visuals",
+                    "Clear connections"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Unique content from previous videos",
+                        "Proper length maintained",
+                        "Excellent production quality",
+                        "Compelling visuals"
+                    ],
+                    "Content Quality ✓": [
+                        "Different government impact featured",
+                        "Multiple course connections",
+                        "Deep understanding shown",
+                        "Personal relevance clear"
+                    ],
+                    "Presentation ✓": [
+                        "Professional presentation",
+                        "Engaging delivery",
+                        "Creative format",
+                        "Summary demonstrates insight"
+                    ]
+                }
+            },
+            
+            video4: {
+                name: "60-Second Government Impact #4",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Final video demonstrating mastery.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "Culminating topic",
+                    "60 seconds",
+                    "Professional quality",
+                    "Synthesis shown"
+                ],
+                rubric: {
+                    "Video Requirements ✓": [
+                        "Original approach to topic",
+                        "Perfect timing (60 seconds)",
+                        "Outstanding production quality",
+                        "Exceptional visuals"
+                    ],
+                    "Content Quality ✓": [
+                        "Sophisticated government impact analysis",
+                        "Multiple course concepts integrated",
+                        "Mastery demonstrated",
+                        "Strong personal connection"
+                    ],
+                    "Presentation ✓": [
+                        "Outstanding quality",
+                        "Highly engaging",
+                        "Creative and original",
+                        "Written component shows deep understanding"
+                    ]
+                }
+            },
+            
+            // === SAFETY-FOCUSED ASSIGNMENTS (Ballard et al., 2016) ===
+            // Added: 10 assignments addressing the safety theme that produced the
+            // strongest civic engagement effects in Ballard's research. The category
+            // of action matters: safety-focused civic projects yielded the largest
+            // gains in civic commitment, self-efficacy, and action civics knowledge.
+            
+            safetyEmergencyAudit: {
+                name: "Campus Emergency Preparedness Audit",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Complete the college's emergency notification sign-up (TCC Alert), then physically locate and photograph three emergency resources on your campus (AED locations, emergency call boxes, evacuation maps, tornado shelter areas). Reflect on whether the campus adequately communicates safety resources to students. Builds awareness of how institutions protect citizens and meets students where they spend their week.",
+                estimatedTime: "30-45 minutes",
+                requirements: [
+                    "Sign up for TCC Alert (or equivalent campus emergency notification)",
+                    "Photograph three different emergency resources on campus",
+                    "Provide caption identifying the location of each",
+                    "Write a 150-word reflection on campus safety communication",
+                ],
+                rubric: {
+                    "Documentation ✓": [
+                        "Screenshot of TCC Alert enrollment confirmation provided",
+                        "Three photos of distinct campus emergency resources",
+                        "Each photo captioned with specific building and location",
+                        "Photos are original (taken by student)"
+                    ],
+                    "Reflection (150 words) ✓": [
+                        "Meets word count requirement",
+                        "Evaluates whether campus communicates safety resources adequately",
+                        "Identifies at least one specific strength or gap",
+                        "Connects to course concepts about institutional responsibility"
+                    ]
+                }
+            },
+            
+            safetyKnowRights: {
+                name: "Know Your Rights: Police Encounter Preparation",
+                category: "Quick Engagement",
+                defaultPoints: 8,
+                description: "Review your legal rights during three types of police encounters (traffic stop, pedestrian stop, home visit) using resources from the ACLU or similar organizations. Create a wallet card or phone note summarizing key phrases and rights. Reflect on what you learned and how this knowledge affects your sense of safety. Builds constitutional literacy through personally relevant application.",
+                estimatedTime: "45-60 minutes",
+                requirements: [
+                    "Research rights during traffic stop, pedestrian stop, and home visit",
+                    "Use credible sources (ACLU, state bar association, or similar)",
+                    "Create a wallet card or phone note with key rights and phrases",
+                    "Write a 200-word reflection",
+                    "List sources consulted",
+                ],
+                rubric: {
+                    "Research and Sources ✓": [
+                        "Three encounter types covered (traffic, pedestrian, home)",
+                        "At least 2 credible sources cited",
+                        "Sources are authoritative (ACLU, bar association, government, etc.)",
+                        "Information is accurate and current"
+                    ],
+                    "Wallet Card or Phone Note ✓": [
+                        "Photo or screenshot of finished card or note provided",
+                        "Key constitutional rights summarized clearly",
+                        "Useful phrases included for each encounter type",
+                        "Format is practical and accessible"
+                    ],
+                    "Reflection (200 words) ✓": [
+                        "Meets word count requirement",
+                        "Connects to specific constitutional amendments (4th, 5th, 6th)",
+                        "Reflects on how knowledge affects sense of safety",
+                        "Goes beyond surface-level summary"
+                    ]
+                }
+            },
+            
+            safetyTenant: {
+                name: "Tenant Safety Rights Investigation",
+                category: "Medium Effort",
+                defaultPoints: 10,
+                description: "Research Texas tenant rights related to safety (required locks, smoke detectors, security devices, landlord entry notice, right to repair and deduct). Identify the government agency that handles tenant complaints in Tarrant County and document the process for reporting violations. Builds practical legal literacy directly relevant to community college students who are renters.",
+                estimatedTime: "1-2 hours",
+                requirements: [
+                    "Research at least three Texas tenant safety rights",
+                    "Provide legal citations (statute or code section)",
+                    "Identify relevant complaint agency in Tarrant County",
+                    "Document step-by-step reporting process",
+                    "Submit one-page summary",
+                ],
+                rubric: {
+                    "Research Quality ✓": [
+                        "Three or more tenant safety rights identified",
+                        "Each right has a legal citation (Texas Property Code or similar)",
+                        "Sources are credible and current",
+                        "Information is accurate"
+                    ],
+                    "Agency Identification ✓": [
+                        "Correct Tarrant County or local complaint agency identified",
+                        "Contact information provided (phone, address, website)",
+                        "Step-by-step reporting process documented",
+                        "Process is clear enough to actually follow"
+                    ],
+                    "Course Connection ✓": [
+                        "Connects to course concepts about regulation or civil law",
+                        "Shows understanding of how laws protect residents",
+                        "Identifies the government level responsible (state or local)"
+                    ]
+                }
+            },
+            
+            safetyWorkplace: {
+                name: "Workplace Safety Deep Dive",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Research OSHA's role in protecting workers, then investigate safety requirements specific to your current or intended occupation. Identify how to file a workplace safety complaint and what protections exist against retaliation. Interview one working adult about a workplace safety concern they have experienced. Connects federal regulatory action to lived workplace experience.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Research OSHA's role and authority",
+                    "Identify safety requirements for your occupation (current or intended)",
+                    "Document the complaint process and whistleblower protections",
+                    "Interview one working adult about a workplace safety concern",
+                    "Write a 400-word report",
+                ],
+                rubric: {
+                    "OSHA Research ✓": [
+                        "OSHA's role and federal authority clearly explained",
+                        "Occupation-specific safety requirements identified",
+                        "Complaint filing process documented accurately",
+                        "Whistleblower or anti-retaliation protections explained"
+                    ],
+                    "Worker Interview ✓": [
+                        "Interview with a working adult conducted",
+                        "Date and interviewee role documented (name not required)",
+                        "Concrete safety concern discussed",
+                        "Interviewee perspective integrated into report"
+                    ],
+                    "Report (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Connects findings to federal regulatory authority",
+                        "Discusses how worker advocacy historically shaped safety law",
+                        "Shows analytical depth beyond summary"
+                    ]
+                }
+            },
+            
+            safetyTraffic: {
+                name: "Community Traffic Safety Analysis",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Identify a dangerous intersection, crosswalk, or road segment in your daily commute or neighborhood. Document the hazard with photos or video. Research who is responsible for traffic safety improvements (city, county, TxDOT) and find the formal process for requesting safety improvements. Draft a formal request letter to the appropriate agency. Activates the full action civics cycle: identify, research, act.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Identify a specific dangerous location in your daily life",
+                    "Document the hazard with photos or video",
+                    "Research the responsible government agency",
+                    "Draft a ready-to-send formal request letter",
+                    "Write a 200-word reflection",
+                ],
+                rubric: {
+                    "Hazard Documentation ✓": [
+                        "Specific location identified with address or coordinates",
+                        "Photos or video clearly show the hazard",
+                        "Brief explanation of why the location is dangerous",
+                        "Personal connection to commute or neighborhood demonstrated"
+                    ],
+                    "Agency Research ✓": [
+                        "Correct agency identified (city, county, or TxDOT)",
+                        "Contact information provided",
+                        "Formal request process documented",
+                        "Multi-jurisdictional considerations noted where relevant"
+                    ],
+                    "Formal Request Letter ✓": [
+                        "Letter is professional and ready to send",
+                        "Includes specific location and hazard description",
+                        "Makes a clear ask",
+                        "References supporting evidence"
+                    ],
+                    "Reflection (200 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses citizen petition processes",
+                        "Connects to local government responsibilities",
+                        "Shows understanding of how infrastructure decisions are made"
+                    ]
+                }
+            },
+            
+            safetyFinancial: {
+                name: "Financial Predator Mapping",
+                category: "Medium Effort",
+                defaultPoints: 15,
+                description: "Research predatory financial services targeting vulnerable populations (payday lenders, title loans, rent-to-own, for-profit colleges). Map locations of such businesses within 2 miles of your campus or home. Investigate what regulations exist (or do not) in Texas compared to one other state. Analyze whether current laws adequately protect consumers and what role government should play.",
+                estimatedTime: "2-3 hours",
+                requirements: [
+                    "Research at least 4 types of predatory financial services",
+                    "Map locations within 2 miles of campus or home",
+                    "Compare Texas regulations with one other state",
+                    "Write a 400-word analysis",
+                ],
+                rubric: {
+                    "Research and Mapping ✓": [
+                        "Four or more types of predatory services identified",
+                        "Map shows locations within 2-mile radius",
+                        "Map is annotated with business types",
+                        "Original screenshot or hand-drawn map (not stock image)"
+                    ],
+                    "Comparative Regulation ✓": [
+                        "Texas regulations on predatory lending documented",
+                        "One other state's regulations documented for comparison",
+                        "Specific legal differences identified",
+                        "Sources cited"
+                    ],
+                    "Analysis (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Evaluates current consumer protection landscape",
+                        "Identifies specific gaps in protection",
+                        "Takes a clear position on government's role",
+                        "Connects to state vs. federal regulation concepts"
+                    ]
+                }
+            },
+            
+            safetyFoodSecurity: {
+                name: "Food Security Resource Navigation",
+                category: "Higher Effort",
+                defaultPoints: 20,
+                description: "Investigate food assistance resources available to community college students (SNAP eligibility, campus food pantries, community resources). Determine eligibility requirements, application processes, and barriers students face. Visit one resource in person and document the experience. Reflect on how accessible these safety-net programs are for students.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Identify at least 5 food assistance options for TCC students",
+                    "Document eligibility, application process, location, and hours for each",
+                    "Visit one resource in person (food pantry, SNAP office, WIC clinic, etc.)",
+                    "Document the visit (photo, business card, or staff contact)",
+                    "Write a 400-word reflection",
+                ],
+                rubric: {
+                    "Resource Guide ✓": [
+                        "Five or more food assistance options listed",
+                        "Eligibility requirements documented for each",
+                        "Application process described for each",
+                        "Location and hours included",
+                        "Information is accurate and current"
+                    ],
+                    "In-Person Visit ✓": [
+                        "Visit to one resource completed",
+                        "Documentation provided (photo, card, or contact)",
+                        "Date and location recorded",
+                        "Respectful and professional approach demonstrated"
+                    ],
+                    "Reflection (400 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses accessibility and barriers",
+                        "Connects to federal nutrition program policy",
+                        "Reflects on the politics of public assistance",
+                        "Shows empathy and analytical depth"
+                    ]
+                }
+            },
+            
+            safetyCrisisTraining: {
+                name: "Crisis Resource Training",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Complete a training or orientation session with a local organization that addresses domestic violence, sexual assault, or crisis intervention (SafeHaven of Tarrant County, Rape Crisis Center, NAMI, Crisis Text Line, or similar). Learn about available resources and how to support someone in crisis. Combines safety-focused civic engagement with sustained relational engagement and structured service preparation.",
+                estimatedTime: "4-6 hours",
+                requirements: [
+                    "Complete a training or orientation with an approved organization",
+                    "Obtain documentation of completion (certificate, email, signed letter)",
+                    "Understand the public policy and funding context",
+                    "Write a 500-word reflection",
+                ],
+                rubric: {
+                    "Training Completion ✓": [
+                        "Documentation of training provided (certificate, email, or letter)",
+                        "Organization is legitimate and addresses crisis intervention",
+                        "Date of training documented",
+                        "Scope of training explained"
+                    ],
+                    "Policy Context ✓": [
+                        "Connects services to relevant federal law (VAWA, etc.)",
+                        "Discusses how federal funding flows to local services",
+                        "Identifies the role of nonprofits in public safety",
+                        "Mandatory reporting laws acknowledged where relevant"
+                    ],
+                    "Reflection (500 words) ✓": [
+                        "Meets word count requirement",
+                        "Describes specific knowledge gained",
+                        "Discusses how this knowledge could help others",
+                        "Shows empathy and ethical maturity",
+                        "Connects to course concepts about government-nonprofit relationships"
+                    ]
+                }
+            },
+            
+            safetyEmergencyMgmt: {
+                name: "Emergency Management Agency Visit",
+                category: "Higher Effort",
+                defaultPoints: 25,
+                description: "Arrange a visit to or interview with a representative from Tarrant County Emergency Management, Fort Worth Office of Emergency Management, or a local fire department's community outreach division. Prepare five questions about how they prepare for disasters, coordinate with other agencies, and communicate with the public. Builds direct understanding of intergovernmental coordination and emergency preparedness.",
+                estimatedTime: "3-4 hours",
+                requirements: [
+                    "Arrange visit or interview with emergency management agency",
+                    "Prepare 5 substantive questions",
+                    "Document the visit (photo, email, or signed confirmation)",
+                    "Summarize responses received",
+                    "Write a 500-word reflection",
+                ],
+                rubric: {
+                    "Arrangement and Documentation ✓": [
+                        "Visit or interview successfully arranged",
+                        "Documentation provided (photo, email exchange, or confirmation)",
+                        "Agency clearly identified",
+                        "Representative role identified"
+                    ],
+                    "Questions and Responses ✓": [
+                        "Five prepared questions submitted",
+                        "Questions are substantive and not boilerplate",
+                        "Responses summarized clearly",
+                        "Specific examples or details captured"
+                    ],
+                    "Reflection (500 words) ✓": [
+                        "Meets word count requirement",
+                        "Discusses intergovernmental coordination (federal, state, local)",
+                        "Addresses public communication during emergencies",
+                        "Identifies what surprised you",
+                        "Connects to FEMA and federalism concepts"
+                    ]
+                }
+            },
+            
+            safetyPolicyBrief: {
+                name: "Campus Safety Policy Brief",
+                category: "Higher Effort",
+                defaultPoints: 30,
+                description: "Obtain and analyze TCC's Clery Act crime statistics and campus safety policies. Compare TCC's safety resources and reporting with one other Texas community college. Attend a campus safety event or meet with TCC Police. Develop three evidence-based recommendations for improving student safety and produce a formal 2-3 page policy brief suitable for presentation to campus administration. The flagship safety assignment: full action civics cycle plus policy advocacy.",
+                estimatedTime: "5-7 hours",
+                requirements: [
+                    "Review TCC's Annual Security Report (Clery Act data)",
+                    "Compare with one other Texas community college",
+                    "Attend a campus safety event OR meet with TCC Police",
+                    "Develop three evidence-based recommendations",
+                    "Produce a 2-3 page policy brief",
+                    "Write a 200-word process reflection",
+                ],
+                rubric: {
+                    "Data Analysis ✓": [
+                        "TCC Annual Security Report reviewed",
+                        "Key crime statistics summarized accurately",
+                        "Patterns or concerns identified",
+                        "Comparison institution selected and justified"
+                    ],
+                    "Comparative Research ✓": [
+                        "Peer Texas community college identified",
+                        "Comparable Clery data obtained",
+                        "Specific differences in safety resources documented",
+                        "Analytical (not just descriptive) comparison"
+                    ],
+                    "Direct Engagement ✓": [
+                        "Attended campus safety event OR met with TCC Police",
+                        "Documentation provided (photo, email, sign-in sheet)",
+                        "Insights from engagement integrated into brief"
+                    ],
+                    "Policy Brief (2-3 pages) ✓": [
+                        "Executive summary included",
+                        "Analysis of TCC's current safety landscape",
+                        "Three specific, evidence-based recommendations",
+                        "Recommendations are actionable and realistic",
+                        "Professional formatting suitable for administration",
+                        "References Clery Act as federal mandate"
+                    ],
+                    "Process Reflection (200 words) ✓": [
+                        "Meets word count requirement",
+                        "Reflects on policy brief writing process",
+                        "Discusses challenges encountered",
+                        "Connects to student advocacy concepts"
+                    ]
+                }
+            }
+        };
+
+    /* ---------- STATE ---------- */
+    const STORAGE_KEY = 'cap_student_app_v1';
+    const TARGET_POINTS = 100;
+
+    let state = {
+        studentName: '',
+        completed: {},          // { assignmentKey: { points, dateISO, name } }
+        requirementsChecked: {}, // { assignmentKey: { reqIndex: bool } }
+        currentView: 'browse',
+        currentFilter: 'all',
+        searchQuery: '',
+        currentAssignmentKey: null,
+        submitFlow: {
+            step: 'choose', // choose | capture | review
+            type: null,     // photo | video | text | files
+            mediaFile: null,
+            mediaUrl: null,
+            text: '',
+            extraFiles: []  // [File...]
+        }
+    };
+
+    /* ---------- PERSISTENCE ---------- */
+    const PENDING_KEY = 'cap_pending_submit_v1';
+    const PENDING_MAX_AGE_MS = 30 * 60 * 1000; // 30 minutes — covers long video sessions
+
+    function loadState() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            state.studentName = parsed.studentName || '';
+            state.completed = parsed.completed || {};
+            state.requirementsChecked = parsed.requirementsChecked || {};
+        } catch (e) {
+            console.warn('Could not load saved state', e);
+        }
+    }
+
+    function saveState() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                studentName: state.studentName,
+                completed: state.completed,
+                requirementsChecked: state.requirementsChecked
+            }));
+        } catch (e) {
+            console.warn('Could not save state', e);
+        }
+    }
+
+    /* ---------- PENDING SUBMISSION RECOVERY ----------
+       Android Chrome may kill the browser tab when launching the camera intent,
+       causing a full page reload when the user returns. Without persistence the
+       captured file lands in nothing. We stamp the submission context into
+       localStorage so the app can reopen the right modal at the right step on
+       reload, and warn the user if their file was lost so they can re-record. */
+    function savePendingCapture() {
+        if (!state.currentAssignmentKey) return;
+        try {
+            localStorage.setItem(PENDING_KEY, JSON.stringify({
+                assignmentKey: state.currentAssignmentKey,
+                type: state.submitFlow.type || null,
+                text: state.submitFlow.text || '',
+                step: state.submitFlow.step || 'choose',
+                timestamp: Date.now()
+            }));
+        } catch (e) { /* quota or private mode — ignore */ }
+    }
+
+    function clearPendingCapture() {
+        try { localStorage.removeItem(PENDING_KEY); } catch (e) {}
+    }
+
+    function readPendingCapture() {
+        try {
+            const raw = localStorage.getItem(PENDING_KEY);
+            if (!raw) return null;
+            const p = JSON.parse(raw);
+            if (!p || !p.assignmentKey) return null;
+            if (Date.now() - (p.timestamp || 0) > PENDING_MAX_AGE_MS) {
+                clearPendingCapture();
+                return null;
+            }
+            if (!completeAssignmentDatabase[p.assignmentKey]) {
+                clearPendingCapture();
+                return null;
+            }
+            return p;
+        } catch (e) {
+            clearPendingCapture();
+            return null;
+        }
+    }
+
+    /* ---------- HELPERS ---------- */
+    function $(sel) { return document.querySelector(sel); }
+    function $$(sel) { return Array.from(document.querySelectorAll(sel)); }
+
+    function categoryClass(cat) {
+        if (cat === 'Higher Effort') return 'cat-higher';
+        if (cat === 'Medium Effort') return 'cat-medium';
+        if (cat === 'Quick Engagement') return 'cat-quick';
+        return 'cat-quick';
+    }
+
+    function isSafetyAssignment(key) {
+        return key.startsWith('safety');
+    }
+
+    /* Detect what kinds of media an assignment expects, so we can show students
+       the right preparation guidance on the detail screen. We scan the full
+       text of the assignment (name + description + requirements + rubric items)
+       since that's where the signal lives. */
+    function detectMediaTypes(a) {
+        const haystack = [
+            a.name || '',
+            a.description || '',
+            (a.requirements || []).join(' '),
+            Object.values(a.rubric || {}).flat().join(' ')
+        ].join(' ').toLowerCase();
+
+        const needsVideo = /\bvideo\b|\brecord(ing)?\b|\bfootage\b|\binterview\b/.test(haystack)
+                          && !/transcript only|notes only/.test(haystack);
+        const needsPhoto = /\bphoto(s|graph)?\b|\bimage(s|ry)?\b|\bscreenshot\b|\bpicture\b/.test(haystack);
+        return { needsVideo, needsPhoto };
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+
+    function fmtSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+    }
+
+    function fmtDate(iso) {
+        const d = new Date(iso);
+        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function showToast(msg, ms) {
+        const t = $('#toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(showToast._t);
+        showToast._t = setTimeout(() => t.classList.remove('show'), ms || 2400);
+    }
+
+    /* ---------- ASSIGNMENT GROUPING ---------- */
+    function groupedAssignments() {
+        const groups = {
+            'Higher Effort': [],
+            'Medium Effort': [],
+            'Quick Engagement': []
+        };
+        Object.entries(completeAssignmentDatabase).forEach(([key, a]) => {
+            const cat = a.category;
+            if (groups[cat]) groups[cat].push({ key, ...a });
+        });
+        return groups;
+    }
+
+    function filteredAssignments() {
+        const q = state.searchQuery.trim().toLowerCase();
+        const f = state.currentFilter;
+        const groups = groupedAssignments();
+        const result = {};
+
+        for (const [cat, list] of Object.entries(groups)) {
+            const filtered = list.filter(a => {
+                // Filter by category
+                if (f === 'higher' && cat !== 'Higher Effort') return false;
+                if (f === 'medium' && cat !== 'Medium Effort') return false;
+                if (f === 'quick' && cat !== 'Quick Engagement') return false;
+
+                // Filter by completion
+                if (f === 'completed' && !state.completed[a.key]) return false;
+                if (f === 'incomplete' && state.completed[a.key]) return false;
+
+                // Search
+                if (q) {
+                    const haystack = (a.name + ' ' + a.description + ' ' + a.category).toLowerCase();
+                    if (!haystack.includes(q)) return false;
+                }
+                return true;
+            });
+            if (filtered.length) result[cat] = filtered;
+        }
+        return result;
+    }
+
+    /* ---------- VIEW ROUTER ---------- */
+    function setView(view) {
+        state.currentView = view;
+        $$('.view').forEach(v => v.classList.remove('active'));
+        $('#view-' + view).classList.add('active');
+        $$('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+        $$('main')[0].scrollTop = 0;
+
+        if (view === 'track') renderTrack();
+        if (view === 'about') renderAbout();
+    }
+
+    /* ---------- BROWSE RENDER ---------- */
+    function renderBrowse() {
+        const groups = filteredAssignments();
+        const list = $('#assignmentList');
+        list.innerHTML = '';
+
+        if (Object.keys(groups).length === 0) {
+            list.innerHTML = '<div class="empty-state">No assignments match.<br>Try a different filter or search term.</div>';
+            return;
+        }
+
+        for (const [cat, items] of Object.entries(groups)) {
+            const section = document.createElement('div');
+            const label = document.createElement('div');
+            label.className = 'section-label';
+            label.textContent = cat;
+            section.appendChild(label);
+
+            const ul = document.createElement('div');
+            ul.className = 'assignment-list';
+
+            items.forEach(a => {
+                const card = document.createElement('div');
+                const completed = !!state.completed[a.key];
+                card.className = 'assignment-card' + (completed ? ' completed' : '');
+                card.dataset.key = a.key;
+                const safetyTag = isSafetyAssignment(a.key) ? ' · Safety theme' : '';
+                card.innerHTML = `
+                    <div class="card-cat ${categoryClass(cat)}${isSafetyAssignment(a.key) ? ' cat-safety' : ''}">
+                        <span class="dot"></span>
+                        ${escapeHtml(cat)}${safetyTag}
+                    </div>
+                    <div class="card-title">${escapeHtml(a.name)}</div>
+                    <div class="card-meta">${escapeHtml(a.estimatedTime || '')}</div>
+                    <div class="card-points">${a.defaultPoints}<span class="pts-label">pts</span></div>
+                    <div class="completed-stamp">Completed</div>
+                `;
+                card.addEventListener('click', () => openDetail(a.key));
+                ul.appendChild(card);
+            });
+            section.appendChild(ul);
+            list.appendChild(section);
+        }
+    }
+
+    /* ---------- DETAIL ---------- */
+    function openDetail(key) {
+        state.currentAssignmentKey = key;
+        const a = completeAssignmentDatabase[key];
+        if (!a) return;
+
+        $('#detailMini').textContent = a.category;
+
+        const checkedSet = state.requirementsChecked[key] || {};
+
+        const reqsHtml = (a.requirements || []).map((req, i) => {
+            const checked = checkedSet[i];
+            return `
+                <li class="req-item${checked ? ' checked' : ''}" data-req="${i}">
+                    <span class="req-checkbox"></span>
+                    <span class="req-text">${escapeHtml(req)}</span>
+                </li>`;
+        }).join('');
+
+        const rubricHtml = Object.entries(a.rubric || {}).map(([criteria, items]) => {
+            const itemsHtml = items.map(i => `<li class="rubric-criteria-item">${escapeHtml(i)}</li>`).join('');
+            return `
+                <div class="rubric-criteria">
+                    <div class="rubric-criteria-title">${escapeHtml(criteria)}</div>
+                    <ul class="rubric-criteria-list">${itemsHtml}</ul>
+                </div>`;
+        }).join('');
+
+        const isComplete = !!state.completed[key];
+
+        // Build the prepare-media banner if this assignment needs photo or video
+        const media = detectMediaTypes(a);
+        let prepBannerHtml = '';
+        if (media.needsVideo || media.needsPhoto) {
+            let titleText, mediaWord, mediaWordCap, captureVerb, captureVerbCap;
+            if (media.needsVideo && media.needsPhoto) {
+                titleText = 'Record videos and take photos before submitting';
+                mediaWord = 'video or photo';
+                mediaWordCap = 'Video or Photo';
+                captureVerb = 'record/take';
+                captureVerbCap = 'Record or take';
+            } else if (media.needsVideo) {
+                titleText = 'Record your video before submitting';
+                mediaWord = 'video';
+                mediaWordCap = 'Video';
+                captureVerb = 'record';
+                captureVerbCap = 'Record';
+            } else {
+                titleText = 'Take your photos before submitting';
+                mediaWord = 'photo';
+                mediaWordCap = 'Photo';
+                captureVerb = 'take';
+                captureVerbCap = 'Take';
+            }
+            prepBannerHtml = `
+                <div class="prep-banner">
+                    <div class="prep-banner-icon">${media.needsVideo ? '🎥' : '📸'}</div>
+                    <div class="prep-banner-body">
+                        <div class="prep-banner-title">${titleText}</div>
+                        <div class="prep-banner-text">
+                            This app does <strong>not</strong> record from inside the assignment. Use your phone's regular camera app first, then come back to attach what you captured.
+                            <ol>
+                                <li>${captureVerbCap} your ${mediaWord} using your phone's <strong>built-in Camera app</strong>.</li>
+                                <li>Return to this CAP app and tap <strong>Submit</strong> below.</li>
+                                <li>Choose <strong>Add a ${mediaWord.split(' ')[0]}</strong> &mdash; pick your file from the gallery.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        $('#detailBody').innerHTML = `
+            <div class="detail-hero">
+                <div class="detail-cat">${escapeHtml(a.category)}</div>
+                <h1 class="detail-title">${escapeHtml(a.name)}</h1>
+                <div class="detail-stats">
+                    <div class="stat"><strong>${a.defaultPoints}</strong><span>Points</span></div>
+                    <div class="stat"><strong style="font-size:14px; line-height:1.3;">${escapeHtml(a.estimatedTime || '—')}</strong><span>Est. Time</span></div>
+                    <div class="stat"><strong>${(a.requirements || []).length}</strong><span>Requirements</span></div>
+                </div>
+            </div>
+
+            ${prepBannerHtml}
+
+            <div class="detail-section">
+                <h3>About this assignment</h3>
+                <div class="detail-description">${escapeHtml(a.description || '')}</div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Requirements (tap to check off as you go)</h3>
+                <ul class="req-list" id="reqList">
+                    ${reqsHtml}
+                </ul>
+            </div>
+
+            <div class="detail-section">
+                <h3>Rubric — what your professor will evaluate</h3>
+                ${rubricHtml}
+            </div>
+        `;
+
+        // Wire up requirement checkbox toggling
+        $$('#reqList .req-item').forEach(li => {
+            li.addEventListener('click', () => {
+                const idx = li.dataset.req;
+                if (!state.requirementsChecked[key]) state.requirementsChecked[key] = {};
+                state.requirementsChecked[key][idx] = !state.requirementsChecked[key][idx];
+                li.classList.toggle('checked');
+                saveState();
+            });
+        });
+
+        // Update Mark Complete button
+        $('#markCompleteBtn').textContent = isComplete ? 'Mark Undone' : 'Mark Done';
+
+        $('#detailModal').classList.add('active');
+    }
+
+    function closeDetail() {
+        $('#detailModal').classList.remove('active');
+    }
+
+    function toggleComplete() {
+        const key = state.currentAssignmentKey;
+        if (!key) return;
+        const a = completeAssignmentDatabase[key];
+
+        if (state.completed[key]) {
+            delete state.completed[key];
+            showToast('Marked as not done');
+        } else {
+            state.completed[key] = {
+                points: a.defaultPoints,
+                dateISO: new Date().toISOString(),
+                name: a.name,
+                category: a.category
+            };
+            showToast(`Marked done — ${a.defaultPoints} points earned`);
+        }
+        saveState();
+        $('#markCompleteBtn').textContent = state.completed[key] ? 'Mark Undone' : 'Mark Done';
+        renderBrowse();
+    }
+
+    /* ---------- SUBMIT FLOW ---------- */
+    function openSubmit() {
+        const key = state.currentAssignmentKey;
+        if (!key) return;
+        const a = completeAssignmentDatabase[key];
+
+        // Reset submit flow
+        state.submitFlow = {
+            step: 'choose',
+            type: null,
+            mediaFile: null,
+            mediaUrl: null,
+            text: '',
+            extraFiles: []
+        };
+
+        $('#submitMini').textContent = a.name.length > 30 ? a.name.slice(0, 30) + '…' : a.name;
+        $('#submitModal').classList.add('active');
+        renderSubmitStep();
+    }
+
+    function closeSubmit() {
+        // Revoke any blob URL
+        if (state.submitFlow.mediaUrl) {
+            try { URL.revokeObjectURL(state.submitFlow.mediaUrl); } catch(e){}
+        }
+        $('#submitModal').classList.remove('active');
+        clearPendingCapture();
+    }
+
+    function renderSubmitStep() {
+        const flow = state.submitFlow;
+        const key = state.currentAssignmentKey;
+        const a = completeAssignmentDatabase[key];
+        const body = $('#submitBody');
+        const actions = $('#submitActions');
+
+        if (flow.step === 'choose') {
+            body.innerHTML = `
+                <div class="submit-intro" style="padding-top: 20px;">
+                    <h2>How are you submitting?</h2>
+                    <p>Pick the kind of work you're turning in. You can attach extra files at the next step.</p>
+                </div>
+                <div class="submit-type-grid">
+                    <button class="submit-type-card" data-type="photo">
+                        <span class="icon-wrap">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h2.5l1.5-2h6l1.5 2H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                        </span>
+                        <span class="type-text">
+                            <strong>Add a photo</strong>
+                            <span>Pick from your phone's photo gallery</span>
+                        </span>
+                    </button>
+                    <button class="submit-type-card" data-type="video">
+                        <span class="icon-wrap">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l5-3v10l-5-3M3 7a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                        </span>
+                        <span class="type-text">
+                            <strong>Add a video</strong>
+                            <span>Record with your camera app first, then pick it here</span>
+                        </span>
+                    </button>
+                    <button class="submit-type-card" data-type="text">
+                        <span class="icon-wrap">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12h6M9 16h6"/></svg>
+                        </span>
+                        <span class="type-text">
+                            <strong>Written response</strong>
+                            <span>Type a reflection or response</span>
+                        </span>
+                    </button>
+                    <button class="submit-type-card" data-type="files">
+                        <span class="icon-wrap">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l3 3L22 4M20.5 13v6a2 2 0 01-2 2H5.5a2 2 0 01-2-2V5a2 2 0 012-2h6"/></svg>
+                        </span>
+                        <span class="type-text">
+                            <strong>Other files</strong>
+                            <span>PDF, document, or image from your phone</span>
+                        </span>
+                    </button>
+                </div>
+            `;
+            actions.innerHTML = `<button class="btn btn-secondary" id="cancelSubmit">Cancel</button>`;
+
+            $$('.submit-type-card').forEach(b => {
+                b.addEventListener('click', () => {
+                    const t = b.dataset.type;
+                    flow.type = t;
+                    // Persist context BEFORE camera launch — Android may kill the tab
+                    savePendingCapture();
+                    if (t === 'photo') $('#filePhoto').click();
+                    else if (t === 'video') $('#fileVideo').click();
+                    else if (t === 'files') $('#fileGeneric').click();
+                    else if (t === 'text') {
+                        flow.step = 'capture';
+                        renderSubmitStep();
+                    }
+                });
+            });
+            $('#cancelSubmit').addEventListener('click', closeSubmit);
+        }
+        else if (flow.step === 'capture') {
+            const isMedia = flow.type === 'photo' || flow.type === 'video';
+            const previewHtml = isMedia && flow.mediaUrl
+                ? (flow.type === 'photo'
+                    ? `<img src="${flow.mediaUrl}" alt="Captured photo">`
+                    : `<video src="${flow.mediaUrl}" controls playsinline></video>`)
+                : '';
+
+            const previewInfo = isMedia && flow.mediaFile
+                ? `<div class="preview-info"><strong>${escapeHtml(flow.mediaFile.name)}</strong> · ${fmtSize(flow.mediaFile.size)}</div>`
+                : '';
+
+            const filesListHtml = flow.extraFiles.map((f, i) => `
+                <div class="attached-file">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span class="fname">${escapeHtml(f.name)}</span>
+                    <span class="fsize">${fmtSize(f.size)}</span>
+                    <button class="remove-btn" data-rm="${i}">×</button>
+                </div>
+            `).join('');
+
+            const textBlockHtml = flow.type === 'text' || flow.type === 'video' || flow.type === 'photo' || flow.type === 'files'
+                ? `
+                    <div style="margin-top: 24px;">
+                        <label style="font-family: var(--ui); font-size: 13px; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 6px;">
+                            ${flow.type === 'text' ? 'Your written response' : 'Reflection or notes (optional)'}
+                        </label>
+                        <textarea class="text-area" id="submitText" placeholder="${flow.type === 'text' ? 'Type your reflection here...' : 'Add any reflection or notes about your submission...'}"${flow.type === 'text' ? ' style="min-height: 320px;"' : ''}>${escapeHtml(flow.text)}</textarea>
+                        <div class="word-count" id="wordCount">0 words</div>
+                    </div>
+                `
+                : '';
+
+            // Replay buttons for picking a different photo / video
+            const retakeHtml = isMedia && flow.mediaUrl
+                ? `<button class="add-file-btn" id="retakeBtn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Pick a different ${flow.type}
+                </button>`
+                : '';
+
+            const addFilesHtml = flow.type !== 'files'
+                ? `<button class="add-file-btn" id="addFilesBtn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    Add ${flow.extraFiles.length ? 'another' : ''} file
+                </button>`
+                : '';
+
+            body.innerHTML = `
+                <div class="submit-intro" style="padding-top: 20px;">
+                    <h2>${flow.type === 'photo' ? 'Your photo' : flow.type === 'video' ? 'Your video' : flow.type === 'text' ? 'Write your response' : 'Your files'}</h2>
+                    <p>For: <em>${escapeHtml(a.name)}</em></p>
+                </div>
+
+                ${isMedia && previewHtml ? `<div class="preview-area">${previewHtml}${previewInfo}</div>` : ''}
+                ${retakeHtml}
+
+                ${textBlockHtml}
+
+                ${flow.extraFiles.length || flow.type === 'files' ? `
+                <div style="margin-top: 18px;">
+                    <label style="font-family: var(--ui); font-size: 13px; font-weight: 600; color: var(--ink-soft); display: block; margin-bottom: 8px;">
+                        ${flow.type === 'files' ? 'Selected files' : 'Attached files'}
+                    </label>
+                    <div class="attached-files">${filesListHtml}</div>
+                </div>` : ''}
+
+                ${addFilesHtml}
+            `;
+
+            actions.innerHTML = `
+                <button class="btn btn-secondary" id="captureBack">Back</button>
+                <button class="btn btn-primary" id="captureNext">Review →</button>
+            `;
+
+            // Wire up
+            $('#captureBack').addEventListener('click', () => {
+                flow.step = 'choose';
+                renderSubmitStep();
+            });
+
+            $('#captureNext').addEventListener('click', () => {
+                // Validate based on type
+                const textVal = $('#submitText') ? $('#submitText').value.trim() : '';
+                flow.text = textVal;
+
+                if (flow.type === 'text' && !textVal) {
+                    showToast('Please write a response first');
+                    return;
+                }
+                if ((flow.type === 'photo' || flow.type === 'video') && !flow.mediaFile) {
+                    showToast('Please pick ' + (flow.type === 'photo' ? 'a photo' : 'a video') + ' first');
+                    return;
+                }
+                if (flow.type === 'files' && flow.extraFiles.length === 0) {
+                    showToast('Please pick at least one file');
+                    return;
+                }
+                flow.step = 'review';
+                renderSubmitStep();
+            });
+
+            const ta = $('#submitText');
+            if (ta) {
+                const updateWords = () => {
+                    const words = ta.value.trim().split(/\s+/).filter(Boolean).length;
+                    $('#wordCount').innerHTML = `<strong>${words}</strong> word${words === 1 ? '' : 's'}`;
+                };
+                ta.addEventListener('input', () => {
+                    state.submitFlow.text = ta.value;
+                    updateWords();
+                    // Light throttle — save at most every 2 seconds while typing
+                    clearTimeout(ta._save);
+                    ta._save = setTimeout(savePendingCapture, 2000);
+                });
+                updateWords();
+            }
+
+            const retakeBtn = $('#retakeBtn');
+            if (retakeBtn) {
+                retakeBtn.addEventListener('click', () => {
+                    // Save current text before camera launch
+                    if ($('#submitText')) state.submitFlow.text = $('#submitText').value;
+                    savePendingCapture();
+                    if (flow.type === 'photo') $('#filePhoto').click();
+                    else if (flow.type === 'video') $('#fileVideo').click();
+                });
+            }
+
+            const addFilesBtn = $('#addFilesBtn');
+            if (addFilesBtn) {
+                addFilesBtn.addEventListener('click', () => {
+                    if ($('#submitText')) state.submitFlow.text = $('#submitText').value;
+                    savePendingCapture();
+                    $('#fileGeneric').click();
+                });
+            }
+
+            $$('.attached-file .remove-btn').forEach(b => {
+                b.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(b.dataset.rm, 10);
+                    flow.extraFiles.splice(idx, 1);
+                    renderSubmitStep();
+                });
+            });
+        }
+        else if (flow.step === 'review') {
+            const summaryParts = [];
+            if (flow.type === 'photo') summaryParts.push('1 photo');
+            if (flow.type === 'video') summaryParts.push('1 video');
+            if (flow.text) {
+                const w = flow.text.trim().split(/\s+/).filter(Boolean).length;
+                summaryParts.push(w + ' words written');
+            }
+            if (flow.extraFiles.length) {
+                summaryParts.push(flow.extraFiles.length + ' file' + (flow.extraFiles.length === 1 ? '' : 's') + ' attached');
+            }
+
+            const previewHtml = flow.mediaUrl
+                ? (flow.type === 'photo'
+                    ? `<div class="preview-area"><img src="${flow.mediaUrl}" alt=""></div>`
+                    : `<div class="preview-area"><video src="${flow.mediaUrl}" controls playsinline></video></div>`)
+                : '';
+
+            const filesListHtml = flow.extraFiles.length
+                ? `<div class="attached-files">${flow.extraFiles.map(f => `
+                    <div class="attached-file">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span class="fname">${escapeHtml(f.name)}</span>
+                        <span class="fsize">${fmtSize(f.size)}</span>
+                    </div>`).join('')}</div>`
+                : '';
+
+            body.innerHTML = `
+                <div class="submit-intro" style="padding-top: 20px;">
+                    <h2>Review your submission</h2>
+                    <p>For: <em>${escapeHtml(a.name)}</em></p>
+                </div>
+
+                <div class="review-summary">
+                    <h4>Ready to submit</h4>
+                    <p>${summaryParts.join(' · ') || 'Empty submission'}</p>
+                </div>
+
+                ${previewHtml}
+
+                ${flow.text ? `
+                    <label style="font-family: var(--ui); font-size: 12px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin: 14px 0 6px;">Your written response</label>
+                    <div class="review-text-block">${escapeHtml(flow.text)}</div>
+                ` : ''}
+
+                ${filesListHtml}
+
+                <div class="canvas-instructions">
+                    <strong>Two ways to send to Canvas — pick whichever is easier:</strong>
+                    <ol style="list-style: none; padding-left: 0; margin-top: 8px;">
+                        <li style="margin-bottom: 8px;"><strong style="color: var(--navy); display:inline; font-family: var(--display);">Open Canvas</strong> &mdash; launches Canvas Student (or canvas.tccd.edu). Find this assignment, tap Submit Assignment → Upload File, pick from your Photos. Your written reflection (if any) is copied to your clipboard so you can paste it into Canvas.</li>
+                        <li><strong style="color: var(--navy); display:inline; font-family: var(--display);">Share files</strong> &mdash; uses your phone's share sheet. If you see Canvas Student, pick it. Otherwise pick Save / Drive / Files, then open Canvas to upload.</li>
+                    </ol>
+                </div>
+
+                <p style="font-family: var(--display); font-style: italic; font-size: 13px; color: var(--ink-muted); text-align: center; margin-top: 14px;">
+                    Your work never leaves your phone via this app — it goes straight to Canvas through whichever path you pick.
+                </p>
+            `;
+
+            // Decide which actions to show. Pure-text submissions need the share sheet
+            // to deliver the .txt file; for file-bearing submissions, the direct Canvas
+            // path works because the files already live in the student's gallery.
+            const hasFiles = !!flow.mediaFile || (flow.extraFiles && flow.extraFiles.length > 0);
+            const hasText = !!(flow.text && flow.text.trim());
+
+            if (hasFiles) {
+                // Both paths offered
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" id="reviewBack">Back</button>
+                    <button class="btn btn-secondary" id="sendShare" style="flex: 1;">Share Files</button>
+                    <button class="btn btn-accent" id="openCanvasDirect" style="flex: 1.2;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        Open Canvas
+                    </button>
+                `;
+            } else if (hasText) {
+                // Text-only — share sheet is the only way to deliver the .txt file.
+                // We still offer Open Canvas as an option, but warn the user that the
+                // text needs to be pasted manually.
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" id="reviewBack">Back</button>
+                    <button class="btn btn-secondary" id="openCanvasDirect" style="flex: 1;">Open Canvas</button>
+                    <button class="btn btn-accent" id="sendShare" style="flex: 1.2;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 12l-4-4m0 0l-4 4m4-4v9"/></svg>
+                        Share .txt
+                    </button>
+                `;
+            } else {
+                // Nothing to send
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" id="reviewBack">Back</button>
+                    <button class="btn btn-secondary" disabled style="flex: 1; opacity: 0.5;">Nothing to send</button>
+                `;
+            }
+
+            $('#reviewBack').addEventListener('click', () => {
+                flow.step = 'capture';
+                renderSubmitStep();
+            });
+
+            const shareBtn = $('#sendShare');
+            if (shareBtn) shareBtn.addEventListener('click', () => doShare());
+
+            const directBtn = $('#openCanvasDirect');
+            if (directBtn) directBtn.addEventListener('click', () => doDirectCanvas());
+        }
+        else if (flow.step === 'sent') {
+            const method = flow.shareMethod; // 'share' | 'download' | 'direct'
+            const isCompleted = !!state.completed[key];
+            const hasFiles = !!flow.mediaFile || (flow.extraFiles && flow.extraFiles.length > 0);
+            const hasText = !!(flow.text && flow.text.trim());
+
+            // List of file names to remind them what to attach
+            const fileNames = [];
+            if (flow.mediaFile) fileNames.push(flow.mediaFile.name);
+            (flow.extraFiles || []).forEach(f => fileNames.push(f.name));
+            const fileListHtml = fileNames.length
+                ? `<div style="background: var(--paper-warm); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; margin: 12px 0;">
+                    <div style="font-family: var(--ui); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-muted); margin-bottom: 6px;">Files to upload in Canvas</div>
+                    ${fileNames.map(n => `<div style="font-size: 14px; color: var(--ink); padding: 3px 0; word-break: break-all;">📄 ${escapeHtml(n)}</div>`).join('')}
+                </div>`
+                : '';
+
+            // Headline + subtitle vary by path taken
+            let headline, subtitle, instructions;
+            if (method === 'direct') {
+                headline = 'Canvas should be opening';
+                subtitle = hasText && flow.textCopied
+                    ? 'Your reflection is on your clipboard — paste it into Canvas. Your files are still in your Photos.'
+                    : hasText
+                    ? 'Your files are still in your Photos. Note: clipboard copy didn\'t work — re-open the app to view your reflection.'
+                    : 'Your files are still in your Photos, ready to attach in Canvas.';
+                instructions = `
+                    <strong>Finish in Canvas</strong>
+                    <ol>
+                        <li>If Canvas didn't open, tap <em>Open Canvas</em> below.</li>
+                        <li>Find <em>${escapeHtml(a.name)}</em> in your course.</li>
+                        <li>Tap <em>Submit Assignment</em>.</li>
+                        ${hasFiles ? `<li>Tap <em>Upload File</em>, pick from your Photos${fileNames.length ? ' (' + escapeHtml(fileNames.slice(0,2).join(', ')) + (fileNames.length > 2 ? '…' : '') + ')' : ''}.</li>` : ''}
+                        ${hasText && flow.textCopied ? `<li>Long-press the text box and paste your reflection.</li>` : ''}
+                        <li>Tap <em>Submit Assignment</em> in Canvas to finalize.</li>
+                    </ol>
+                `;
+            } else {
+                // 'share' or 'download'
+                headline = 'Step 1 of 2 done';
+                subtitle = method === 'share'
+                    ? 'Your files are shared. Now attach them in Canvas to finish the submission.'
+                    : 'Your files are saved to your phone. Now attach them in Canvas to finish.';
+                const verb = method === 'share' ? 'shared' : 'saved';
+                instructions = `
+                    <strong>Step 2: Attach in Canvas</strong>
+                    <ol>
+                        <li>Tap <em>Open Canvas</em> below.</li>
+                        <li>Find <em>${escapeHtml(a.name)}</em> in your course.</li>
+                        <li>Tap <em>Submit Assignment</em>, then <em>Upload File</em>.</li>
+                        <li>Pick the file you just ${verb} (look for one named <code style="font-family: var(--body); background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 3px; font-size: 12px;">CAP_…</code>).</li>
+                    </ol>
+                `;
+            }
+
+            body.innerHTML = `
+                <div style="text-align: center; padding: 36px 16px 8px;">
+                    <div style="width: 72px; height: 72px; margin: 0 auto 16px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: bold;">✓</div>
+                    <h2 style="font-family: var(--display); font-size: 24px; font-weight: 700; line-height: 1.25; color: var(--ink); margin-bottom: 6px;">${headline}</h2>
+                    <p style="font-family: var(--body); font-size: 15px; color: var(--ink-muted); max-width: 340px; margin: 0 auto;">${subtitle}</p>
+                </div>
+
+                ${method === 'direct' && hasFiles ? fileListHtml : ''}
+
+                <div class="canvas-instructions" style="margin-top: 20px;">
+                    ${instructions}
+                </div>
+
+                <button class="btn btn-accent" id="openCanvasBig" style="width: 100%; margin-top: 20px; padding: 16px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    ${method === 'direct' ? 'Open Canvas (again)' : 'Open Canvas Student'}
+                </button>
+
+                ${hasText && method === 'direct' && flow.textCopied ? `
+                    <button class="btn btn-secondary" id="recopyTextBtn" style="width: 100%; margin-top: 8px;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        Copy reflection text again
+                    </button>
+                ` : ''}
+
+                <p style="font-family: var(--display); font-style: italic; font-size: 13px; color: var(--ink-muted); text-align: center; margin: 14px 0;">
+                    On Android, tapping above will offer to open the Canvas app if you have it installed.
+                </p>
+            `;
+
+            actions.innerHTML = `
+                <button class="btn btn-secondary" id="closeSentBtn">Close</button>
+                <button class="btn ${isCompleted ? 'btn-secondary' : 'btn-primary'}" id="markDoneSentBtn" ${isCompleted ? 'disabled style="opacity:0.6;"' : ''}>
+                    ${isCompleted ? '✓ Already marked done' : 'Mark this assignment done'}
+                </button>
+            `;
+
+            $('#openCanvasBig').addEventListener('click', () => {
+                window.open('https://canvas.tccd.edu', '_blank');
+            });
+
+            const recopyBtn = $('#recopyTextBtn');
+            if (recopyBtn) {
+                recopyBtn.addEventListener('click', async () => {
+                    try {
+                        await navigator.clipboard.writeText(flow.text);
+                        showToast('Reflection copied to clipboard', 2200);
+                    } catch (e) {
+                        showToast('Could not copy — please retry', 2200);
+                    }
+                });
+            }
+
+            $('#closeSentBtn').addEventListener('click', () => {
+                closeSubmit();
+                closeDetail();
+            });
+
+            $('#markDoneSentBtn').addEventListener('click', () => {
+                if (!state.completed[key]) {
+                    state.completed[key] = {
+                        points: a.defaultPoints,
+                        dateISO: new Date().toISOString(),
+                        name: a.name,
+                        category: a.category
+                    };
+                    saveState();
+                    showToast(`Marked done — ${a.defaultPoints} points earned`);
+                }
+                closeSubmit();
+                closeDetail();
+                renderBrowse();
+            });
+        }
+    }
+
+    /* ---------- SHARING via Web Share API ---------- */
+    async function doShare() {
+        const flow = state.submitFlow;
+        const key = state.currentAssignmentKey;
+        const a = completeAssignmentDatabase[key];
+        const studentName = state.studentName || 'CAP Student';
+        const today = new Date().toISOString().slice(0, 10);
+        const safeName = (a.name || 'submission').replace(/[^a-z0-9]+/gi, '_').slice(0, 40);
+        const studentSlug = (studentName || 'student').replace(/[^a-z0-9]+/gi, '_').slice(0, 20);
+        const baseFileName = `CAP_${studentSlug}_${safeName}_${today}`;
+
+        // Assemble files
+        const filesToShare = [];
+
+        // Media file (photo/video) — rename for clarity
+        if (flow.mediaFile) {
+            const ext = flow.mediaFile.name.includes('.') ? flow.mediaFile.name.split('.').pop() : (flow.type === 'photo' ? 'jpg' : 'mp4');
+            try {
+                const renamed = new File([flow.mediaFile], `${baseFileName}.${ext}`, { type: flow.mediaFile.type });
+                filesToShare.push(renamed);
+            } catch (e) {
+                filesToShare.push(flow.mediaFile);
+            }
+        }
+
+        // Text → produce a .txt file
+        if (flow.text) {
+            const meta = `Civic Action Project Submission
+=================================
+
+Student: ${studentName}
+Assignment: ${a.name}
+Category: ${a.category}
+Points: ${a.defaultPoints}
+Date: ${today}
+
+---
+
+${flow.text}
+`;
+            try {
+                const txtFile = new File([meta], `${baseFileName}.txt`, { type: 'text/plain' });
+                filesToShare.push(txtFile);
+            } catch (e) {
+                console.warn('File constructor failed', e);
+            }
+        }
+
+        // Extra files
+        flow.extraFiles.forEach((f) => filesToShare.push(f));
+
+        const titleText = `CAP: ${a.name}`;
+        const messageText = `${studentName} — ${a.name} (${a.defaultPoints} pts)`;
+
+        // Try Web Share API with files
+        let shared = false;
+        try {
+            if (filesToShare.length && navigator.canShare && navigator.canShare({ files: filesToShare })) {
+                await navigator.share({
+                    files: filesToShare,
+                    title: titleText,
+                    text: messageText
+                });
+                shared = true;
+            } else if (!filesToShare.length && navigator.share) {
+                await navigator.share({ title: titleText, text: messageText });
+                shared = true;
+            }
+        } catch (err) {
+            // User cancelled or share failed — fall through to download fallback
+            if (err && err.name === 'AbortError') {
+                showToast('Share cancelled');
+                return;
+            }
+            console.warn('Share failed', err);
+        }
+
+        if (!shared) {
+            // Fallback: download files individually
+            filesToShare.forEach((f) => {
+                const url = URL.createObjectURL(f);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = f.name;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(url), 4000);
+            });
+            state.submitFlow.shareMethod = 'download';
+        } else {
+            state.submitFlow.shareMethod = 'share';
+        }
+
+        // Move to the post-share "next steps" screen instead of an abrupt toast+confirm
+        clearPendingCapture(); // submission has happened
+        state.submitFlow.step = 'sent';
+        renderSubmitStep();
+    }
+
+    /* ---------- DIRECT CANVAS PATH (no share sheet) ----------
+       The student picks a file from their gallery, so the file already lives
+       on their phone — no need to push it through the share sheet. We just
+       need to (a) copy any written reflection to their clipboard so they can
+       paste it in Canvas, (b) open canvas.tccd.edu (which Android will
+       offer to handle with the Canvas Student app if installed), and (c)
+       walk them through what to do once they're inside Canvas. */
+    async function doDirectCanvas() {
+        const flow = state.submitFlow;
+        const key = state.currentAssignmentKey;
+        const a = completeAssignmentDatabase[key];
+
+        // If they wrote a reflection, copy it to the clipboard so they can
+        // paste straight into Canvas's text submission box.
+        let textCopied = false;
+        if (flow.text && flow.text.trim()) {
+            const studentName = state.studentName || 'CAP Student';
+            const today = new Date().toISOString().slice(0, 10);
+            const blob = `Civic Action Project — ${a.name}
+Student: ${studentName}
+Date: ${today}
+
+${flow.text}`;
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(blob);
+                    textCopied = true;
+                }
+            } catch (e) {
+                // Clipboard API may fail in some contexts (e.g., older browsers,
+                // permissions). Continue without clipboard copy — student can
+                // still re-open the app to copy text manually.
+                console.warn('Clipboard write failed', e);
+            }
+        }
+
+        flow.shareMethod = 'direct';
+        flow.textCopied = textCopied;
+
+        clearPendingCapture();
+        flow.step = 'sent';
+        renderSubmitStep();
+
+        // Open Canvas in a new tab. On Android, if Canvas Student is registered
+        // as a handler for canvas.tccd.edu app links, the user will be offered
+        // the choice to open in the app. Otherwise the browser opens.
+        setTimeout(() => {
+            window.open('https://canvas.tccd.edu', '_blank');
+        }, 200);
+    }
+
+    /* ---------- TRACK VIEW ---------- */
+    function renderTrack() {
+        let total = 0;
+        const catTotals = { 'Higher Effort': 0, 'Medium Effort': 0, 'Quick Engagement': 0 };
+        const catCounts = { 'Higher Effort': 0, 'Medium Effort': 0, 'Quick Engagement': 0 };
+
+        const completedEntries = Object.entries(state.completed);
+        completedEntries.forEach(([k, c]) => {
+            total += c.points || 0;
+            if (catTotals[c.category] !== undefined) {
+                catTotals[c.category] += c.points || 0;
+                catCounts[c.category]++;
+            }
+        });
+
+        $('#totalPoints').textContent = total;
+        const pct = Math.min(100, Math.round((total / TARGET_POINTS) * 100));
+        $('#progressBar').style.width = pct + '%';
+        $('#progressPercent').textContent = pct + '% toward 100 points';
+
+        // Category stats
+        $('#categoryStats').innerHTML = `
+            <div class="cat-stat higher">
+                <div class="cat-name">Higher<br>Effort</div>
+                <div class="cat-points">${catTotals['Higher Effort']}</div>
+                <div class="cat-pts-label">${catCounts['Higher Effort']} done</div>
+            </div>
+            <div class="cat-stat medium">
+                <div class="cat-name">Medium<br>Effort</div>
+                <div class="cat-points">${catTotals['Medium Effort']}</div>
+                <div class="cat-pts-label">${catCounts['Medium Effort']} done</div>
+            </div>
+            <div class="cat-stat quick">
+                <div class="cat-name">Quick<br>Engagement</div>
+                <div class="cat-points">${catTotals['Quick Engagement']}</div>
+                <div class="cat-pts-label">${catCounts['Quick Engagement']} done</div>
+            </div>
+        `;
+
+        // Two-categories-required check
+        const catsWithWork = Object.values(catCounts).filter(c => c > 0).length;
+        const banner = $('#requirementBanner');
+        if (catsWithWork >= 2) {
+            banner.innerHTML = `
+                <div class="requirement-banner met">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div>
+                        <strong>Multi-category requirement met</strong>
+                        You've completed work in ${catsWithWork} different effort tiers. Keep going.
+                    </div>
+                </div>`;
+        } else {
+            banner.innerHTML = `
+                <div class="requirement-banner unmet">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5 19h14a2 2 0 001.84-2.75L13.74 4a2 2 0 00-3.48 0L3.16 16.25A2 2 0 005 19z"/></svg>
+                    <div>
+                        <strong>Multi-category requirement</strong>
+                        You must earn points in at least 2 different effort tiers (Higher / Medium / Quick).
+                    </div>
+                </div>`;
+        }
+
+        // Completed list
+        const list = $('#completedList');
+        if (completedEntries.length === 0) {
+            list.innerHTML = `<div class="completed-empty">Nothing completed yet.<br>Browse the menu, do the work,<br>and your progress lives here.</div>`;
+            return;
+        }
+        // Sort newest first
+        completedEntries.sort((a, b) => new Date(b[1].dateISO) - new Date(a[1].dateISO));
+        list.innerHTML = completedEntries.map(([k, c]) => `
+            <div class="completed-row" data-key="${k}">
+                <div class="completed-mark">✓</div>
+                <div class="completed-info">
+                    <div class="ctitle">${escapeHtml(c.name)}</div>
+                    <div class="cdate">${escapeHtml(c.category)} · ${fmtDate(c.dateISO)}</div>
+                </div>
+                <div class="completed-pts">+${c.points}</div>
+                <button class="undo-btn" data-undo="${k}">Undo</button>
+            </div>
+        `).join('');
+
+        $$('[data-undo]').forEach(b => {
+            b.addEventListener('click', (e) => {
+                const k = b.dataset.undo;
+                if (confirm('Mark this as not done?')) {
+                    delete state.completed[k];
+                    saveState();
+                    renderTrack();
+                }
+            });
+        });
+
+        $$('#completedList .completed-info').forEach(el => {
+            el.addEventListener('click', () => {
+                const row = el.closest('.completed-row');
+                if (row && row.dataset.key) openDetail(row.dataset.key);
+            });
+        });
+    }
+
+    /* ---------- ABOUT ---------- */
+    function renderAbout() {
+        $('#studentNameInput').value = state.studentName || '';
+    }
+
+    /* ---------- iOS install hint ---------- */
+    function maybeShowIosHint() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.navigator.standalone === true;
+        const dismissed = localStorage.getItem('cap_ios_hint_dismissed') === '1';
+        if (isIOS && !isStandalone && !dismissed) {
+            setTimeout(() => $('#iosHint').classList.add('show'), 2000);
+        }
+    }
+
+    /* ---------- INITIALIZATION ---------- */
+    function init() {
+        loadState();
+
+        // Tab nav
+        $$('.tab-btn').forEach(b => {
+            b.addEventListener('click', () => setView(b.dataset.view));
+        });
+
+        // Search
+        $('#searchInput').addEventListener('input', (e) => {
+            state.searchQuery = e.target.value;
+            renderBrowse();
+        });
+
+        // Filters
+        $$('.filter-chip').forEach(c => {
+            c.addEventListener('click', () => {
+                $$('.filter-chip').forEach(x => x.classList.remove('active'));
+                c.classList.add('active');
+                state.currentFilter = c.dataset.filter;
+                renderBrowse();
+            });
+        });
+
+        // Detail modal
+        $('#detailBack').addEventListener('click', closeDetail);
+        $('#markCompleteBtn').addEventListener('click', toggleComplete);
+        $('#openSubmitBtn').addEventListener('click', openSubmit);
+
+        // Submit modal
+        $('#submitBack').addEventListener('click', () => {
+            if (state.submitFlow.step === 'choose') closeSubmit();
+            else if (state.submitFlow.step === 'capture') {
+                state.submitFlow.step = 'choose';
+                renderSubmitStep();
+            } else if (state.submitFlow.step === 'sent') {
+                // Submission already happened — back means close
+                closeSubmit();
+                closeDetail();
+            } else {
+                state.submitFlow.step = 'capture';
+                renderSubmitStep();
+            }
+        });
+
+        // File inputs
+        $('#filePhoto').addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0];
+            if (!f) return;
+            handleMediaCaptured(f, 'photo');
+            e.target.value = '';
+        });
+        $('#fileVideo').addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0];
+            if (!f) return;
+            handleMediaCaptured(f, 'video');
+            e.target.value = '';
+        });
+        $('#fileGeneric').addEventListener('change', (e) => {
+            const files = Array.from(e.target.files || []);
+            if (!files.length) return;
+            state.submitFlow.extraFiles.push(...files);
+            // If type was 'files' and step was 'choose', advance
+            if (state.submitFlow.step === 'choose') {
+                state.submitFlow.step = 'capture';
+            }
+            renderSubmitStep();
+            e.target.value = '';
+        });
+
+        // Name input
+        $('#studentNameInput').addEventListener('input', (e) => {
+            state.studentName = e.target.value;
+            saveState();
+        });
+
+        // Reset
+        $('#resetBtn').addEventListener('click', () => {
+            if (confirm('Erase all progress and your name? This cannot be undone.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                state.studentName = '';
+                state.completed = {};
+                state.requirementsChecked = {};
+                renderBrowse();
+                renderAbout();
+                showToast('All data cleared');
+            }
+        });
+
+        // iOS hint
+        $('#closeHint').addEventListener('click', () => {
+            $('#iosHint').classList.remove('show');
+            localStorage.setItem('cap_ios_hint_dismissed', '1');
+        });
+
+        renderBrowse();
+        maybeShowIosHint();
+        maybeResumeSubmission();
+
+        // Persist text state when the page is about to be hidden (Android may
+        // kill the tab when the camera intent takes over).
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                const ta = document.getElementById('submitText');
+                if (ta) state.submitFlow.text = ta.value;
+                if (state.currentAssignmentKey && $('#submitModal').classList.contains('active')) {
+                    savePendingCapture();
+                }
+            }
+        });
+    }
+
+    /* If the user was mid-submission when the page reloaded (typically because
+       Android killed the tab during a camera intent), restore the modal flow
+       so they don't silently land on the home screen with their work lost. */
+    function maybeResumeSubmission() {
+        const pending = readPendingCapture();
+        if (!pending) return;
+
+        const a = completeAssignmentDatabase[pending.assignmentKey];
+        if (!a) return;
+
+        // Restore context
+        state.currentAssignmentKey = pending.assignmentKey;
+
+        // Open detail (silently — animation is fine, it cues the user)
+        openDetail(pending.assignmentKey);
+
+        // Then open submit and seed the resumed type/text
+        setTimeout(() => {
+            openSubmit(); // this resets submitFlow
+            state.submitFlow.type = pending.type || null;
+            state.submitFlow.text = pending.text || '';
+            if (pending.type) {
+                state.submitFlow.step = 'capture';
+            }
+            renderSubmitStep();
+
+            // Try to recover the file if Chrome preserved it on the input
+            // (rare on Android after a tab kill, but harmless to check).
+            let recovered = false;
+            if (pending.type === 'video') {
+                const f = $('#fileVideo').files && $('#fileVideo').files[0];
+                if (f) { handleMediaCaptured(f, 'video'); recovered = true; }
+            } else if (pending.type === 'photo') {
+                const f = $('#filePhoto').files && $('#filePhoto').files[0];
+                if (f) { handleMediaCaptured(f, 'photo'); recovered = true; }
+            }
+
+            if (!recovered && (pending.type === 'photo' || pending.type === 'video')) {
+                const word = pending.type === 'photo' ? 'photo' : 'video';
+                const verb = pending.type === 'photo' ? 'take' : 'record';
+                showToast(`Returned to your submission. Tap Re-${verb} to capture your ${word} again.`, 6000);
+            } else if (!recovered) {
+                showToast('Resumed your submission', 3000);
+            }
+        }, 120);
+    }
+
+    function handleMediaCaptured(file, type) {
+        const flow = state.submitFlow;
+        // Revoke any old URL
+        if (flow.mediaUrl) {
+            try { URL.revokeObjectURL(flow.mediaUrl); } catch(e){}
+        }
+        flow.mediaFile = file;
+        flow.mediaUrl = URL.createObjectURL(file);
+        flow.type = type;
+        flow.step = 'capture';
+        renderSubmitStep();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    // Optional: register service worker for offline support if sw.js is deployed alongside.
+    // Fails silently in single-file deployments — that's fine.
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(() => { /* no SW deployed — ok */ });
+        });
+    }
+
+    
+
+    
+
+    </script>
+</body>
+</html>
