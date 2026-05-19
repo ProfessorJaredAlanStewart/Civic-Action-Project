@@ -437,6 +437,46 @@
         }
         
         /* Plan submission form */
+        .submit-callout {
+            background: linear-gradient(135deg, #00788a, #005f6e);
+            color: #ffffff;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,43,92,0.18);
+            overflow: hidden;
+        }
+        .submit-callout-stars {
+            text-align: center;
+            color: #dac792;
+            font-size: 0.9em;
+            letter-spacing: 0.35em;
+            line-height: 1;
+            padding: 9px 0;
+            user-select: none;
+        }
+        .submit-callout-body {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 4px 26px 6px;
+        }
+        .submit-callout-icon {
+            font-size: 2.2em;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .submit-callout-text {
+            font-size: 0.97em;
+            line-height: 1.5;
+        }
+        .submit-callout-text strong { color: #ffffff; }
+        .submit-callout-text em {
+            font-style: normal;
+            font-weight: 600;
+            background: rgba(255,255,255,0.18);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
         .plan-form-section {
             background: white;
             border-radius: 16px;
@@ -697,8 +737,22 @@
                 <li>Edit point values if your instructor uses different amounts</li>
                 <li>You must complete activities from at least 2 categories</li>
                 <li>Use suggested paths for quick planning ideas</li>
-                <li>Save your plan to return later</li>
+                <li><strong>Scroll to the bottom</strong> to answer a few planning questions and generate your <strong>"My CAP Plan"</strong> PDF</li>
             </ul>
+        </div>
+
+        <div class="submit-callout">
+            <div class="submit-callout-stars">★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★</div>
+            <div class="submit-callout-body">
+                <div class="submit-callout-icon">📄</div>
+                <div class="submit-callout-text">
+                    <strong>This planner produces an assignment you turn in.</strong>
+                    After you select your activities, scroll to the bottom of this page,
+                    answer the planning questions, and click <em>Generate My CAP Plan (PDF)</em>.
+                    Submit that PDF on Canvas when and where your instructor directs you.
+                </div>
+            </div>
+            <div class="submit-callout-stars">★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★</div>
         </div>
         
         <div class="main-content">
