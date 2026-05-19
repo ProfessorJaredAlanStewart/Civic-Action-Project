@@ -269,6 +269,89 @@
         }
         
         /* Action Buttons */
+        .canvas-export-panel {
+            background: #ffffff;
+            border: 2px solid #00788a;
+            border-radius: 14px;
+            padding: 24px 26px;
+            margin-top: 24px;
+            box-shadow: 0 4px 15px rgba(0,43,92,0.08);
+        }
+        .canvas-export-panel h3 {
+            color: #002b5c;
+            font-size: 1.25em;
+            margin-bottom: 8px;
+        }
+        .canvas-export-intro {
+            color: #4a5a64;
+            font-size: 0.92em;
+            line-height: 1.55;
+            margin-bottom: 16px;
+        }
+        .canvas-export-intro code {
+            background: #eef2f4;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .canvas-export-options {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            margin-bottom: 16px;
+        }
+        .export-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.93em;
+            color: #2b3a44;
+            cursor: pointer;
+        }
+        .export-toggle input { width: 17px; height: 17px; accent-color: #00788a; cursor: pointer; }
+        .canvas-export-field { margin-bottom: 16px; }
+        .canvas-export-field label {
+            display: block;
+            font-weight: 600;
+            color: #002b5c;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        .export-title-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #d4dde2;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95em;
+        }
+        .export-title-input:focus { outline: none; border-color: #00788a; }
+        .btn-canvas-export {
+            background: linear-gradient(135deg, #00788a, #005f6e);
+            color: #ffffff;
+            width: 100%;
+        }
+        .canvas-export-status {
+            margin-top: 12px;
+            font-size: 0.92em;
+            line-height: 1.5;
+            display: none;
+        }
+        .canvas-export-status.show { display: block; }
+        .canvas-export-status.ok {
+            background: #e8f5e9; border-left: 4px solid #2e7d32;
+            color: #1b5e20; padding: 10px 14px; border-radius: 6px;
+        }
+        .canvas-export-status.err {
+            background: #fbe9ee; border-left: 4px solid #98002e;
+            color: #6e0020; padding: 10px 14px; border-radius: 6px;
+        }
+        .canvas-export-note {
+            margin-top: 13px;
+            font-size: 0.84em;
+            color: #6b7a84;
+            line-height: 1.5;
+        }
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -995,6 +1078,7 @@
             max-width:720px; margin-left:auto; margin-right:auto; line-height:1.5;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 <div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
@@ -1060,6 +1144,43 @@
                         <span>🚀</span>
                         <span>Generate Custom Tracker</span>
                     </button>
+                </div>
+
+                <div class="canvas-export-panel">
+                    <h3>📦 Export a Canvas Import Package</h3>
+                    <p class="canvas-export-intro">
+                        Build your CAP above &mdash; select the activities you want and set their point
+                        values &mdash; then generate a Canvas Common Cartridge containing <strong>only the
+                        assignments you chose</strong>. Import the resulting <code>.imscc</code> file into
+                        any Canvas course (Settings &rarr; Import Course Content &rarr;
+                        <strong>Canvas Course Export Package</strong>) to create those
+                        assignments automatically, all inside one CAP module.
+                    </p>
+                    <div class="canvas-export-options">
+                        <label class="export-toggle">
+                            <input type="checkbox" id="exportIncludeCheckpoints">
+                            <span>Include the three CAP checkpoint assignments</span>
+                        </label>
+                        <label class="export-toggle">
+                            <input type="checkbox" id="exportIncludeSurveys">
+                            <span>Include the civic engagement pre-survey and post-survey</span>
+                        </label>
+                    </div>
+                    <div class="canvas-export-field">
+                        <label for="exportCourseTitle">Package title (shown in Canvas):</label>
+                        <input type="text" id="exportCourseTitle" class="export-title-input"
+                               value="Civic Action Project (CAP)" placeholder="Civic Action Project (CAP)">
+                    </div>
+                    <button class="action-btn btn-canvas-export" onclick="exportCanvasPackage()">
+                        <span>📦</span>
+                        <span>Export Canvas Package (.imscc)</span>
+                    </button>
+                    <div class="canvas-export-status" id="canvasExportStatus"></div>
+                    <p class="canvas-export-note">
+                        Assignments are created as Complete/Incomplete, each with its full rubric in the
+                        description. <strong>Test the import in a Canvas sandbox course before relying on
+                        it</strong> &mdash; Canvas import behavior can vary by institution.
+                    </p>
                 </div>
             </div>
         </div>
@@ -3915,6 +4036,396 @@
             }
             if (event.target === document.getElementById('dataModal')) {
                 closeDataModal();
+            }
+        }
+
+        // ====================================================================
+        // CANVAS COMMON CARTRIDGE (.imscc) EXPORT
+        // Generates a valid IMS Common Cartridge v1.1 in the browser from the
+        // assignments the instructor selected in the setup phase. Each becomes
+        // a Complete/Incomplete Canvas assignment with its full rubric in the
+        // description. Uses JSZip (loaded from CDN).
+        // ====================================================================
+
+        // Deterministic 32-char hex id (Canvas resource-identifier style).
+        function capHexId(seed) {
+            // Simple FNV-1a hash spun into 32 hex chars — stable per seed.
+            let h1 = 0x811c9dc5, h2 = 0x811c9dc5 ^ 0x5bd1e995;
+            for (let i = 0; i < seed.length; i++) {
+                const c = seed.charCodeAt(i);
+                h1 = (h1 ^ c) >>> 0; h1 = (h1 * 0x01000193) >>> 0;
+                h2 = (h2 ^ c) >>> 0; h2 = (h2 * 0x01000193 + i) >>> 0;
+            }
+            const hex = n => ('00000000' + (n >>> 0).toString(16)).slice(-8);
+            // 32 hex chars: weave two 16-char halves
+            return 'g' + (hex(h1) + hex(h2 ^ 0x9e3779b9) +
+                          hex(h1 ^ 0x85ebca6b) + hex(h2)).slice(0, 31);
+        }
+
+        function capXmlEscape(t) {
+            return String(t == null ? '' : t)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function capSlug(name) {
+            return name.toLowerCase()
+                .replace(/#/g, 'number-')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'assignment';
+        }
+
+        // Build the assignment_settings.xml (Canvas cccv1p0 schema, pass_fail).
+        function capAssignmentSettingsXml(resId, title) {
+            return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<assignment identifier="' + resId + '" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">\n' +
+'  <title>' + capXmlEscape(title) + '</title>\n' +
+'  <due_at/>\n  <lock_at/>\n  <unlock_at/>\n' +
+'  <module_locked>false</module_locked>\n' +
+'  <assignment_group_identifierref>cap_group_main</assignment_group_identifierref>\n' +
+'  <workflow_state>published</workflow_state>\n' +
+'  <assignment_overrides>\n  </assignment_overrides>\n' +
+'  <allowed_extensions></allowed_extensions>\n' +
+'  <has_group_category>false</has_group_category>\n' +
+'  <points_possible>0.0</points_possible>\n' +
+'  <grading_type>pass_fail</grading_type>\n' +
+'  <all_day>false</all_day>\n' +
+'  <submission_types>online_text_entry,online_url,media_recording,online_upload</submission_types>\n' +
+'  <turnitin_enabled>false</turnitin_enabled>\n' +
+'  <vericite_enabled>false</vericite_enabled>\n' +
+'  <peer_review_count>0</peer_review_count>\n' +
+'  <peer_reviews>false</peer_reviews>\n' +
+'  <automatic_peer_reviews>false</automatic_peer_reviews>\n' +
+'  <anonymous_peer_reviews>false</anonymous_peer_reviews>\n' +
+'  <grade_group_students_individually>false</grade_group_students_individually>\n' +
+'  <freeze_on_copy>false</freeze_on_copy>\n' +
+'  <omit_from_final_grade>false</omit_from_final_grade>\n' +
+'  <hide_in_gradebook>false</hide_in_gradebook>\n' +
+'  <intra_group_peer_reviews>false</intra_group_peer_reviews>\n' +
+'  <only_visible_to_overrides>false</only_visible_to_overrides>\n' +
+'  <post_to_sis>false</post_to_sis>\n' +
+'  <moderated_grading>false</moderated_grading>\n' +
+'  <grader_count>0</grader_count>\n' +
+'  <grader_comments_visible_to_graders>true</grader_comments_visible_to_graders>\n' +
+'  <anonymous_grading>false</anonymous_grading>\n' +
+'  <graders_anonymous_to_graders>false</graders_anonymous_to_graders>\n' +
+'  <grader_names_visible_to_final_grader>true</grader_names_visible_to_final_grader>\n' +
+'  <anonymous_instructor_annotations>false</anonymous_instructor_annotations>\n' +
+'  <allowed_attempts>2</allowed_attempts>\n' +
+'  <post_policy>\n    <post_manually>false</post_manually>\n  </post_policy>\n' +
+'</assignment>\n';
+        }
+
+        // Build the assignment HTML body (description, requirements, rubric).
+        // `points` is the instructor's chosen value, surfaced in the body since
+        // pass_fail assignments do not carry a numeric points field.
+        function capAssignmentHtml(a, points) {
+            let reqs = '';
+            (a.requirements || []).forEach(function (r) {
+                reqs += '<li>' + capXmlEscape(r) + '</li>\n';
+            });
+            let rubric = '';
+            if (a.rubric) {
+                Object.keys(a.rubric).forEach(function (cat) {
+                    let items = '';
+                    (a.rubric[cat] || []).forEach(function (it) {
+                        items += '<li>' + capXmlEscape(it) + '</li>\n';
+                    });
+                    rubric += '<div class="rubric-category">\n<h4>' + capXmlEscape(cat) +
+                              '</h4>\n<ul class="rubric-items">\n' + items + '</ul>\n</div>\n';
+                });
+            }
+            return '<html>\n<head>\n' +
+'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>\n' +
+'<title>Assignment: ' + capXmlEscape(a.name) + '</title>\n</head>\n<body>\n' +
+'<div class="modal-section">\n<h3>\uD83D\uDCDD Description</h3>\n' +
+'<p>' + capXmlEscape(a.description) + '</p>\n' +
+'<p><strong>Point Value:</strong><span>&nbsp;</span>' + points + ' CAP points</p>\n' +
+(a.estimatedTime ? '<p><strong>Estimated Time:</strong><span>&nbsp;</span>' + capXmlEscape(a.estimatedTime) + '</p>\n' : '') +
+'<p><strong>Category:</strong><span>&nbsp;</span>' + capXmlEscape(a.category) + ' Activity</p>\n' +
+'</div>\n' +
+(reqs ? '<div class="modal-section">\n<h3>\uD83D\uDCCB Requirements</h3>\n<ul class="requirements-list">\n' + reqs + '</ul>\n</div>\n' : '') +
+(rubric ? '<div class="modal-section">\n<h3>\u2705 Complete/Incomplete Rubric</h3>\n' +
+'<p>Student receives Complete when ALL criteria below are met:</p>\n' + rubric + '</div>\n' : '') +
+'</body>\n</html>\n';
+        }
+
+        // Generic Canvas page HTML (used for checkpoint / survey items).
+        function capPageHtml(title, bodyHtml) {
+            return '<html>\n<head>\n' +
+'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>\n' +
+'<title>' + capXmlEscape(title) + '</title>\n</head>\n<body>\n' +
+bodyHtml + '\n</body>\n</html>\n';
+        }
+
+        // Gather the instructor's selections from the setup-phase checkboxes.
+        function capGatherSelected() {
+            const db = (typeof completeAssignmentDatabase !== 'undefined') ? completeAssignmentDatabase : {};
+            const custom = (typeof customAssignments !== 'undefined') ? customAssignments : {};
+            const all = {};
+            Object.keys(db).forEach(function (id) { all[id] = db[id]; });
+            Object.keys(custom).forEach(function (id) { all[id] = custom[id]; });
+
+            const tiers = { 'Higher Effort': [], 'Medium Effort': [], 'Quick Engagement': [] };
+            const other = [];
+            Object.keys(all).forEach(function (id) {
+                const cb = document.getElementById('check-' + id);
+                if (!cb || !cb.checked) return;
+                const pInput = document.getElementById('points-' + id);
+                const points = pInput ? (parseInt(pInput.value, 10) || all[id].defaultPoints || 0)
+                                      : (all[id].defaultPoints || 0);
+                const entry = { id: id, data: all[id], points: points };
+                const cat = all[id].category;
+                if (tiers[cat]) tiers[cat].push(entry);
+                else other.push(entry);
+            });
+            return { tiers: tiers, other: other };
+        }
+
+        // The three checkpoint assignments + the two surveys, as optional extras.
+        function capCheckpointItems() {
+            return [
+                { title: 'CAP Checkpoint #1',
+                  body: '<div class="modal-section"><h3>\uD83D\uDCCD CAP Checkpoint #1</h3>' +
+                        '<p>Submit confirmation of your CAP progress for the first checkpoint. ' +
+                        'See your course syllabus for the point target and due date your instructor has set.</p></div>' },
+                { title: 'CAP Checkpoint #2',
+                  body: '<div class="modal-section"><h3>\uD83D\uDCCD CAP Checkpoint #2</h3>' +
+                        '<p>Submit confirmation of your CAP progress for the second checkpoint. ' +
+                        'See your course syllabus for the point target and due date your instructor has set.</p></div>' },
+                { title: 'Final CAP Checkpoint',
+                  body: '<div class="modal-section"><h3>\uD83C\uDFC1 Final CAP Checkpoint</h3>' +
+                        '<p>Submit confirmation that all CAP activities are complete. ' +
+                        'See your course syllabus for the final point target and due date.</p></div>' }
+            ];
+        }
+        function capSurveyItems() {
+            return [
+                { title: 'Civic Engagement Pre-Survey',
+                  body: '<div class="modal-section"><h3>\uD83D\uDCCA Civic Engagement Pre-Survey</h3>' +
+                        '<p>Complete this short survey at the start of the term to reflect on your ' +
+                        'current civic engagement. Your responses help shape the course.</p></div>' },
+                { title: 'Civic Engagement Post-Survey',
+                  body: '<div class="modal-section"><h3>\uD83D\uDCCA Civic Engagement Post-Survey</h3>' +
+                        '<p>Complete this short survey at the end of the term to reflect on how your ' +
+                        'civic engagement has changed through the CAP.</p></div>' }
+            ];
+        }
+
+        function capSetStatus(kind, html) {
+            const el = document.getElementById('canvasExportStatus');
+            el.className = 'canvas-export-status show ' + kind;
+            el.innerHTML = html;
+        }
+
+        // Main entry point — wired to the Export button.
+        async function exportCanvasPackage() {
+            if (typeof JSZip === 'undefined') {
+                capSetStatus('err', 'The packaging library did not load. Check your internet connection and try again.');
+                return;
+            }
+            const { tiers, other } = capGatherSelected();
+            const totalSelected = tiers['Higher Effort'].length + tiers['Medium Effort'].length +
+                                  tiers['Quick Engagement'].length + other.length;
+            if (totalSelected === 0) {
+                capSetStatus('err', 'Select at least one assignment above before exporting a Canvas package.');
+                return;
+            }
+
+            const courseTitle = (document.getElementById('exportCourseTitle').value || '').trim()
+                                || 'Civic Action Project (CAP)';
+            const includeCheckpoints = document.getElementById('exportIncludeCheckpoints').checked;
+            const includeSurveys = document.getElementById('exportIncludeSurveys').checked;
+
+            capSetStatus('ok', 'Building your Canvas package&hellip;');
+
+            try {
+                const zip = new JSZip();
+
+                // ---- collect resources + organization items ----
+                const resources = [];   // {resId, htmlFile}
+                const allItems = [];    // {itemId, resId, title} — every assignment, in order
+
+                const tierOrder = [
+                    ['Higher Effort'],
+                    ['Medium Effort'],
+                    ['Quick Engagement']
+                ];
+
+                function addAssignment(entry, sectionItems) {
+                    const resId = capHexId('cap-assign-' + entry.id + '-' + entry.data.name);
+                    const slug = capSlug(entry.data.name);
+                    const htmlFile = slug + '.html';
+                    zip.file(resId + '/' + htmlFile, capAssignmentHtml(entry.data, entry.points));
+                    zip.file(resId + '/assignment_settings.xml',
+                             capAssignmentSettingsXml(resId, entry.data.name));
+                    resources.push({ resId: resId, htmlFile: htmlFile, isAssignment: true });
+                    sectionItems.push({ itemId: capHexId('item-' + resId),
+                                        resId: resId, title: entry.data.name });
+                }
+
+                tierOrder.forEach(function (t) {
+                    const list = tiers[t[0]];
+                    if (list.length === 0) return;
+                    // sort by points high-to-low within the tier
+                    list.sort(function (a, b) {
+                        if (b.points !== a.points) return b.points - a.points;
+                        return a.data.name.localeCompare(b.data.name);
+                    });
+                    list.forEach(function (e) { addAssignment(e, allItems); });
+                });
+
+                other.forEach(function (e) { addAssignment(e, allItems); });
+
+                // checkpoints / surveys: real Canvas assignments too, so they
+                // appear in the gradebook (Complete/Incomplete, like activities)
+                function addAssignmentExtras(defs) {
+                    defs.forEach(function (p) {
+                        const resId = capHexId('cap-extra-' + p.title);
+                        const slug = capSlug(p.title);
+                        const htmlFile = slug + '.html';
+                        zip.file(resId + '/' + htmlFile, capPageHtml(p.title, p.body));
+                        zip.file(resId + '/assignment_settings.xml',
+                                 capAssignmentSettingsXml(resId, p.title));
+                        resources.push({ resId: resId, htmlFile: htmlFile, isAssignment: true });
+                        allItems.push({ itemId: capHexId('item-' + resId),
+                                        resId: resId, title: p.title });
+                    });
+                }
+                if (includeCheckpoints) addAssignmentExtras(capCheckpointItems());
+                if (includeSurveys) addAssignmentExtras(capSurveyItems());
+
+                // ---- assignment_groups.xml ----
+                // Declares the "Civic Action Project" assignment group that
+                // every generated assignment_settings.xml references.
+                const groupXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<assignmentGroups xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">\n' +
+'  <assignmentGroup identifier="cap_group_main">\n' +
+'    <title>Civic Action Project</title>\n' +
+'    <position>1</position>\n' +
+'    <group_weight>0.0</group_weight>\n' +
+'  </assignmentGroup>\n' +
+'</assignmentGroups>\n';
+                zip.file('course_settings/assignment_groups.xml', groupXml);
+
+                // ---- module_meta.xml ----
+                // ONE module holding every selected assignment, in tier order.
+                // CRITICAL: each module item's `identifier` must MATCH the
+                // org-tree item identifier (allItems[].itemId) — that shared
+                // identifier is what places the assignment inside the module.
+                const moduleId = capHexId('cap-module-' + courseTitle);
+                let moduleItemsXml = '';
+                allItems.forEach(function (it, ii) {
+                    moduleItemsXml +=
+'      <item identifier="' + it.itemId + '">\n' +
+'        <content_type>Assignment</content_type>\n' +
+'        <workflow_state>active</workflow_state>\n' +
+'        <title>' + capXmlEscape(it.title) + '</title>\n' +
+'        <identifierref>' + it.resId + '</identifierref>\n' +
+'        <position>' + (ii + 1) + '</position>\n' +
+'        <new_tab>false</new_tab>\n' +
+'        <indent>0</indent>\n' +
+'        <link_settings_json>null</link_settings_json>\n' +
+'      </item>\n';
+                });
+                const moduleMetaXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<modules xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">\n' +
+'  <module identifier="' + moduleId + '">\n' +
+'    <title>' + capXmlEscape(courseTitle) + '</title>\n' +
+'    <workflow_state>active</workflow_state>\n' +
+'    <position>1</position>\n' +
+'    <require_sequential_progress>false</require_sequential_progress>\n' +
+'    <locked>false</locked>\n' +
+'    <items>\n' + moduleItemsXml + '    </items>\n' +
+'  </module>\n' +
+'</modules>\n';
+                zip.file('course_settings/module_meta.xml', moduleMetaXml);
+
+                // ---- canvas_export.txt (marks this as a Canvas-style export) ----
+                zip.file('course_settings/canvas_export.txt',
+                    'Q2FudmFzCg==\nMy course was exported as a CAP Canvas package.\n');
+
+                // ---- build imsmanifest.xml ----
+                const manId = capHexId('cap-manifest-' + courseTitle + '-' + Date.now());
+                const courseSettingsResId = capHexId('cap-course-settings-' + courseTitle);
+
+                // org tree: one module header, all items nested under it.
+                // Item identifiers MUST match module_meta item identifiers.
+                let org = '        <item identifier="' + moduleId + '">\n' +
+                          '          <title>' + capXmlEscape(courseTitle) + '</title>\n';
+                allItems.forEach(function (it) {
+                    org += '          <item identifier="' + it.itemId +
+                           '" identifierref="' + it.resId + '">\n' +
+                           '            <title>' + capXmlEscape(it.title) + '</title>\n' +
+                           '          </item>\n';
+                });
+                org += '        </item>\n';
+
+                let res = '';
+                resources.forEach(function (r) {
+                    res += '    <resource identifier="' + r.resId +
+                           '" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="' +
+                           r.resId + '/' + r.htmlFile + '">\n' +
+                           '      <file href="' + r.resId + '/' + r.htmlFile + '"/>\n' +
+                           '      <file href="' + r.resId + '/assignment_settings.xml"/>\n' +
+                           '    </resource>\n';
+                });
+                // course_settings resource — carries module_meta + assignment_groups
+                res += '    <resource identifier="' + courseSettingsResId +
+                       '" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="course_settings/canvas_export.txt">\n' +
+                       '      <file href="course_settings/module_meta.xml"/>\n' +
+                       '      <file href="course_settings/assignment_groups.xml"/>\n' +
+                       '      <file href="course_settings/canvas_export.txt"/>\n' +
+                       '    </resource>\n';
+
+                const today = new Date().toISOString().slice(0, 10);
+                const manifest = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+'<manifest identifier="' + manId + '" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:lomimscc="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd">\n' +
+'  <metadata>\n    <schema>IMS Common Cartridge</schema>\n    <schemaversion>1.1.0</schemaversion>\n' +
+'    <lomimscc:lom>\n      <lomimscc:general>\n        <lomimscc:title>\n' +
+'          <lomimscc:string>' + capXmlEscape(courseTitle) + '</lomimscc:string>\n' +
+'        </lomimscc:title>\n      </lomimscc:general>\n' +
+'      <lomimscc:lifeCycle>\n        <lomimscc:contribute>\n          <lomimscc:date>\n' +
+'            <lomimscc:dateTime>' + today + '</lomimscc:dateTime>\n' +
+'          </lomimscc:date>\n        </lomimscc:contribute>\n      </lomimscc:lifeCycle>\n' +
+'    </lomimscc:lom>\n  </metadata>\n' +
+'  <organizations>\n' +
+'    <organization identifier="org_1" structure="rooted-hierarchy">\n' +
+'      <item identifier="LearningModules">\n' +
+org +
+'      </item>\n    </organization>\n  </organizations>\n' +
+'  <resources>\n' + res + '  </resources>\n</manifest>\n';
+
+                zip.file('imsmanifest.xml', manifest);
+
+                // ---- generate + download ----
+                const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/zip' });
+                const safeTitle = courseTitle.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = (safeTitle || 'CAP') + '_Canvas_Package.imscc';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+
+                let extraNote = '';
+                if (includeCheckpoints) extraNote += ' Includes 3 checkpoint assignments.';
+                if (includeSurveys) extraNote += ' Includes 2 survey assignments.';
+                capSetStatus('ok',
+                    '<strong>Package created.</strong> ' + allItems.length +
+                    ' assignment' + (allItems.length === 1 ? '' : 's') +
+                    ' in one &ldquo;' + capXmlEscape(courseTitle) + '&rdquo; module.' + extraNote +
+                    ' Your <code>.imscc</code> file has downloaded &mdash; in Canvas, go to ' +
+                    'Settings &rarr; Import Course Content, choose <strong>Canvas Course Export ' +
+                    'Package</strong> as the content type, and upload it. ' +
+                    '<strong>Test the import in a sandbox course first.</strong>');
+            } catch (err) {
+                console.error('Canvas export failed:', err);
+                capSetStatus('err', 'Something went wrong building the package: ' +
+                             capXmlEscape(err && err.message ? err.message : String(err)) +
+                             '. Try again, or use the thumbs-down button to report it.');
             }
         }
     </script>
