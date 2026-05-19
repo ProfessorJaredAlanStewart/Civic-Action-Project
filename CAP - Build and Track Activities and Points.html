@@ -397,6 +397,45 @@
         }
         
         /* Modal Styles */
+        .gb-guide-intro {
+            font-size: 0.95em; color: #3a4a54; line-height: 1.55;
+            margin-bottom: 18px;
+        }
+        .gb-step {
+            display: flex; gap: 14px; margin-bottom: 16px;
+            align-items: flex-start;
+        }
+        .gb-step-num {
+            flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+            background: #00788a; color: #fff; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1em;
+        }
+        .gb-step-body h4 {
+            color: #002b5c; font-size: 1em; margin: 4px 0 4px;
+        }
+        .gb-step-body p {
+            font-size: 0.9em; color: #4a5a64; line-height: 1.5; margin: 0 0 4px;
+        }
+        .gb-step-body code {
+            background: #eef2f4; padding: 1px 5px; border-radius: 4px; font-size: 0.88em;
+        }
+        .gb-note {
+            font-size: 0.84em; color: #6b7a84; font-style: italic;
+        }
+        .gb-callout {
+            background: #fff8e6; border-left: 4px solid #dac792;
+            padding: 12px 16px; border-radius: 6px; margin: 18px 0;
+            font-size: 0.9em; color: #5a4520; line-height: 1.5;
+        }
+        .gb-callout ul { margin: 8px 0 0 18px; }
+        .gb-callout li { margin-bottom: 6px; }
+        .gb-section-reminder {
+            font-size: 0.9em; color: #3a4a54; text-align: center;
+            background: #e6f2f4; padding: 9px 14px; border-radius: 6px;
+            margin: 16px 0;
+        }
+        .gb-go-btn { border: 2px solid #00788a !important; }
         .modal {
             display: none;
             position: fixed;
@@ -1211,6 +1250,7 @@
                     <button class="btn-import" onclick="openDataModal()">📁 Import/Export Data</button>
                     <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCanvasCSV(event)">
                     <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleJSONImport(event)">
+                    <input type="file" id="gradebookFileInput" accept=".csv" style="display: none;" onchange="handleGradebookFill(event)">
                     <button class="btn-delete" onclick="clearSection()">🗑️ Clear Students</button>
                     <button class="btn-delete" onclick="deleteSection()" style="background: #98002e;">✖ Delete Section</button>
                 </div>
@@ -1300,12 +1340,95 @@
                                 <div class="data-btn-desc">Export all students with points, status, and completed assignments</div>
                             </div>
                         </button>
+
+                        <button class="data-btn" onclick="openGradebookGuide();">
+                            <span class="data-btn-icon">🎯</span>
+                            <div class="data-btn-text">
+                                <div class="data-btn-title">Fill Canvas Gradebook (CSV)</div>
+                                <div class="data-btn-desc">Upload your Canvas gradebook export — the tracker fills in CAP completions and returns a file you re-import into Canvas</div>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <div id="gradebookGuideModal" class="modal">
+        <div class="modal-content data-modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg, #00788a 0%, #002b5c 100%);">
+                <h2 class="modal-title">🎯 Fill Your Canvas Gradebook</h2>
+                <button class="close-modal" onclick="closeGradebookGuide()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="gb-guide-intro">
+                    This moves CAP completions from this tracker into your Canvas gradebook.
+                    You stay in control &mdash; nothing is sent anywhere automatically. You move
+                    one file out of Canvas and one file back in. Here is the whole process:
+                </p>
+
+                <div class="gb-step">
+                    <div class="gb-step-num">1</div>
+                    <div class="gb-step-body">
+                        <h4>In Canvas: export your gradebook</h4>
+                        <p>Open your course in Canvas, go to <strong>Grades</strong>, click
+                        <strong>Export</strong>, and choose <strong>Export Entire Gradebook</strong>.
+                        Canvas downloads a <code>.csv</code> file (usually to your Downloads folder).</p>
+                    </div>
+                </div>
+
+                <div class="gb-step">
+                    <div class="gb-step-num">2</div>
+                    <div class="gb-step-body">
+                        <h4>Here: upload that file</h4>
+                        <p>Click the button below and pick the gradebook file Canvas just gave you.
+                        This tracker reads it, fills in <em>complete</em> / <em>incomplete</em> for
+                        each CAP assignment, and immediately downloads a <strong>new</strong> file
+                        named <code>CAP_Gradebook_Filled_&hellip;.csv</code>.</p>
+                        <p class="gb-note">Your browser may ask where to save it, or simply drop
+                        it in Downloads &mdash; that downloaded file is the one you want next.</p>
+                    </div>
+                </div>
+
+                <div class="gb-step">
+                    <div class="gb-step-num">3</div>
+                    <div class="gb-step-body">
+                        <h4>Back in Canvas: import the filled file</h4>
+                        <p>In Canvas Grades, click <strong>Import</strong>, upload the
+                        <code>CAP_Gradebook_Filled_&hellip;.csv</code> file, and
+                        <strong>review the preview Canvas shows you before saving</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="gb-callout">
+                    <strong>Two things that must line up for a match:</strong>
+                    <ul>
+                        <li><strong>Student names.</strong> A student is matched between the
+                        tracker and the gradebook by name. If they don't match, that student is
+                        skipped and left untouched (never zeroed). The summary will tell you who
+                        was skipped.</li>
+                        <li><strong>The CAP assignments must already exist in the Canvas course.</strong>
+                        Import the CAP assignments first (use the Export Canvas Package tool), so the
+                        gradebook has columns to fill.</li>
+                    </ul>
+                </div>
+
+                <p class="gb-section-reminder">
+                    You are filling grades for the section currently open in the tracker:
+                    <strong id="gbCurrentSectionName">(no section selected)</strong>
+                </p>
+
+                <button class="data-btn gb-go-btn" onclick="startGradebookFill()">
+                    <span class="data-btn-icon">📂</span>
+                    <div class="data-btn-text">
+                        <div class="data-btn-title">Choose my Canvas gradebook file</div>
+                        <div class="data-btn-desc">Step 2 — pick the .csv you exported from Canvas</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Complete assignment database with FULL rubrics for ALL 39 assignments (29 original + 10 safety-focused)
         const completeAssignmentDatabase = {
@@ -4028,7 +4151,243 @@
             a.click();
             URL.revokeObjectURL(url);
         }
-        
+
+        // ====================================================================
+        // FILL CANVAS GRADEBOOK
+        // The instructor uploads a real Canvas gradebook export. This matches
+        // CAP assignment columns by NAME, fills complete/incomplete for each
+        // student from the tracker, and returns a CSV the instructor re-imports
+        // into Canvas. It only touches cells it can match — every other column
+        // (and every non-CAP assignment) is passed through untouched.
+        // ====================================================================
+
+        // Normalize an assignment name for fuzzy matching: lowercase, strip the
+        // trailing Canvas id "(12345)", collapse whitespace, drop punctuation.
+        function gbNormalizeName(raw) {
+            return String(raw == null ? '' : raw)
+                .replace(/\(\d+\)\s*$/, '')          // strip "(12345)" id suffix
+                .toLowerCase()
+                .replace(/[^a-z0-9 ]+/g, ' ')        // punctuation -> space
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // Normalize a student name to "first last" lowercase for matching.
+        // Canvas gradebook rows are "Last, First Middle".
+        function gbNormalizeStudent(raw) {
+            let s = String(raw == null ? '' : raw).replace(/^["']|["']$/g, '').trim();
+            if (s.indexOf(',') !== -1) {
+                const ci = s.indexOf(',');
+                const last = s.substring(0, ci).trim();
+                const first = s.substring(ci + 1).trim().split(/\s+/)[0] || '';
+                s = first + ' ' + last;
+            }
+            return s.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+
+        // --- Gradebook guide modal: walks faculty through the export/fill/import flow ---
+        function openGradebookGuide() {
+            closeDataModal();
+            const label = document.getElementById('gbCurrentSectionName');
+            if (currentSection && trackerSections[currentSection]) {
+                const n = trackerSections[currentSection].length;
+                label.textContent = currentSection + '  (' + n + ' student' +
+                                     (n === 1 ? '' : 's') + ')';
+            } else {
+                label.textContent = '(no section selected — open a section first)';
+            }
+            document.getElementById('gradebookGuideModal').style.display = 'block';
+        }
+        function closeGradebookGuide() {
+            document.getElementById('gradebookGuideModal').style.display = 'none';
+        }
+        function startGradebookFill() {
+            if (!currentSection || !trackerSections[currentSection] ||
+                trackerSections[currentSection].length === 0) {
+                alert('Open a section with students first, then start again.\n\n' +
+                      'The gradebook is filled from the section currently shown in the tracker.');
+                return;
+            }
+            closeGradebookGuide();
+            document.getElementById('gradebookFileInput').click();
+        }
+
+        function handleGradebookFill(event) {
+            const file = event.target.files[0];
+            event.target.value = '';
+            if (!file) return;
+            if (!currentSection || !trackerSections[currentSection] ||
+                trackerSections[currentSection].length === 0) {
+                alert('Open a section with students first — the gradebook is filled from the section you are viewing.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const text = e.target.result.replace(/^\uFEFF/, '');
+                    const rawLines = text.split(/\r?\n/);
+                    // keep line objects so we can rewrite cells and re-join
+                    const lines = rawLines.filter(function (l, i) {
+                        return i === 0 || l.trim() !== '';
+                    });
+                    if (lines.length < 2) {
+                        alert('That CSV looks empty. Export your gradebook from Canvas (Grades \u2192 Export) and try again.');
+                        return;
+                    }
+
+                    const header = parseCSVLine(lines[0]);
+                    const headerNorm = header.map(gbNormalizeName);
+
+                    // Canvas gradebook always starts: Student, ID, SIS User ID,
+                    // SIS Login ID, Section. The student name is column 0.
+                    const studentCol = 0;
+                    if (!/student/.test(String(header[0]).toLowerCase())) {
+                        alert('This does not look like a Canvas gradebook export. The first column should be "Student".\n\nIn Canvas: Grades \u2192 Export \u2192 Export Entire Gradebook.');
+                        return;
+                    }
+
+                    // Build a name -> tracker-assignment lookup for this section.
+                    const trackerByName = {};
+                    activeConfig.assignments.forEach(function (a) {
+                        trackerByName[gbNormalizeName(a.name)] = a;
+                    });
+
+                    // Find which gradebook columns correspond to CAP assignments.
+                    const capColumns = [];   // {colIndex, assignment}
+                    const unmatchedCap = []; // CAP assignments with no column
+                    const matchedNames = {};
+                    header.forEach(function (h, idx) {
+                        const norm = headerNorm[idx];
+                        if (norm && trackerByName[norm]) {
+                            capColumns.push({ col: idx, assignment: trackerByName[norm] });
+                            matchedNames[norm] = true;
+                        }
+                    });
+                    activeConfig.assignments.forEach(function (a) {
+                        if (!matchedNames[gbNormalizeName(a.name)]) unmatchedCap.push(a.name);
+                    });
+
+                    if (capColumns.length === 0) {
+                        alert('No CAP assignment columns were found in this gradebook.\n\n' +
+                              'Make sure you have already imported the CAP assignments into this ' +
+                              'Canvas course, then export the gradebook again. The column headers ' +
+                              'must match the CAP assignment names.');
+                        return;
+                    }
+
+                    // Build a name -> tracker-student lookup.
+                    const studentsByName = {};
+                    trackerSections[currentSection].forEach(function (st) {
+                        studentsByName[gbNormalizeStudent(st.name)] = st;
+                    });
+
+                    // Walk the gradebook rows. Row index 1 is usually the
+                    // "Points Possible" row — leave it completely untouched.
+                    const outLines = [lines[0]];
+                    let filledStudents = 0, filledCells = 0;
+                    const unmatchedStudents = [];
+                    let pointsPossibleRowKept = false;
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const fields = parseCSVLine(lines[i]);
+                        const nameCell = (fields[studentCol] || '').replace(/^["']|["']$/g, '').trim();
+                        const lowerName = nameCell.toLowerCase();
+
+                        // Pass through the Points Possible row unchanged.
+                        if (lowerName.indexOf('points possible') !== -1) {
+                            outLines.push(lines[i]);
+                            pointsPossibleRowKept = true;
+                            continue;
+                        }
+                        // Pass through any blank/structural row unchanged.
+                        if (!nameCell) { outLines.push(lines[i]); continue; }
+
+                        const student = studentsByName[gbNormalizeStudent(nameCell)];
+                        if (!student) {
+                            unmatchedStudents.push(nameCell);
+                            outLines.push(lines[i]); // leave untouched
+                            continue;
+                        }
+
+                        // Fill the CAP columns for this student.
+                        let touched = false;
+                        capColumns.forEach(function (cc) {
+                            const done = !!student.completed[cc.assignment.id];
+                            // ensure the row has enough fields
+                            while (fields.length <= cc.col) fields.push('');
+                            fields[cc.col] = done ? 'complete' : 'incomplete';
+                            filledCells++;
+                            touched = true;
+                        });
+                        if (touched) filledStudents++;
+
+                        // re-quote any field containing comma/quote/newline
+                        const rebuilt = fields.map(function (f) {
+                            const v = String(f == null ? '' : f);
+                            return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+                        }).join(',');
+                        outLines.push(rebuilt);
+                    }
+
+                    // Generate the filled file.
+                    const outCsv = outLines.join('\r\n') + '\r\n';
+                    const blob = new Blob([outCsv], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const now = new Date();
+                    const stamp = now.getFullYear() + '-' +
+                        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(now.getDate()).padStart(2, '0') + '_' +
+                        String(now.getHours()).padStart(2, '0') +
+                        String(now.getMinutes()).padStart(2, '0');
+                    const sectionTag = (currentSection || 'Section')
+                        .replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                    a.download = 'CAP_Gradebook_Filled_' + sectionTag + '_' + stamp + '.csv';
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    // Honest report — what matched, what didn't.
+                    let msg = 'Filled gradebook downloaded.\n\n' +
+                        '\u2713 ' + capColumns.length + ' CAP assignment column' +
+                        (capColumns.length === 1 ? '' : 's') + ' matched\n' +
+                        '\u2713 ' + filledStudents + ' student' +
+                        (filledStudents === 1 ? '' : 's') + ' filled (' +
+                        filledCells + ' grade cells)\n';
+                    if (!pointsPossibleRowKept) {
+                        msg += '\u2022 Note: no "Points Possible" row was found \u2014 ' +
+                               'that is normal for some exports.\n';
+                    }
+                    if (unmatchedCap.length > 0) {
+                        msg += '\n\u26A0 ' + unmatchedCap.length + ' CAP assignment' +
+                               (unmatchedCap.length === 1 ? '' : 's') +
+                               ' had no matching gradebook column (left alone):\n   ' +
+                               unmatchedCap.slice(0, 8).join(', ') +
+                               (unmatchedCap.length > 8 ? ', \u2026' : '');
+                    }
+                    if (unmatchedStudents.length > 0) {
+                        msg += '\n\u26A0 ' + unmatchedStudents.length + ' gradebook student' +
+                               (unmatchedStudents.length === 1 ? '' : 's') +
+                               ' not found in this tracker section (left alone):\n   ' +
+                               unmatchedStudents.slice(0, 6).join('; ') +
+                               (unmatchedStudents.length > 6 ? '; \u2026' : '');
+                    }
+                    msg += '\n\nNEXT STEP \u2014 in Canvas: Grades \u2192 Import, and upload ' +
+                           'the file that just downloaded:\n   ' + a.download +
+                           '\n\nReview the preview Canvas shows you before saving.';
+                    alert(msg);
+                } catch (err) {
+                    console.error('Gradebook fill failed:', err);
+                    alert('Something went wrong reading that gradebook file: ' +
+                          (err && err.message ? err.message : err) +
+                          '\n\nMake sure it is an unmodified Canvas gradebook export (.csv).');
+                }
+            };
+            reader.onerror = function () { alert('Could not read that file. Please try again.'); };
+            reader.readAsText(file);
+        }
+
         // Close modal on click outside
         window.onclick = function(event) {
             if (event.target === document.getElementById('detailsModal')) {
@@ -4036,6 +4395,9 @@
             }
             if (event.target === document.getElementById('dataModal')) {
                 closeDataModal();
+            }
+            if (event.target === document.getElementById('gradebookGuideModal')) {
+                closeGradebookGuide();
             }
         }
 
