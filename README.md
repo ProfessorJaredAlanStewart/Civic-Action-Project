@@ -23,9 +23,9 @@ This repo is the open-source home of the Civic Action Project. Everything here i
 | [`index.html`](index.html) | The main CAP website — overview, rationale, student outcomes |
 | [`CAP - Build and Track Activities and Points.html`](https://professorjaredalanstewart.github.io/Civic-Action-Project/CAP%20-%20Build%20and%20Track%20Activities%20and%20Points.html) | Multi-section instructor tracker. Manages multiple class sections, imports rosters from Canvas, exports gradebook-ready CSV |
 | `CAP Assignments Complete Guide.pdf` | Full assignment guide with all 39 activities, rubrics, and student-facing instructions |
-| `CAP Path to 100 Points (With All 29 Assignments).html` | Interactive planning tool — helps students see how to combine activities to reach 100 points |
-| `CAP_All_29_Assignments.imscc` | Canvas Common Cartridge — drop into your Canvas course to auto-create all CAP assignments |
-| `CAP_All_29_Assignments_COMPLETE.md` | Full markdown source of all assignments — copy, edit, adapt for your context |
+| `CAP Path to 100 Points (With All 39 Assignments).html` | Interactive planning tool — helps students see how to combine activities to reach 100 points |
+| `CAP_All_29_Assignments.imscc` | Canvas Common Cartridge — drop into your Canvas course to auto-create CAP assignments. *(Currently covers the original 29; a 39-assignment package is in progress.)* |
+| `CAP_All_39_Assignments_COMPLETE.md` | Full markdown source of all 39 assignments — copy, edit, adapt for your context |
 | `CAP_Safety_Focused_Assignments.md` | Ten safety-themed assignments grounded in Ballard et al. (2016), which found safety-focused civic projects produced the strongest civic engagement outcomes |
 | `Video_Introduction_Assignment.docx` | Week-1 icebreaker — students record a "Government & Me" video reflection |
 

@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CAP Tracker - Auto-Resume & Keyed Data</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         * {
             box-sizing: border-box;
@@ -12,7 +16,7 @@
         }
         
         body {
-            font-family: Georgia, 'Times New Roman', serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -25,7 +29,7 @@
         
         /* Header Styles */
         .header {
-            background: linear-gradient(135deg, #003366 0%, #0055a4 100%);
+            background: linear-gradient(135deg, #002b5c 0%, #00788a 100%);
             color: white;
             padding: 30px;
             border-radius: 15px;
@@ -62,15 +66,15 @@
         }
         
         .setup-instructions {
-            background: linear-gradient(135deg, #e8f1fa 0%, #c5dcf0 100%);
+            background: linear-gradient(135deg, #e6f2f4 0%, #bfe0e5 100%);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
-            border-left: 5px solid #003366;
+            border-left: 5px solid #002b5c;
         }
         
         .setup-instructions h2 {
-            color: #003366;
+            color: #002b5c;
             margin-bottom: 15px;
         }
         
@@ -110,11 +114,11 @@
         }
         
         .category-high .category-header {
-            background: linear-gradient(135deg, #00254d 0%, #003366 100%);
+            background: linear-gradient(135deg, #00254d 0%, #002b5c 100%);
         }
         
         .category-medium .category-header {
-            background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #002b5c 100%);
         }
         
         .category-quick .category-header {
@@ -131,7 +135,7 @@
         }
         
         .category-medium .category-content {
-            background: #e8f1fa;
+            background: #e6f2f4;
         }
         
         .category-quick .category-content {
@@ -195,7 +199,7 @@
         
         .view-details-btn {
             padding: 6px 14px;
-            background: linear-gradient(135deg, #0055a4 0%, #003366 100%);
+            background: linear-gradient(135deg, #00788a 0%, #002b5c 100%);
             color: white;
             border: none;
             border-radius: 6px;
@@ -212,15 +216,15 @@
         
         /* Configuration Summary */
         .config-summary {
-            background: linear-gradient(135deg, #e8f1fa 0%, #c5dcf0 100%);
+            background: linear-gradient(135deg, #e6f2f4 0%, #bfe0e5 100%);
             padding: 20px;
             border-radius: 10px;
             margin: 30px 0;
-            border: 2px solid #0055a4;
+            border: 2px solid #00788a;
         }
         
         .config-summary h3 {
-            color: #003366;
+            color: #002b5c;
             margin-bottom: 15px;
         }
         
@@ -250,13 +254,13 @@
         .config-stat-value {
             font-size: 1.8em;
             font-weight: bold;
-            color: #003366;
+            color: #002b5c;
         }
         
         .target-points-input {
             width: 100px;
             padding: 8px;
-            border: 2px solid #0055a4;
+            border: 2px solid #00788a;
             border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
@@ -284,7 +288,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-family: Georgia, serif;
+            font-family: 'EB Garamond', Georgia, serif;
         }
         
         .action-btn:hover {
@@ -300,12 +304,12 @@
         }
         
         .btn-load-all {
-            background: linear-gradient(135deg, #0055a4 0%, #003366 100%);
+            background: linear-gradient(135deg, #00788a 0%, #002b5c 100%);
             color: white;
         }
         
         .btn-clear {
-            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            background: linear-gradient(135deg, #98002e 0%, #98002e 100%);
             color: white;
         }
         
@@ -336,7 +340,7 @@
         }
         
         .modal-header {
-            background: linear-gradient(135deg, #003366 0%, #0055a4 100%);
+            background: linear-gradient(135deg, #002b5c 0%, #00788a 100%);
             color: white;
             padding: 20px 30px;
             display: flex;
@@ -512,7 +516,7 @@
         }
         
         .delete-section-btn {
-            background: #f44336;
+            background: #98002e;
             color: white;
             border: none;
             border-radius: 50%;
@@ -531,7 +535,7 @@
         }
         
         .delete-section-btn:hover {
-            background: #d32f2f;
+            background: #98002e;
             transform: scale(1.1);
         }
         
@@ -599,7 +603,7 @@
         }
         
         .import-section {
-            border-left: 4px solid #2196F3;
+            border-left: 4px solid #00788a;
         }
         
         .export-section {
@@ -620,7 +624,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            font-family: Georgia, serif;
+            font-family: 'EB Garamond', Georgia, serif;
         }
         
         .btn-add {
@@ -629,7 +633,7 @@
         }
         
         .btn-import {
-            background: #2196F3;
+            background: #00788a;
             color: white;
         }
         
@@ -639,7 +643,7 @@
         }
         
         .btn-delete {
-            background: #f44336;
+            background: #98002e;
             color: white;
         }
         
@@ -670,7 +674,7 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            font-family: Georgia, serif;
+            font-family: 'EB Garamond', Georgia, serif;
         }
         
         .student-name {
@@ -727,7 +731,7 @@
         }
         
         .total-fail {
-            color: #f44336;
+            color: #98002e;
         }
         
         .notes-input {
@@ -774,7 +778,7 @@
             border: 2px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-            font-family: Georgia, serif;
+            font-family: 'EB Garamond', Georgia, serif;
         }
         
         .custom-add-form input:focus, .custom-add-form select:focus {
@@ -801,7 +805,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-family: Georgia, serif;
+            font-family: 'EB Garamond', Georgia, serif;
             transition: all 0.3s ease;
         }
         
@@ -812,7 +816,7 @@
         
         .btn-remove-custom {
             padding: 6px 12px;
-            background: #f44336;
+            background: #98002e;
             color: white;
             border: none;
             border-radius: 6px;
@@ -823,7 +827,7 @@
         }
         
         .btn-remove-custom:hover {
-            background: #d32f2f;
+            background: #98002e;
         }
         
         .cat-custom { background-color: #f0f2f3; }
@@ -908,13 +912,13 @@
             margin: 14px 0 6px;
             padding: 12px 16px;
             background: #f5f8fc;
-            border: 1px solid #c5dcf0;
+            border: 1px solid #bfe0e5;
             border-radius: 8px;
             font-size: 0.95em;
         }
         
         .category-toggles strong {
-            color: #003366;
+            color: #002b5c;
             margin-right: 4px;
         }
         
@@ -930,14 +934,14 @@
         }
         
         .category-toggles label:hover {
-            background: #e8f1fa;
+            background: #e6f2f4;
         }
         
         .category-toggles input[type="checkbox"] {
             width: 16px;
             height: 16px;
             cursor: pointer;
-            accent-color: #0055a4;
+            accent-color: #00788a;
         }
         
         .cat-swatch {
@@ -967,11 +971,33 @@
             cursor: pointer;
         }
         #tableBody tr .student-name:hover {
-            background-color: #e8f1fa;
+            background-color: #e6f2f4;
+        }
+        .tcc-brand-stripe { display:flex; height:6px; width:100%; }
+        .tcc-brand-stripe > span { flex:1; display:block; }
+        .tcc-brand-stripe .nv { background:#002b5c; }
+        .tcc-brand-stripe .tn { background:#dac792; }
+        .tcc-brand-stripe .bg { background:#98002e; }
+        .tcc-brand-stripe .tl { background:#00788a; }
+        .tcc-brand-footer {
+            background:#002b5c; color:rgba(255,255,255,0.85);
+            text-align:center; padding:20px 16px 24px;
+            font-family:'Inter',sans-serif; font-size:13px; line-height:1.6;
+        }
+        .tcc-brand-footer .tagline {
+            color:#fff; font-weight:700; letter-spacing:0.5px;
+            text-transform:uppercase; font-size:11px;
+        }
+        .tcc-brand-footer .eeoc {
+            margin-top:11px; padding-top:9px;
+            border-top:1px solid rgba(255,255,255,0.2);
+            font-size:10px; font-style:italic; color:rgba(255,255,255,0.7);
+            max-width:720px; margin-left:auto; margin-right:auto; line-height:1.5;
         }
     </style>
 </head>
 <body>
+<div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
     <div class="main-container">
         <!-- Setup Phase - DEFAULT VISIBLE -->
         <div id="setupPhase" class="phase-container active">
@@ -1065,7 +1091,7 @@
                     <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCanvasCSV(event)">
                     <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleJSONImport(event)">
                     <button class="btn-delete" onclick="clearSection()">🗑️ Clear Students</button>
-                    <button class="btn-delete" onclick="deleteSection()" style="background: #d32f2f;">✖ Delete Section</button>
+                    <button class="btn-delete" onclick="deleteSection()" style="background: #98002e;">✖ Delete Section</button>
                 </div>
                 
                 <!-- Category Show/Hide Toggles + Legend -->
@@ -1110,7 +1136,7 @@
         <!-- Import/Export Data Modal -->
         <div id="dataModal" class="modal">
             <div class="modal-content data-modal-content">
-                <div class="modal-header" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);">
+                <div class="modal-header" style="background: linear-gradient(135deg, #00788a 0%, #1976D2 100%);">
                     <h2 class="modal-title">📁 Import / Export Data</h2>
                     <button class="close-modal" onclick="closeDataModal()">&times;</button>
                 </div>
@@ -2715,6 +2741,24 @@
             updateSummary();
         }
         
+        // Returns assignment IDs for a given category, sorted by point
+        // value (highest first), then alphabetically by name. This replaces
+        // the old hardcoded ID arrays so assignments — including the
+        // safety-focused ones — always appear in their proper point
+        // position within each tier rather than appended at the end.
+        function sortedIdsForCategory(categoryName) {
+            return Object.keys(completeAssignmentDatabase)
+                .filter(id => completeAssignmentDatabase[id].category === categoryName)
+                .sort((a, b) => {
+                    const A = completeAssignmentDatabase[a];
+                    const B = completeAssignmentDatabase[b];
+                    if (B.defaultPoints !== A.defaultPoints) {
+                        return B.defaultPoints - A.defaultPoints;
+                    }
+                    return A.name.localeCompare(B.name);
+                });
+        }
+        
         function buildAssignmentSections() {
             console.log('Building assignment sections...');
             const container = document.getElementById('assignmentSections');
@@ -2727,12 +2771,8 @@
             const highContent = document.createElement('div');
             highContent.className = 'category-content';
             
-            ['meeting', 'interview1', 'interview2', 'directory', 'mythvideo', 
-             'publiccomment', 'civicorg', 'naturalization', 'ridealong', 'voterdrive',
-             'safetyFoodSecurity', 'safetyCrisisTraining', 'safetyEmergencyMgmt', 'safetyPolicyBrief'].forEach(id => {
-                if (completeAssignmentDatabase[id]) {
-                    highContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
-                }
+            sortedIdsForCategory('Higher Effort').forEach(id => {
+                highContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
             });
             
             highSection.appendChild(highContent);
@@ -2745,12 +2785,8 @@
             const mediumContent = document.createElement('div');
             mediumContent.className = 'category-content';
             
-            ['scavenger', 'clip1', 'clip2', 'clip3', 'journal1', 
-             'journal2', 'journal3', 'detective', 'democracy', 'failure',
-             'safetyTenant', 'safetyWorkplace', 'safetyTraffic', 'safetyFinancial'].forEach(id => {
-                if (completeAssignmentDatabase[id]) {
-                    mediumContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
-                }
+            sortedIdsForCategory('Medium Effort').forEach(id => {
+                mediumContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
             });
             
             mediumSection.appendChild(mediumContent);
@@ -2763,12 +2799,8 @@
             const quickContent = document.createElement('div');
             quickContent.className = 'category-content';
             
-            ['reflect1', 'reflect2', 'reflect3', 'reflect4', 'reflect5',
-             'video1', 'video2', 'video3', 'video4',
-             'safetyEmergencyAudit', 'safetyKnowRights'].forEach(id => {
-                if (completeAssignmentDatabase[id]) {
-                    quickContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
-                }
+            sortedIdsForCategory('Quick Engagement').forEach(id => {
+                quickContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
             });
             
             quickSection.appendChild(quickContent);
@@ -3403,7 +3435,7 @@
                     // Categories cell
                     const catCell = document.createElement('td');
                     catCell.textContent = `${categories.size}/2`;
-                    catCell.style.color = categories.size >= 2 ? '#4CAF50' : '#f44336';
+                    catCell.style.color = categories.size >= 2 ? '#4CAF50' : '#98002e';
                     row.appendChild(catCell);
                     
                     // Notes cell
@@ -3886,5 +3918,11 @@
             }
         }
     </script>
+<div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
+<div class="tcc-brand-footer">
+    <div class="tagline">Tomorrow Starts Here</div>
+    <div>Tarrant County College &middot; <a href="https://www.tccd.edu" style="color:#dac792;" target="_blank" rel="noopener">www.tccd.edu</a></div>
+    <div class="eeoc">Tarrant County College is an Equal Opportunity Institution that provides educational and employment opportunities on the basis of merit and without discrimination because of race, color, religion, sex, age, national origin, physical or mental disability, sexual orientation, or veteran status.</div>
+</div>
 </body>
 </html>

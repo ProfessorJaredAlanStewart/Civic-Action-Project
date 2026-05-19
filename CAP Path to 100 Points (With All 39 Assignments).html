@@ -18,7 +18,7 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
             min-height: 100vh;
             padding: 20px;
-            color: #2d3436;
+            color: #1e293b;
         }
         
         .container {
@@ -28,7 +28,7 @@
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%);
+            background: linear-gradient(135deg, #002b5c 0%, #002b5c 50%, #3d7ab5 100%);
             color: white;
             padding: 35px 40px;
             border-radius: 20px;
@@ -68,12 +68,12 @@
             padding: 22px 28px;
             border-radius: 14px;
             margin-bottom: 25px;
-            border-left: 5px solid #2d5a87;
+            border-left: 5px solid #002b5c;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
         }
         
         .instructions h3 {
-            color: #1e3a5f;
+            color: #002b5c;
             margin-bottom: 12px;
             font-size: 1.15em;
         }
@@ -135,7 +135,7 @@
         }
         
         .category-high .category-header {
-            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            background: linear-gradient(135deg, #98002e 0%, #98002e 100%);
         }
         
         .category-medium .category-header {
@@ -169,7 +169,7 @@
         }
         
         .assignment-item:hover {
-            border-color: #2d5a87;
+            border-color: #002b5c;
             background: #fff;
             transform: translateX(4px);
         }
@@ -195,7 +195,7 @@
         .assignment-name {
             font-weight: 600;
             font-size: 0.98em;
-            color: #2d3436;
+            color: #1e293b;
             cursor: pointer;
         }
         
@@ -229,7 +229,7 @@
         
         .points-input:focus {
             outline: none;
-            border-color: #2d5a87;
+            border-color: #002b5c;
         }
         
         .points-label {
@@ -273,7 +273,7 @@
             transition: color 0.3s ease;
         }
         
-        .total-points.under { color: #2d5a87; }
+        .total-points.under { color: #002b5c; }
         .total-points.exact { color: #27ae60; }
         .total-points.over { color: #e67e22; }
         
@@ -289,7 +289,7 @@
         .goal-value {
             font-size: 1.4em;
             font-weight: 700;
-            color: #2d3436;
+            color: #1e293b;
         }
         
         .progress-section {
@@ -309,7 +309,7 @@
             height: 100%;
             border-radius: 10px;
             transition: width 0.4s ease, background 0.3s ease;
-            background: linear-gradient(90deg, #2d5a87, #3d7ab5);
+            background: linear-gradient(90deg, #002b5c, #3d7ab5);
         }
         
         .progress-fill.exact {
@@ -388,7 +388,7 @@
         .message.info {
             background: linear-gradient(135deg, #cce5ff, #b8daff);
             color: #004085;
-            border: 2px solid #2d5a87;
+            border: 2px solid #002b5c;
         }
         
         /* Buttons */
@@ -417,12 +417,12 @@
         }
         
         .btn-reset {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: linear-gradient(135deg, #98002e, #98002e);
             color: white;
         }
         
         .btn-save {
-            background: linear-gradient(135deg, #2d5a87, #1e3a5f);
+            background: linear-gradient(135deg, #002b5c, #002b5c);
             color: white;
         }
         
@@ -446,7 +446,7 @@
         }
         
         .tools-section h3 {
-            color: #1e3a5f;
+            color: #002b5c;
             margin-bottom: 18px;
             font-size: 1.15em;
         }
@@ -467,14 +467,14 @@
         }
         
         .suggestion-card:hover {
-            border-color: #2d5a87;
+            border-color: #002b5c;
             transform: translateY(-3px);
             box-shadow: 0 6px 18px rgba(0,0,0,0.1);
         }
         
         .suggestion-title {
             font-weight: 700;
-            color: #2d3436;
+            color: #1e293b;
             margin-bottom: 8px;
             font-size: 1em;
         }
@@ -500,7 +500,7 @@
         }
         
         .selection-summary h4 {
-            color: #2d3436;
+            color: #1e293b;
             margin-bottom: 12px;
             font-size: 1em;
         }
@@ -589,9 +589,19 @@
                 border: 2px solid #000;
             }
         }
+            .tcc-brand-stripe{display:flex;height:6px;width:100%;}
+        .tcc-brand-stripe>span{flex:1;display:block;}
+        .tcc-brand-stripe .nv{background:#002b5c;}
+        .tcc-brand-stripe .tn{background:#dac792;}
+        .tcc-brand-stripe .bg{background:#98002e;}
+        .tcc-brand-stripe .tl{background:#00788a;}
+        .tcc-brand-footer{background:#002b5c;color:rgba(255,255,255,0.85);text-align:center;padding:20px 16px 24px;font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;}
+        .tcc-brand-footer .tagline{color:#fff;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;font-size:11px;}
+        .tcc-brand-footer .eeoc{margin-top:11px;padding-top:9px;border-top:1px solid rgba(255,255,255,0.2);font-size:10px;font-style:italic;color:rgba(255,255,255,0.7);max-width:720px;margin-left:auto;margin-right:auto;line-height:1.5;}
     </style>
 </head>
 <body>
+<div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
     <div class="container">
         <div class="header">
             <h1>🎯 CAP Path to 100 Points</h1>
@@ -738,7 +748,7 @@
     <script>
         // Complete assignment database with all 39 assignments (29 original + 10 safety-focused)
         const assignments = {
-            // Higher Effort (10 assignments)
+            // Higher Effort (14 assignments)
             meeting: {
                 name: "Government Meeting Attendance",
                 category: "high",
@@ -1278,5 +1288,7 @@
             return false;
         }
     </script>
+<div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
+<div class="tcc-brand-footer"><div class="tagline">Tomorrow Starts Here</div><div>Tarrant County College &middot; <a href="https://www.tccd.edu" style="color:#dac792;" target="_blank" rel="noopener">www.tccd.edu</a></div><div class="eeoc">Tarrant County College is an Equal Opportunity Institution that provides educational and employment opportunities on the basis of merit and without discrimination because of race, color, religion, sex, age, national origin, physical or mental disability, sexual orientation, or veteran status.</div></div>
 </body>
 </html>
