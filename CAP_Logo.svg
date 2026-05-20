@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="CAP — Civic Action Project logo">
+  <title>CAP — Civic Action Project</title>
+  <defs>
+    <!-- soft lift shadow for the badge -->
+    <filter id="badgeShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="9" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <!-- subtle drop shadow for star + letters -->
+    <filter id="liftShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="3" dy="5" stdDeviation="4" flood-color="#000000" flood-opacity="0.40"/>
+    </filter>
+  </defs>
+
+  <!-- ===== Badge: navy field, double frame (dark inner edge + tan band) ===== -->
+  <g filter="url(#badgeShadow)">
+    <rect x="26" y="26" width="548" height="548" rx="78" ry="78" fill="#dac792"/>
+    <rect x="38" y="38" width="524" height="524" rx="68" ry="68" fill="#002b5c"/>
+    <rect x="38" y="38" width="524" height="524" rx="68" ry="68"
+          fill="none" stroke="#0a1f3c" stroke-width="3"/>
+  </g>
+  <!-- thin dark line just inside the tan band -->
+  <rect x="26.5" y="26.5" width="547" height="547" rx="77.5" ry="77.5"
+        fill="none" stroke="#0a1f3c" stroke-width="1.5" opacity="0.55"/>
+
+  <!-- ===== Star: tan fill, teal outline, soft lift ===== -->
+  <path d="M300.00 102.00 L316.29 145.57 L362.77 147.60 L326.36 176.57 L338.79 221.40 L300.00 195.72 L261.21 221.40 L273.64 176.57 L237.23 147.60 L283.71 145.57 Z"
+        fill="#dac792" stroke="#00788a" stroke-width="6" stroke-linejoin="round"
+        filter="url(#liftShadow)"/>
+
+  <!-- ===== CAP wordmark: white serif, teal outline, lift shadow ===== -->
+  <text x="303" y="398"
+        font-family="'EB Garamond', 'Garamond', Georgia, serif"
+        font-size="178" font-weight="700" letter-spacing="22"
+        text-anchor="middle"
+        fill="#ffffff" stroke="#00788a" stroke-width="4.5"
+        paint-order="stroke" stroke-linejoin="round"
+        filter="url(#liftShadow)">CAP</text>
+
+  <!-- ===== Burgundy divider rule ===== -->
+  <rect x="150" y="432" width="300" height="6" rx="3" fill="#98002e"/>
+
+  <!-- ===== Tagline: tan serif, subtle teal outline ===== -->
+  <text x="301" y="492"
+        font-family="'EB Garamond', 'Garamond', Georgia, serif"
+        font-size="31" font-weight="600" letter-spacing="2.4"
+        text-anchor="middle"
+        fill="#dac792" stroke="#00788a" stroke-width="1.3"
+        paint-order="stroke" stroke-linejoin="round">CIVIC ACTION PROJECT</text>
+</svg>
