@@ -173,6 +173,38 @@
         }
 
         /* Category Sections */
+        .tier-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0 14px;
+            font-size: 0.88em;
+            color: #4a5a64;
+        }
+        .tier-controls-label {
+            font-weight: 600;
+            color: #002b5c;
+        }
+        .tier-control-btn {
+            background: #ffffff;
+            border: 1.5px solid #d4dde2;
+            border-radius: 6px;
+            color: #002b5c;
+            padding: 5px 12px;
+            font-family: inherit;
+            font-size: inherit;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .tier-control-btn:hover {
+            border-color: #00788a;
+            background: #e6f2f4;
+        }
+        .tier-control-btn:focus-visible {
+            outline: 2px solid #00788a;
+            outline-offset: 2px;
+        }
+
         .category-section {
             margin-bottom: 30px;
             border-radius: 10px;
@@ -186,6 +218,38 @@
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            user-select: none;
+            transition: filter 0.15s ease;
+        }
+        .category-header:hover { filter: brightness(1.08); }
+        .category-header:focus-visible {
+            outline: 3px solid #dac792;
+            outline-offset: -3px;
+        }
+        .category-chevron {
+            display: inline-block;
+            font-size: 0.85em;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+            opacity: 0.85;
+        }
+        .category-section.collapsed .category-chevron {
+            transform: rotate(-90deg);
+        }
+        .category-section.collapsed .category-content {
+            display: none;
+        }
+        .category-header-label { flex: 1; }
+        .category-header-hint {
+            font-size: 0.65em;
+            font-weight: 500;
+            opacity: 0.75;
+            text-shadow: none;
+            margin-left: 4px;
         }
         
         .category-high .category-header {
@@ -1259,6 +1323,8 @@
                                 <li><strong>Check the ones you want</strong> for your course.</li>
                                 <li><strong>Point values are editable</strong> &mdash; type a new number in
                                 any selected assignment's points field.</li>
+                                <li><strong>Click any tier header</strong> to collapse or expand that
+                                section &mdash; useful once you know which tiers you'll be using.</li>
                             </ul>
                         </div>
 
@@ -1299,6 +1365,16 @@
                     </div>
                 </div>
                 
+                <div class="tier-controls">
+                    <span class="tier-controls-label">Tier display:</span>
+                    <button type="button" class="tier-control-btn" onclick="setAllTiers(false)">
+                        ▾ Expand all
+                    </button>
+                    <button type="button" class="tier-control-btn" onclick="setAllTiers(true)">
+                        ▸ Collapse all
+                    </button>
+                </div>
+
                 <div id="assignmentSections">
                     <!-- This will be populated by JavaScript -->
                 </div>
@@ -3171,66 +3247,116 @@
                 });
         }
         
+        // ---- Collapsible tier sections ----
+        // Each tier's collapsed/expanded state persists in localStorage so
+        // reloads remember what the instructor had open. Defaults to expanded.
+        const COLLAPSE_KEY = 'capTrackerCollapsedTiers';
+        function getCollapsedTiers() {
+            try {
+                const raw = localStorage.getItem(COLLAPSE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (e) { return {}; }
+        }
+        function setTierCollapsed(tierKey, collapsed) {
+            const state = getCollapsedTiers();
+            if (collapsed) state[tierKey] = true; else delete state[tierKey];
+            try { localStorage.setItem(COLLAPSE_KEY, JSON.stringify(state)); } catch (e) {}
+        }
+        function toggleTier(headerEl) {
+            const section = headerEl.parentElement;
+            const tierKey = section.dataset.tierKey;
+            const collapsed = section.classList.toggle('collapsed');
+            headerEl.setAttribute('aria-expanded', String(!collapsed));
+            setTierCollapsed(tierKey, collapsed);
+        }
+        function setAllTiers(collapsed) {
+            document.querySelectorAll('.category-section[data-tier-key]').forEach(sec => {
+                const header = sec.querySelector('.category-header');
+                if (!header) return;
+                if (collapsed) sec.classList.add('collapsed');
+                else sec.classList.remove('collapsed');
+                header.setAttribute('aria-expanded', String(!collapsed));
+                setTierCollapsed(sec.dataset.tierKey, collapsed);
+            });
+        }
+
+        // Helper: build one tier section with a clickable, accessible header.
+        function buildTierSection(tierKey, sectionClass, emoji, label, hint) {
+            const collapsedState = getCollapsedTiers();
+            const isCollapsed = !!collapsedState[tierKey];
+            const section = document.createElement('div');
+            section.className = 'category-section ' + sectionClass + (isCollapsed ? ' collapsed' : '');
+            section.dataset.tierKey = tierKey;
+
+            const header = document.createElement('div');
+            header.className = 'category-header';
+            header.setAttribute('role', 'button');
+            header.setAttribute('tabindex', '0');
+            header.setAttribute('aria-expanded', String(!isCollapsed));
+            header.innerHTML =
+                '<span class="category-chevron" aria-hidden="true">\u25BE</span>' +
+                '<span class="category-header-label">' + emoji + ' ' + label +
+                (hint ? '<span class="category-header-hint"> &middot; ' + hint + '</span>' : '') +
+                '</span>';
+            header.addEventListener('click', function () { toggleTier(header); });
+            header.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleTier(header);
+                }
+            });
+            section.appendChild(header);
+
+            const content = document.createElement('div');
+            content.className = 'category-content';
+            section.appendChild(content);
+            return { section: section, content: content };
+        }
+
         function buildAssignmentSections() {
             console.log('Building assignment sections...');
             const container = document.getElementById('assignmentSections');
             container.innerHTML = '';
-            
-            // Higher Effort Section
-            const highSection = document.createElement('div');
-            highSection.className = 'category-section category-high';
-            highSection.innerHTML = '<div class="category-header">🔴 Higher Effort Activities (20-30 points) - 14 Assignments</div>';
-            const highContent = document.createElement('div');
-            highContent.className = 'category-content';
-            
+
+            // Higher Effort
+            const higher = buildTierSection(
+                'higher', 'category-high', '\uD83D\uDD34',
+                'Higher Effort Activities',
+                '20-30 points &middot; 14 Assignments');
             sortedIdsForCategory('Higher Effort').forEach(id => {
-                highContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
+                higher.content.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
             });
-            
-            highSection.appendChild(highContent);
-            container.appendChild(highSection);
-            
-            // Medium Effort Section
-            const mediumSection = document.createElement('div');
-            mediumSection.className = 'category-section category-medium';
-            mediumSection.innerHTML = '<div class="category-header">🟡 Medium Effort Activities (10-15 points) - 14 Assignments</div>';
-            const mediumContent = document.createElement('div');
-            mediumContent.className = 'category-content';
-            
+            container.appendChild(higher.section);
+
+            // Medium Effort
+            const medium = buildTierSection(
+                'medium', 'category-medium', '\uD83D\uDFE1',
+                'Medium Effort Activities',
+                '10-15 points &middot; 14 Assignments');
             sortedIdsForCategory('Medium Effort').forEach(id => {
-                mediumContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
+                medium.content.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
             });
-            
-            mediumSection.appendChild(mediumContent);
-            container.appendChild(mediumSection);
-            
-            // Quick Engagement Section
-            const quickSection = document.createElement('div');
-            quickSection.className = 'category-section category-quick';
-            quickSection.innerHTML = '<div class="category-header">🟢 Quick Engagement Activities (5-8 points) - 11 Assignments</div>';
-            const quickContent = document.createElement('div');
-            quickContent.className = 'category-content';
-            
+            container.appendChild(medium.section);
+
+            // Quick Engagement
+            const quick = buildTierSection(
+                'quick', 'category-quick', '\uD83D\uDFE2',
+                'Quick Engagement Activities',
+                '5-8 points &middot; 11 Assignments');
             sortedIdsForCategory('Quick Engagement').forEach(id => {
-                quickContent.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
+                quick.content.appendChild(createAssignmentItem(id, completeAssignmentDatabase[id]));
             });
-            
-            quickSection.appendChild(quickContent);
-            container.appendChild(quickSection);
-            
-            // Custom Assignments Section
-            const customSection = document.createElement('div');
-            customSection.className = 'category-section category-custom';
-            customSection.innerHTML = '<div class="category-header">⚙️ Custom Assignments (Instructor-Created)</div>';
-            const customContent = document.createElement('div');
-            customContent.className = 'category-content';
-            customContent.id = 'customAssignmentList';
-            
-            // Render any already-defined custom assignments
+            container.appendChild(quick.section);
+
+            // Custom Assignments
+            const custom = buildTierSection(
+                'custom', 'category-custom', '\u2699\uFE0F',
+                'Custom Assignments',
+                'Instructor-Created');
+            custom.content.id = 'customAssignmentList';
             Object.keys(customAssignments).forEach(id => {
-                customContent.appendChild(createAssignmentItem(id, customAssignments[id]));
+                custom.content.appendChild(createAssignmentItem(id, customAssignments[id]));
             });
-            
             // Add form
             const addForm = document.createElement('div');
             addForm.className = 'custom-add-form';
@@ -3245,10 +3371,8 @@
                 <input type="number" id="customPoints" placeholder="Pts" value="10" min="1" max="100" style="width:80px;">
                 <button class="btn-add-custom" onclick="addCustomAssignment()">+ Add Assignment</button>
             `;
-            customContent.appendChild(addForm);
-            
-            customSection.appendChild(customContent);
-            container.appendChild(customSection);
+            custom.content.appendChild(addForm);
+            container.appendChild(custom.section);
         }
         
         function createAssignmentItem(id, assignment) {
