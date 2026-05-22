@@ -443,6 +443,40 @@
         }
         .save-backup-link:hover { color: #005a6a; }
 
+        .setup-card-jump {
+            color: inherit;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.15s ease, color 0.15s ease;
+        }
+        .setup-card-jump:hover,
+        .setup-card-jump:focus-visible {
+            color: #98002e;
+            border-bottom-color: #98002e;
+            outline: none;
+        }
+        .setup-card-jump-arrow {
+            display: inline-block;
+            font-size: 0.85em;
+            transition: transform 0.2s ease;
+        }
+        .setup-card-jump:hover .setup-card-jump-arrow {
+            transform: translateY(2px);
+        }
+        /* Flash-highlight the export panel when the link is followed,
+           so it is obvious where the page just jumped to. */
+        .canvas-export-panel.jump-flash {
+            animation: panelFlash 1.4s ease-out;
+        }
+        @keyframes panelFlash {
+            0%   { box-shadow: 0 0 0 0 rgba(152, 0, 46, 0); }
+            25%  { box-shadow: 0 0 0 6px rgba(152, 0, 46, 0.35); }
+            100% { box-shadow: 0 0 0 0 rgba(152, 0, 46, 0); }
+        }
+
         .canvas-export-panel {
             background: #ffffff;
             border: 2px solid #00788a;
@@ -1348,7 +1382,12 @@
 
                         <div class="setup-card setup-card-canvas">
                             <div class="setup-card-icon">📦</div>
-                            <h3>Take It Live in Canvas</h3>
+                            <h3>
+                                <a href="#canvasExportPanel" class="setup-card-jump" onclick="jumpToCanvasExport(event)">
+                                    Take It Live in Canvas
+                                    <span class="setup-card-jump-arrow" aria-hidden="true">↓</span>
+                                </a>
+                            </h3>
                             <p>Once your selections look right, scroll down past the assignment
                             sections &mdash; there's a Canvas export panel waiting for you.</p>
                             <ul>
@@ -1418,7 +1457,7 @@
                     </button>
                 </div>
 
-                <div class="canvas-export-panel">
+                <div class="canvas-export-panel" id="canvasExportPanel">
                     <h3>📦 Export a Canvas Import Package</h3>
                     <p class="canvas-export-intro">
                         Build your CAP above &mdash; select the activities you want and set their point
@@ -4876,6 +4915,21 @@ bodyHtml + '\n</body>\n</html>\n';
         }
 
         // Main entry point — wired to the Export button.
+        // Smooth-scroll from the Setup Instructions "Take It Live in Canvas"
+        // card down to the Canvas export panel, with a brief flash so the
+        // instructor sees where the page landed.
+        function jumpToCanvasExport(event) {
+            if (event) event.preventDefault();
+            const panel = document.getElementById('canvasExportPanel');
+            if (!panel) return;
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            panel.classList.remove('jump-flash');
+            // Force a reflow so the animation restarts on repeat clicks.
+            void panel.offsetWidth;
+            panel.classList.add('jump-flash');
+            setTimeout(function () { panel.classList.remove('jump-flash'); }, 1500);
+        }
+
         async function exportCanvasPackage() {
             if (typeof JSZip === 'undefined') {
                 capSetStatus('err', 'The packaging library did not load. Check your internet connection and try again.');
