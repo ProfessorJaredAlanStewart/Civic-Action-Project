@@ -73,36 +73,105 @@
         
         .setup-instructions {
             background: linear-gradient(135deg, #e6f2f4 0%, #bfe0e5 100%);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 26px 30px 30px;
+            border-radius: 14px;
             margin-bottom: 30px;
             border-left: 5px solid #002b5c;
+            box-shadow: 0 4px 16px rgba(0,43,92,0.08);
         }
-        
+
         .setup-instructions h2 {
             color: #002b5c;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
+            font-size: 1.55em;
         }
-        
-        .setup-instructions ul {
+
+        .setup-intro {
+            color: #2b3a44;
+            font-size: 0.98em;
+            line-height: 1.55;
+            margin-bottom: 22px;
+            max-width: 920px;
+        }
+
+        .setup-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .setup-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px 20px 18px;
+            border-top: 4px solid #00788a;
+            box-shadow: 0 2px 10px rgba(0,43,92,0.06);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setup-card-canvas {
+            border-top-color: #98002e;
+            background: linear-gradient(180deg, #fff 0%, #fff8e6 100%);
+        }
+
+        .setup-card-icon {
+            font-size: 1.9em;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .setup-card h3 {
+            color: #002b5c;
+            font-size: 1.1em;
+            margin: 0 0 8px;
+        }
+
+        .setup-card > p {
+            color: #4a5a64;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin: 0 0 12px;
+        }
+
+        .setup-card ul {
             list-style: none;
             padding-left: 0;
+            margin: 0;
         }
-        
-        .setup-instructions li {
-            padding: 5px 0;
-            padding-left: 25px;
+
+        .setup-card li {
+            padding: 5px 0 5px 22px;
             position: relative;
+            font-size: 0.88em;
+            color: #2b3a44;
+            line-height: 1.5;
         }
-        
-        .setup-instructions li:before {
-            content: "✓";
+
+        .setup-card li:before {
+            content: "→";
             position: absolute;
             left: 0;
-            color: #2e7d32;
-            font-weight: bold;
+            top: 5px;
+            color: #00788a;
+            font-weight: 700;
         }
-        
+
+        .setup-card-canvas li:before {
+            color: #98002e;
+        }
+
+        .setup-card code {
+            background: #eef2f4;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 0.88em;
+        }
+
+        @media (max-width: 1000px) {
+            .setup-cards { grid-template-columns: 1fr; }
+        }
+
         /* Category Sections */
         .category-section {
             margin-bottom: 30px;
@@ -275,6 +344,41 @@
         }
         
         /* Action Buttons */
+        .save-backup-banner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #fff8e6 0%, #fff3d4 100%);
+            border: 1.5px solid #dac792;
+            border-left: 5px solid #b8860b;
+            border-radius: 10px;
+            padding: 11px 18px;
+            margin: 12px 0 18px;
+            font-size: 0.92em;
+            color: #5a4520;
+            line-height: 1.5;
+        }
+        .save-backup-icon {
+            font-size: 1.4em;
+            flex-shrink: 0;
+        }
+        .save-backup-text { flex: 1; }
+        .save-backup-text strong { color: #4a3815; }
+        .save-backup-link {
+            display: inline-block;
+            margin-left: 6px;
+            background: transparent;
+            border: none;
+            color: #00788a;
+            font-weight: 600;
+            font-size: inherit;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+        }
+        .save-backup-link:hover { color: #005a6a; }
+
         .canvas-export-panel {
             background: #ffffff;
             border: 2px solid #00788a;
@@ -1138,14 +1242,61 @@
             <div class="setup-container">
                 <div class="setup-instructions">
                     <h2>📋 Setup Instructions</h2>
-                    <ul>
-                        <li>Browse all 39 assignments across three effort levels</li>
-                        <li>Click "View Details" to see complete rubrics</li>
-                        <li>Select assignments to include in your tracker</li>
-                        <li>Customize point values as needed</li>
-                        <li>Add your own custom assignments (extra credit, bonus activities, etc.)</li>
-                        <li>Click "Generate Tracker" to create your custom tracking system</li>
-                    </ul>
+                    <p class="setup-intro">
+                        Build the CAP that fits your course. Pick the activities you'll actually use,
+                        set their point values, and either start tracking student progress or hand the
+                        whole package off to Canvas in one click.
+                    </p>
+                    <div class="setup-cards">
+                        <div class="setup-card">
+                            <div class="setup-card-icon">🔎</div>
+                            <h3>Browse & Customize</h3>
+                            <p>All 39 CAP assignments are grouped by effort tier &mdash; Higher Effort,
+                            Medium Effort, and Quick Engagement &mdash; below this box.</p>
+                            <ul>
+                                <li><strong>Click "View Details"</strong> on any assignment for its full
+                                description, requirements, and the Complete/Incomplete rubric.</li>
+                                <li><strong>Check the ones you want</strong> for your course.</li>
+                                <li><strong>Point values are editable</strong> &mdash; type a new number in
+                                any selected assignment's points field.</li>
+                            </ul>
+                        </div>
+
+                        <div class="setup-card">
+                            <div class="setup-card-icon">✨</div>
+                            <h3>Make It Yours</h3>
+                            <p>Use the CAP as-is, or shape it to your section. Nothing here is locked.</p>
+                            <ul>
+                                <li><strong>Add your own assignments</strong> with the "Add Custom
+                                Assignment" button &mdash; extra credit, course-specific projects,
+                                anything you want students to be able to complete.</li>
+                                <li><strong>Target points are flexible too</strong> &mdash; the default is
+                                100 to match the standard CAP, but you can set whatever total works for
+                                your gradebook.</li>
+                                <li><strong>Click "Generate Tracker"</strong> to lock in your choices
+                                and move to student tracking. <em>Once you're tracking, save a JSON
+                                backup often &mdash; the tracker autosaves to your browser, but a
+                                backup file is your safety net.</em></li>
+                            </ul>
+                        </div>
+
+                        <div class="setup-card setup-card-canvas">
+                            <div class="setup-card-icon">📦</div>
+                            <h3>Take It Live in Canvas</h3>
+                            <p>Once your selections look right, scroll down past the assignment
+                            sections &mdash; there's a Canvas export panel waiting for you.</p>
+                            <ul>
+                                <li><strong>One-click Canvas package.</strong> Generates an <code>.imscc</code>
+                                file with <em>only</em> your selected assignments, at <em>your</em> point
+                                values, all in one CAP module.</li>
+                                <li><strong>Full rubrics travel with each assignment</strong> &mdash;
+                                Complete/Incomplete grading, ready to use the moment Canvas finishes
+                                importing.</li>
+                                <li><strong>Optional add-ons:</strong> include the three CAP checkpoint
+                                assignments and/or the pre/post civic-engagement surveys.</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="assignmentSections">
@@ -1259,6 +1410,17 @@
                     <input type="file" id="gradebookFileInput" accept=".csv" style="display: none;" onchange="handleGradebookFill(event)">
                     <button class="btn-delete" onclick="clearSection()">🗑️ Clear Students</button>
                     <button class="btn-delete" onclick="deleteSection()" style="background: #98002e;">✖ Delete Section</button>
+                </div>
+
+                <!-- Save-often reminder, visible whenever the tracking controls are -->
+                <div id="saveBackupBanner" class="save-backup-banner" style="display: none;">
+                    <span class="save-backup-icon" aria-hidden="true">💾</span>
+                    <span class="save-backup-text">
+                        <strong>Save backups often.</strong> Your work autosaves in this browser, but a
+                        downloaded JSON backup is your only safety net if the browser cache clears, the
+                        device changes, or something goes sideways.
+                        <button class="save-backup-link" onclick="openDataModal()">Open Import/Export Data &rarr;</button>
+                    </span>
                 </div>
                 
                 <!-- Category Show/Hide Toggles + Legend -->
@@ -3542,6 +3704,7 @@
                 currentSection = name;
                 document.getElementById('previewMessage').style.display = 'none';
                 document.getElementById('studentControls').style.display = 'flex';
+                document.getElementById('saveBackupBanner').style.display = 'flex';
                 saveConfiguration();
                 renderSectionTabs();
                 showSection(name);
@@ -3567,6 +3730,7 @@
         function showSection(name) {
             currentSection = name;
             document.getElementById('studentControls').style.display = 'flex';
+                document.getElementById('saveBackupBanner').style.display = 'flex';
             document.getElementById('previewMessage').style.display = 'none';
             renderSectionTabs();
             renderTable();
@@ -3937,6 +4101,7 @@
                     showSection(remainingSections[0]);
                 } else {
                     document.getElementById('studentControls').style.display = 'none';
+                    document.getElementById('saveBackupBanner').style.display = 'none';
                     document.getElementById('previewMessage').style.display = 'block';
                     renderTableHeaders();
                 }
