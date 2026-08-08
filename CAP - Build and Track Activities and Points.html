@@ -1303,6 +1303,147 @@
         #tableBody tr .student-name:hover {
             background-color: #e6f2f4;
         }
+        /* ── Due dates + setup usability ── */
+        .sticky-mini {
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            background: #002b5c;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 18px;
+            margin: 0 0 14px;
+            font-size: 0.92em;
+            box-shadow: 0 4px 14px rgba(0,43,92,0.35);
+        }
+        .sticky-mini b { color: #dac792; }
+        .sticky-mini .mini-warn { color: #ffb3c1; font-weight: 600; }
+        .assignment-search {
+            width: 100%;
+            padding: 11px 16px;
+            border: 2px solid #d4dde2;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.98em;
+            margin: 0 0 14px;
+        }
+        .assignment-search:focus {
+            outline: none;
+            border-color: #00788a;
+            box-shadow: 0 0 6px rgba(0,120,138,0.3);
+        }
+        .due-date-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: #e6f2f4;
+            border: 2px solid #00788a;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 0 0 18px;
+            font-size: 0.93em;
+            color: #2b3a44;
+        }
+        .due-date-bar-label {
+            font-weight: 700;
+            color: #002b5c;
+        }
+        .due-date-bar input[type="date"],
+        .due-date-bar input[type="time"],
+        .due-date-bar select {
+            padding: 7px 10px;
+            border: 1.5px solid #d4dde2;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: inherit;
+            background: #fff;
+        }
+        .due-date-bar input:focus, .due-date-bar select:focus {
+            outline: none;
+            border-color: #00788a;
+        }
+        .due-btn {
+            background: linear-gradient(135deg, #00788a, #005f6e);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .due-btn:hover { filter: brightness(1.1); }
+        .due-btn-clear {
+            background: #fff;
+            color: #98002e;
+            border: 1.5px solid #98002e;
+        }
+        .due-date-note {
+            flex-basis: 100%;
+            font-size: 0.88em;
+            color: #4a5a64;
+            font-style: italic;
+        }
+        .date-input {
+            padding: 6px 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        .date-input:focus {
+            outline: none;
+            border-color: #00788a;
+            box-shadow: 0 0 5px rgba(0,120,138,0.3);
+        }
+        .date-input:disabled {
+            background: #f5f5f5;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .tier-select-btns {
+            display: inline-flex;
+            gap: 6px;
+            margin-left: 10px;
+        }
+        .tier-select-btns button {
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.45);
+            color: #fff;
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 0.62em;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            text-shadow: none;
+            transition: background 0.15s ease;
+        }
+        .tier-select-btns button:hover { background: rgba(255,255,255,0.3); }
+        .target-warning {
+            display: none;
+            margin-top: 14px;
+            background: #fbe9ee;
+            border-left: 4px solid #98002e;
+            color: #6e0020;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.92em;
+        }
+        .th-due {
+            display: inline-block;
+            font-size: 0.78em;
+            font-weight: 600;
+            opacity: 0.95;
+            margin-top: 2px;
+        }
         .tcc-brand-stripe { display:flex; height:6px; width:100%; }
         .tcc-brand-stripe > span { flex:1; display:block; }
         .tcc-brand-stripe .nv { background:#002b5c; }
@@ -1414,6 +1555,37 @@
                     </button>
                 </div>
 
+                <div class="sticky-mini" id="stickyMini" aria-live="polite">
+                    <span>Selected: <b id="miniSelected">0</b></span>
+                    <span>Points: <b id="miniPoints">0</b> / <b id="miniTarget">100</b> target</span>
+                    <span id="miniDated"></span>
+                    <span class="mini-warn" id="miniWarn" style="display:none;">⚠ below target</span>
+                </div>
+
+                <input type="search" id="assignmentSearch" class="assignment-search"
+                       placeholder="🔎 Filter assignments by name…"
+                       oninput="filterAssignments(this.value)" aria-label="Filter assignments by name">
+
+                <div class="due-date-bar" id="dueDateBar">
+                    <span class="due-date-bar-label">📅 Due dates:</span>
+                    <input type="date" id="bulkDueDate" aria-label="Bulk due date">
+                    <span>at</span>
+                    <input type="time" id="bulkDueTime" value="23:59" onchange="onDueTimeChanged()" aria-label="Due time for all dated assignments">
+                    <span>for</span>
+                    <select id="bulkDueScope" aria-label="Which selected assignments to apply the date to">
+                        <option value="all">All selected assignments</option>
+                        <option value="Higher Effort">Selected Higher Effort</option>
+                        <option value="Medium Effort">Selected Medium Effort</option>
+                        <option value="Quick Engagement">Selected Quick Engagement</option>
+                        <option value="Custom">Selected Custom</option>
+                    </select>
+                    <button type="button" class="due-btn" onclick="applyBulkDueDate()">Apply</button>
+                    <button type="button" class="due-btn due-btn-clear" onclick="clearDueDates()">Clear all dates</button>
+                    <span class="due-date-note">Dates are optional and export into the Canvas package (blank = no due date).
+                    Every dated assignment uses the time shown here; individual dates can be set or changed
+                    in each assignment's row below once it's checked.</span>
+                </div>
+
                 <div id="assignmentSections">
                     <!-- This will be populated by JavaScript -->
                 </div>
@@ -1433,13 +1605,18 @@
                             <div class="config-stat-label">Total Possible Points</div>
                             <div class="config-stat-value" id="totalPoints">0</div>
                         </div>
+                        <div class="config-stat">
+                            <div class="config-stat-label">With Due Dates</div>
+                            <div class="config-stat-value" id="datedCount">0</div>
+                        </div>
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
                         <label style="font-weight: bold; font-size: 1.1em;">
                             Target Completion Points:
-                            <input type="number" class="target-points-input" id="targetPoints" value="100" min="0">
+                            <input type="number" class="target-points-input" id="targetPoints" value="100" min="0" oninput="updateSummary()">
                         </label>
                     </div>
+                    <div class="target-warning" id="targetWarning"></div>
                 </div>
                 
                 <div class="action-buttons">
@@ -3200,12 +3377,107 @@
         let customAssignments = {};
         let customCounter = 0;
         
+        // ---- Due dates ----
+        // One optional date per assignment plus a single shared due time.
+        // Persisted separately from the tracker so dates survive reloads even
+        // before "Generate Tracker" is ever clicked.
+        const DUE_KEY = 'capTrackerDueDates';
+        let dueDates = {};      // { assignmentId: 'YYYY-MM-DD' }
+        let dueTime = '23:59';  // HH:MM (local) applied to every dated assignment
+        
+        function saveDueDates() {
+            try { localStorage.setItem(DUE_KEY, JSON.stringify({ dates: dueDates, time: dueTime })); } catch (e) {}
+        }
+        function loadDueDates() {
+            try {
+                const raw = localStorage.getItem(DUE_KEY);
+                if (raw) {
+                    const d = JSON.parse(raw);
+                    if (d && d.dates) dueDates = d.dates;
+                    if (d && d.time) dueTime = d.time;
+                }
+            } catch (e) {}
+        }
+        function syncDueDateInputs() {
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const di = document.getElementById(`date-${id}`);
+                if (di) di.value = dueDates[id] || '';
+            });
+            const bdt = document.getElementById('bulkDueTime');
+            if (bdt) bdt.value = dueTime;
+        }
+        function onDueDateChanged(e) {
+            const id = e.target.id.replace(/^date-/, '');
+            if (e.target.value) dueDates[id] = e.target.value;
+            else delete dueDates[id];
+            saveDueDates();
+            updateSummary();
+        }
+        function onDueTimeChanged() {
+            const t = document.getElementById('bulkDueTime');
+            if (t && t.value) { dueTime = t.value; saveDueDates(); }
+        }
+        function applyBulkDueDate() {
+            const dateEl = document.getElementById('bulkDueDate');
+            const date = dateEl ? dateEl.value : '';
+            if (!date) { alert('Pick a date first.'); return; }
+            onDueTimeChanged();
+            const scope = document.getElementById('bulkDueScope').value;
+            let applied = 0;
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                if (!checkbox || !checkbox.checked) return;
+                if (scope !== 'all' && completeAssignmentDatabase[id].category !== scope) return;
+                dueDates[id] = date;
+                const di = document.getElementById(`date-${id}`);
+                if (di) di.value = date;
+                applied++;
+            });
+            if (applied === 0) {
+                alert(scope === 'all'
+                    ? 'No assignments are selected yet — check the boxes first, then apply.'
+                    : `No selected assignments in the "${scope}" tier — check some boxes there first.`);
+                return;
+            }
+            saveDueDates();
+            updateSummary();
+        }
+        function clearDueDates() {
+            const dated = Object.keys(dueDates).length;
+            if (dated === 0) return;
+            if (!confirm(`Clear all ${dated} due dates?`)) return;
+            dueDates = {};
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const di = document.getElementById(`date-${id}`);
+                if (di) di.value = '';
+            });
+            saveDueDates();
+            updateSummary();
+        }
+        // "2026-09-15" -> "9/15" for compact display in tracker headers
+        function fmtDueShort(dateStr) {
+            if (!dateStr) return '';
+            const p = String(dateStr).split('-').map(Number);
+            if (p.length !== 3 || p.some(isNaN)) return dateStr;
+            return p[1] + '/' + p[2];
+        }
+        
         // Initialize on page load
         window.addEventListener('DOMContentLoaded', function() {
             console.log('Initializing CAP Tracker...');
             loadCustomAssignments();
+            loadDueDates();
             buildAssignmentSections();
             loadSavedConfiguration();
+            
+            // Seed due dates from a saved config (e.g., a tracker restored on a
+            // new device via JSON import) when none are stored locally yet
+            if (Object.keys(dueDates).length === 0 && activeConfig.assignments.some(a => a.dueDate)) {
+                activeConfig.assignments.forEach(a => { if (a.dueDate) dueDates[a.id] = a.dueDate; });
+                if (activeConfig.dueTime) dueTime = activeConfig.dueTime;
+                saveDueDates();
+            }
+            syncDueDateInputs();
             
             // AUTO-RESUME: If we have a saved config with assignments, skip setup
             if (activeConfig.assignments.length > 0) {
@@ -3318,6 +3590,34 @@
                 setTierCollapsed(sec.dataset.tierKey, collapsed);
             });
         }
+        
+        // Live filter for the assignment list. While a query is active,
+        // sections expand to reveal matches (without persisting that state);
+        // clearing the query restores each tier's saved collapse state.
+        function filterAssignments(query) {
+            const q = (query || '').trim().toLowerCase();
+            const collapsedState = getCollapsedTiers();
+            document.querySelectorAll('.category-section[data-tier-key]').forEach(sec => {
+                let visible = 0;
+                sec.querySelectorAll('.assignment-item').forEach(item => {
+                    const label = item.querySelector('.assignment-label');
+                    const match = !q || (label && label.textContent.toLowerCase().includes(q));
+                    item.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+                const form = sec.querySelector('.custom-add-form');
+                if (form) form.style.display = q ? 'none' : '';
+                if (q) {
+                    sec.classList.remove('collapsed');
+                    sec.style.display = visible ? '' : 'none';
+                } else {
+                    sec.style.display = '';
+                    sec.classList.toggle('collapsed', !!collapsedState[sec.dataset.tierKey]);
+                }
+                const header = sec.querySelector('.category-header');
+                if (header) header.setAttribute('aria-expanded', String(!sec.classList.contains('collapsed')));
+            });
+        }
 
         // Helper: build one tier section with a clickable, accessible header.
         function buildTierSection(tierKey, sectionClass, emoji, label, hint) {
@@ -3344,6 +3644,24 @@
                     toggleTier(header);
                 }
             });
+            // Per-tier select buttons (don't toggle the collapse when clicked)
+            const tierBtns = document.createElement('span');
+            tierBtns.className = 'tier-select-btns';
+            const mkTierBtn = (txt, checked) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.textContent = txt;
+                b.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    section.querySelectorAll('.assignment-checkbox').forEach(cb => { cb.checked = checked; });
+                    updateSummary();
+                });
+                b.addEventListener('keydown', function (e) { e.stopPropagation(); });
+                return b;
+            };
+            tierBtns.appendChild(mkTierBtn('Select all', true));
+            tierBtns.appendChild(mkTierBtn('None', false));
+            header.appendChild(tierBtns);
             section.appendChild(header);
 
             const content = document.createElement('div');
@@ -3443,6 +3761,15 @@
             const pointsSpan = document.createElement('span');
             pointsSpan.textContent = 'points';
             
+            const dateInput = document.createElement('input');
+            dateInput.type = 'date';
+            dateInput.className = 'date-input';
+            dateInput.id = `date-${id}`;
+            dateInput.title = 'Due date (optional — exports to Canvas)';
+            dateInput.disabled = true;
+            dateInput.value = dueDates[id] || '';
+            dateInput.onchange = onDueDateChanged;
+            
             const viewBtn = document.createElement('button');
             viewBtn.className = 'view-details-btn';
             viewBtn.textContent = 'View Details';
@@ -3452,6 +3779,7 @@
             item.appendChild(label);
             item.appendChild(pointsInput);
             item.appendChild(pointsSpan);
+            item.appendChild(dateInput);
             item.appendChild(viewBtn);
             
             // Add remove button for custom assignments
@@ -3664,23 +3992,51 @@
         function updateSummary() {
             let selected = 0;
             let total = 0;
+            let dated = 0;
             
             Object.keys(completeAssignmentDatabase).forEach(id => {
                 const checkbox = document.getElementById(`check-${id}`);
                 const pointsInput = document.getElementById(`points-${id}`);
+                const dateInput = document.getElementById(`date-${id}`);
                 
                 if (checkbox && checkbox.checked) {
                     selected++;
                     total += parseInt(pointsInput.value) || 0;
                     pointsInput.disabled = false;
-                } else if (pointsInput) {
-                    pointsInput.disabled = true;
+                    if (dateInput) {
+                        dateInput.disabled = false;
+                        if (dateInput.value) dated++;
+                    }
+                } else {
+                    if (pointsInput) pointsInput.disabled = true;
+                    if (dateInput) dateInput.disabled = true;
                 }
             });
             
             document.getElementById('selectedCount').textContent = selected;
             document.getElementById('totalPoints').textContent = total;
             document.getElementById('totalAvailable').textContent = Object.keys(completeAssignmentDatabase).length;
+            const datedStat = document.getElementById('datedCount');
+            if (datedStat) datedStat.textContent = selected ? `${dated} of ${selected}` : '0';
+            
+            // Warn when completion is mathematically impossible
+            const target = parseInt(document.getElementById('targetPoints').value) || 100;
+            const below = selected > 0 && total < target;
+            const warn = document.getElementById('targetWarning');
+            if (warn) {
+                warn.style.display = below ? 'block' : 'none';
+                if (below) warn.textContent = `⚠ Total possible points (${total}) are below the target (${target}) — students could not reach completion. Select more assignments or lower the target.`;
+            }
+            
+            // Sticky mini summary
+            const ms = document.getElementById('miniSelected');
+            if (ms) {
+                ms.textContent = selected;
+                document.getElementById('miniPoints').textContent = total;
+                document.getElementById('miniTarget').textContent = target;
+                document.getElementById('miniDated').innerHTML = dated ? `Due dates: <b>${dated}</b>` : '';
+                document.getElementById('miniWarn').style.display = below ? 'inline' : 'none';
+            }
         }
         
         function selectAllAssignments() {
@@ -3703,6 +4059,7 @@
             // Collect selected assignments
             activeConfig.assignments = [];
             activeConfig.targetPoints = parseInt(document.getElementById('targetPoints').value) || 100;
+            activeConfig.dueTime = dueTime;
             
             Object.keys(completeAssignmentDatabase).forEach(id => {
                 const checkbox = document.getElementById(`check-${id}`);
@@ -3714,7 +4071,8 @@
                         id: id,
                         name: assignment.name,
                         category: assignment.category,
-                        points: parseInt(pointsInput.value) || 0
+                        points: parseInt(pointsInput.value) || 0,
+                        dueDate: dueDates[id] || null
                     });
                 }
             });
@@ -3814,7 +4172,8 @@
                 if (prevGroup !== null && group !== prevGroup) {
                     th.classList.add('cat-boundary');
                 }
-                th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
+                th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)` +
+                    (assignment.dueDate ? `<br><span class="th-due">due ${fmtDueShort(assignment.dueDate)}</span>` : '');
                 headerRow.appendChild(th);
                 prevGroup = group;
             });
@@ -3953,7 +4312,8 @@
                 const th = document.createElement('th');
                 th.className = getCatClass(assignment.category);
                 if (boundarySet.has(i)) th.classList.add('cat-boundary');
-                th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)`;
+                th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)` +
+                    (assignment.dueDate ? `<br><span class="th-due">due ${fmtDueShort(assignment.dueDate)}</span>` : '');
                 headerRow.appendChild(th);
             });
             
@@ -4071,79 +4431,49 @@
         
         function handleCanvasCSV(event) {
             const file = event.target.files[0];
-            if (!file || !currentSection) {
-                if (!currentSection) alert('Please select a section first!');
+            if (!file) return;
+            
+            if (!currentSection) {
+                alert('Please create a section first!');
+                event.target.value = '';
                 return;
             }
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result.replace(/^\uFEFF/, ''); // Strip BOM
-                const lines = text.split(/\r?\n/);
+                const text = e.target.result;
+                const lines = text.split('\n');
                 let studentsAdded = 0;
                 
-                if (lines.length < 2) {
-                    alert('CSV file appears to be empty.');
-                    return;
-                }
-                
-                // Detect format from header row
-                const headerFields = parseCSVLine(lines[0]);
-                const headerLower = headerFields.map(h => h.replace(/['"]/g, '').trim().toLowerCase());
-                
-                // Format A: Section roster — single "student name" column, "Last, First M." format
-                // Format B: Gradebook — has columns like "Student", "First Name" at index 1, "Last Name" at index 3
-                const isRosterFormat = (headerFields.length <= 2 && headerLower.some(h => h.includes('student name')));
-                
+                // Skip header row(s) - Canvas CSVs have headers
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
                     
-                    let fullName = '';
+                    // Parse CSV line (handle quoted fields)
+                    const fields = parseCSVLine(line);
+                    if (fields.length === 0) continue;
                     
-                    if (isRosterFormat) {
-                        // Section roster: single column "Last, First M."
-                        const raw = line.replace(/^["']|["']$/g, '').trim();
-                        if (!raw) continue;
-                        
-                        // Parse "Last, First M." → "First Last"
-                        const commaIdx = raw.indexOf(',');
-                        if (commaIdx !== -1) {
-                            const lastName = raw.substring(0, commaIdx).trim();
-                            // Take first name only (drop middle initial)
-                            const restParts = raw.substring(commaIdx + 1).trim().split(/\s+/);
-                            const firstName = restParts[0] || '';
-                            fullName = `${firstName} ${lastName}`;
-                        } else {
-                            fullName = raw; // No comma — use as-is
-                        }
-                    } else {
-                        // Gradebook format: First Name at index 1, Last Name at index 3
-                        const fields = parseCSVLine(line);
-                        if (fields.length >= 4) {
-                            const firstName = fields[1].replace(/['"]/g, '').trim();
-                            const lastName = fields[3].replace(/['"]/g, '').trim();
-                            if (firstName && lastName) {
-                                fullName = `${firstName} ${lastName}`;
-                            }
-                        }
+                    const studentName = fields[0].trim();
+                    
+                    // Skip empty names, test students, and points possible rows
+                    if (!studentName || 
+                        studentName.toLowerCase().includes('points possible') ||
+                        studentName.toLowerCase().includes('student, test') ||
+                        studentName.toLowerCase() === 'student') {
+                        continue;
                     }
                     
-                    fullName = fullName.trim();
-                    if (!fullName) continue;
-                    
-                    // Check if student already exists (case-insensitive)
-                    const exists = trackerSections[currentSection].some(
-                        student => student.name.toLowerCase() === fullName.toLowerCase()
-                    );
-                    
+                    // Check if student already exists
+                    const exists = trackerSections[currentSection].some(s => s.name === studentName);
                     if (!exists) {
                         const completed = {};
                         activeConfig.assignments.forEach(a => {
                             completed[a.id] = false;
                         });
+                        
                         trackerSections[currentSection].push({
-                            name: fullName,
+                            name: studentName,
                             completed: completed,
                             notes: ''
                         });
@@ -4151,25 +4481,17 @@
                     }
                 }
                 
-                if (studentsAdded > 0) {
-                    saveConfiguration();
-                    renderTable();
-                    alert(`Successfully imported ${studentsAdded} students from Canvas roster!`);
-                } else {
-                    alert('No new students were added. They may already exist in this section.');
-                }
-            };
-            
-            reader.onerror = function() {
-                alert('Error reading file. Please try again.');
+                saveConfiguration();
+                renderTable();
+                alert(`Added ${studentsAdded} students to ${currentSection}`);
             };
             
             reader.readAsText(file);
-            event.target.value = ''; // Reset file input
+            event.target.value = '';
         }
         
         function parseCSVLine(line) {
-            const result = [];
+            const fields = [];
             let current = '';
             let inQuotes = false;
             
@@ -4179,60 +4501,49 @@
                 if (char === '"') {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
-                    result.push(current);
+                    fields.push(current);
                     current = '';
                 } else {
                     current += char;
                 }
             }
+            fields.push(current);
             
-            result.push(current); // Don't forget the last field
-            return result;
+            return fields;
         }
         
         function exportSection() {
-            if (!currentSection) return;
+            if (!currentSection) {
+                alert('No section selected!');
+                return;
+            }
             
-            let csv = 'Student Name,';
-            csv += activeConfig.assignments.map(a => `"${a.name}"`).join(',');
-            csv += ',Total Points,Categories,Notes\n';
+            const data = {
+                section: currentSection,
+                config: activeConfig,
+                students: trackerSections[currentSection],
+                exportDate: new Date().toISOString()
+            };
             
-            trackerSections[currentSection].forEach(student => {
-                csv += `"${student.name}",`;
-                
-                let total = 0;
-                const categories = new Set();
-                
-                activeConfig.assignments.forEach(assignment => {
-                    const completed = student.completed[assignment.id] || false;
-                    csv += (completed ? 'Complete' : '') + ',';
-                    if (completed) {
-                        total += assignment.points;
-                        categories.add(assignment.category);
-                    }
-                });
-                
-                csv += `${total},${categories.size},"${student.notes || ''}"\n`;
-            });
-            
-            const blob = new Blob([csv], {type: 'text/csv'});
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `CAP_Tracker_${currentSection}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.download = `CAP_${currentSection.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
         
         function saveConfiguration() {
-            localStorage.setItem('capTrackerCompleteData', JSON.stringify({
+            const data = {
                 config: activeConfig,
                 sections: trackerSections,
-                customAssignments: customAssignments
-            }));
+                customAssignments: customAssignments,
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('capTrackerCompleteData', JSON.stringify(data));
         }
         
-        // Data Modal Functions
         function openDataModal() {
             document.getElementById('dataModal').style.display = 'block';
         }
@@ -4241,57 +4552,52 @@
             document.getElementById('dataModal').style.display = 'none';
         }
         
-        // Delete Section with confirmation
         function deleteSection() {
             if (!currentSection) {
                 alert('No section selected!');
                 return;
             }
             
-            const studentCount = trackerSections[currentSection]?.length || 0;
-            const message = studentCount > 0 
-                ? `Are you sure you want to delete the section "${currentSection}"?\n\nThis will permanently delete ${studentCount} student(s) and all their progress data.\n\nThis action cannot be undone!`
-                : `Are you sure you want to delete the section "${currentSection}"?`;
-            
-            if (confirm(message)) {
+            if (confirm(`Delete section "${currentSection}" and all its students? This cannot be undone.`)) {
                 delete trackerSections[currentSection];
-                currentSection = null;
-                saveConfiguration();
                 
-                // If there are remaining sections, switch to the first one
                 const remainingSections = Object.keys(trackerSections);
                 if (remainingSections.length > 0) {
-                    showSection(remainingSections[0]);
+                    currentSection = remainingSections[0];
+                    showSection(currentSection);
                 } else {
+                    currentSection = null;
                     document.getElementById('studentControls').style.display = 'none';
                     document.getElementById('saveBackupBanner').style.display = 'none';
                     document.getElementById('previewMessage').style.display = 'block';
                     renderTableHeaders();
+                    renderSectionTabs();
                 }
-                renderSectionTabs();
+                
+                saveConfiguration();
             }
         }
         
-        // Export Full Save as JSON
         function exportFullSave() {
-            const saveData = {
-                exportDate: new Date().toISOString(),
-                version: '4.0',
+            const data = {
                 config: activeConfig,
                 sections: trackerSections,
-                customAssignments: customAssignments
+                customAssignments: customAssignments,
+                dueDates: dueDates,
+                dueTime: dueTime,
+                exportDate: new Date().toISOString(),
+                version: '2.0-keyed'
             };
             
-            const blob = new Blob([JSON.stringify(saveData, null, 2)], {type: 'application/json'});
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `CAP_Tracker_Save_${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `CAP_Tracker_Full_Save_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
         
-        // Import JSON with smart merge - uses assignment IDs for reliable matching
         function handleJSONImport(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -4299,185 +4605,132 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
+                    const imported = JSON.parse(e.target.result);
                     
-                    if (!importedData.config || !importedData.sections) {
-                        alert('Invalid save file format. Please select a valid CAP Tracker save file.');
-                        return;
-                    }
-                    
-                    // Import custom assignments if present
-                    if (importedData.customAssignments) {
-                        Object.keys(importedData.customAssignments).forEach(id => {
+                    // Import custom assignments first
+                    if (imported.customAssignments) {
+                        Object.keys(imported.customAssignments).forEach(id => {
                             if (!customAssignments[id]) {
-                                customAssignments[id] = importedData.customAssignments[id];
-                                completeAssignmentDatabase[id] = importedData.customAssignments[id];
+                                customAssignments[id] = imported.customAssignments[id];
+                                completeAssignmentDatabase[id] = imported.customAssignments[id];
                             }
                         });
                         saveCustomAssignments();
                     }
                     
-                    // Merge configuration - use imported if current is empty
-                    if (activeConfig.assignments.length === 0 && importedData.config.assignments.length > 0) {
-                        activeConfig = importedData.config;
-                    }
-                    
-                    // Build a lookup of imported assignment IDs for conversion
-                    const importedAssignments = importedData.config.assignments || [];
-                    
-                    // Helper: convert imported student's completed data to keyed format
-                    function normalizeCompleted(importedCompleted) {
-                        if (!importedCompleted) return {};
-                        
-                        // Already keyed object format
-                        if (!Array.isArray(importedCompleted)) {
-                            return importedCompleted;
-                        }
-                        
-                        // Old positional array format - use IMPORTED config's assignment order
-                        const keyed = {};
-                        importedCompleted.forEach((val, idx) => {
-                            if (idx < importedAssignments.length) {
-                                keyed[importedAssignments[idx].id] = !!val;
-                            }
+                    // Import due dates (fill in any this browser doesn't have)
+                    if (imported.dueDates) {
+                        Object.keys(imported.dueDates).forEach(id => {
+                            if (!dueDates[id]) dueDates[id] = imported.dueDates[id];
                         });
-                        return keyed;
+                        if (imported.dueTime && dueTime === '23:59') dueTime = imported.dueTime;
+                        saveDueDates();
+                        syncDueDateInputs();
+                        updateSummary();
                     }
                     
-                    // Smart merge sections
-                    let studentsAdded = 0;
-                    let studentsUpdated = 0;
-                    let sectionsAdded = 0;
+                    // Import config if we don't have one
+                    if (imported.config && activeConfig.assignments.length === 0) {
+                        activeConfig = imported.config;
+                    }
                     
-                    Object.keys(importedData.sections).forEach(sectionName => {
-                        if (!trackerSections[sectionName]) {
-                            trackerSections[sectionName] = [];
-                            sectionsAdded++;
-                        }
-                        
-                        const importedStudents = importedData.sections[sectionName];
-                        
-                        importedStudents.forEach(importedStudent => {
-                            const importedCompleted = normalizeCompleted(importedStudent.completed);
-                            
-                            // Find existing student by name
-                            const existingIdx = trackerSections[sectionName].findIndex(
-                                s => s.name.toLowerCase() === importedStudent.name.toLowerCase()
-                            );
-                            
-                            if (existingIdx === -1) {
-                                // New student - add them with keyed data
-                                const completed = {};
-                                activeConfig.assignments.forEach(a => {
-                                    completed[a.id] = importedCompleted[a.id] || false;
-                                });
-                                
-                                trackerSections[sectionName].push({
-                                    name: importedStudent.name,
-                                    completed: completed,
-                                    notes: importedStudent.notes || ''
-                                });
-                                studentsAdded++;
+                    // Merge sections - KEYED DATA merge
+                    if (imported.sections) {
+                        Object.keys(imported.sections).forEach(sectionName => {
+                            if (!trackerSections[sectionName]) {
+                                // New section - just add it
+                                trackerSections[sectionName] = imported.sections[sectionName];
                             } else {
-                                // Existing student - merge by assignment ID
-                                const existing = trackerSections[sectionName][existingIdx];
-                                let wasUpdated = false;
-                                
-                                // Ensure existing data is keyed (not array)
-                                if (Array.isArray(existing.completed)) {
-                                    const keyed = {};
-                                    existing.completed.forEach((val, idx) => {
-                                        if (idx < activeConfig.assignments.length) {
-                                            keyed[activeConfig.assignments[idx].id] = !!val;
+                                // Merge students
+                                imported.sections[sectionName].forEach(importedStudent => {
+                                    const existing = trackerSections[sectionName].find(
+                                        s => s.name === importedStudent.name
+                                    );
+                                    
+                                    if (!existing) {
+                                        trackerSections[sectionName].push(importedStudent);
+                                    } else {
+                                        // Merge completions - keep TRUE values (highest completion)
+                                        const importedCompleted = importedStudent.completed || {};
+                                        Object.keys(importedCompleted).forEach(assignmentId => {
+                                            if (importedCompleted[assignmentId]) {
+                                                existing.completed[assignmentId] = true;
+                                            }
+                                        });
+                                        
+                                        // Keep longer notes
+                                        if (importedStudent.notes && 
+                                            importedStudent.notes.length > (existing.notes || '').length) {
+                                            existing.notes = importedStudent.notes;
                                         }
-                                    });
-                                    existing.completed = keyed;
-                                }
-                                
-                                // Merge: if either has TRUE for an assignment ID, result is TRUE
-                                Object.keys(importedCompleted).forEach(assignmentId => {
-                                    if (importedCompleted[assignmentId] && !existing.completed[assignmentId]) {
-                                        existing.completed[assignmentId] = true;
-                                        wasUpdated = true;
                                     }
                                 });
-                                
-                                // Ensure all current config assignments exist in the student
-                                activeConfig.assignments.forEach(a => {
-                                    if (existing.completed[a.id] === undefined) {
-                                        existing.completed[a.id] = importedCompleted[a.id] || false;
-                                    }
-                                });
-                                
-                                // Keep existing notes if present, otherwise use imported
-                                if (!existing.notes && importedStudent.notes) {
-                                    existing.notes = importedStudent.notes;
-                                    wasUpdated = true;
-                                }
-                                
-                                if (wasUpdated) studentsUpdated++;
                             }
                         });
-                    });
-                    
-                    saveConfiguration();
-                    renderSectionTabs();
-                    if (currentSection) {
-                        renderTable();
                     }
                     
-                    alert(`Import Complete!\n\n• Sections added: ${sectionsAdded}\n• Students added: ${studentsAdded}\n• Students updated: ${studentsUpdated}\n\nCompleted assignments have been merged by assignment name - students now have credit for all assignments marked complete in either file.`);
+                    // Handle old single-section format
+                    if (imported.section && imported.students) {
+                        const sectionName = imported.section;
+                        if (!trackerSections[sectionName]) {
+                            trackerSections[sectionName] = imported.students;
+                        } else {
+                            imported.students.forEach(importedStudent => {
+                                const existing = trackerSections[sectionName].find(
+                                    s => s.name === importedStudent.name
+                                );
+                                if (!existing) {
+                                    trackerSections[sectionName].push(importedStudent);
+                                }
+                            });
+                        }
+                    }
                     
-                } catch (err) {
-                    console.error('Import error:', err);
-                    alert('Error reading file. Please ensure it is a valid JSON save file.');
+                    migrateCompletedData();
+                    saveConfiguration();
+                    
+                    // Refresh display
+                    if (Object.keys(trackerSections).length > 0) {
+                        const firstSection = currentSection || Object.keys(trackerSections)[0];
+                        showSection(firstSection);
+                    }
+                    
+                    alert('Data imported and merged successfully!');
+                } catch (error) {
+                    alert('Error importing file: ' + error.message);
                 }
             };
             
             reader.readAsText(file);
-            event.target.value = ''; // Reset file input
+            event.target.value = '';
         }
         
-        // Export Student Summary as CSV
         function exportStudentSummary() {
-            if (Object.keys(trackerSections).length === 0) {
-                alert('No sections to export!');
-                return;
-            }
+            let csv = 'Section,Student Name,Total Points,Target Points,Categories Completed,Status,Completed Assignments,Notes\n';
             
-            // Build CSV header
-            let csv = 'Section,Student Name,Total Points,Target Points,Status,Categories Met,Category Requirement Met,Completed Assignments,Notes\n';
-            
-            // Process all sections
             Object.keys(trackerSections).forEach(sectionName => {
                 trackerSections[sectionName].forEach(student => {
                     let total = 0;
                     const categories = new Set();
-                    const completedAssignments = [];
+                    const completedNames = [];
                     
                     activeConfig.assignments.forEach(assignment => {
                         if (student.completed[assignment.id]) {
                             total += assignment.points;
                             categories.add(assignment.category);
-                            completedAssignments.push(assignment.name);
+                            completedNames.push(assignment.name);
                         }
                     });
                     
-                    const pointsMet = total >= activeConfig.targetPoints;
-                    const categoryMet = categories.size >= 2;
-                    const status = (pointsMet && categoryMet) ? 'COMPLETE' : 'IN PROGRESS';
+                    const status = (total >= activeConfig.targetPoints && categories.size >= 2) 
+                        ? 'COMPLETE' 
+                        : 'IN PROGRESS';
                     
-                    // Escape fields for CSV
-                    const escapedName = `"${student.name.replace(/"/g, '""')}"`;
-                    const escapedSection = `"${sectionName.replace(/"/g, '""')}"`;
-                    const escapedAssignments = `"${completedAssignments.join('; ').replace(/"/g, '""')}"`;
-                    const escapedNotes = `"${(student.notes || '').replace(/"/g, '""')}"`;
-                    
-                    csv += `${escapedSection},${escapedName},${total},${activeConfig.targetPoints},${status},${categories.size},${categoryMet ? 'Yes' : 'No'},${escapedAssignments},${escapedNotes}\n`;
+                    csv += `"${sectionName}","${student.name}",${total},${activeConfig.targetPoints},${categories.size},"${status}","${completedNames.join('; ')}","${student.notes || ''}"\n`;
                 });
             });
             
-            const blob = new Blob([csv], {type: 'text/csv'});
+            const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -4485,666 +4738,674 @@
             a.click();
             URL.revokeObjectURL(url);
         }
-
-        // ====================================================================
-        // FILL CANVAS GRADEBOOK
-        // The instructor uploads a real Canvas gradebook export. This matches
-        // CAP assignment columns by NAME, fills complete/incomplete for each
-        // student from the tracker, and returns a CSV the instructor re-imports
-        // into Canvas. It only touches cells it can match — every other column
-        // (and every non-CAP assignment) is passed through untouched.
-        // ====================================================================
-
-        // Normalize an assignment name for fuzzy matching: lowercase, strip the
-        // trailing Canvas id "(12345)", collapse whitespace, drop punctuation.
+        
+        // ═══════════════════════════════════════════════════════════
+        // FILL CANVAS GRADEBOOK (CSV round-trip)
+        // ═══════════════════════════════════════════════════════════
+        
+        // Normalize a name for matching: lowercase, trim, collapse spaces,
+        // and convert "Last, First" to "first last"
         function gbNormalizeName(raw) {
-            return String(raw == null ? '' : raw)
-                .replace(/\(\d+\)\s*$/, '')          // strip "(12345)" id suffix
-                .toLowerCase()
-                .replace(/[^a-z0-9 ]+/g, ' ')        // punctuation -> space
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        // Normalize a student name to "first last" lowercase for matching.
-        // Canvas gradebook rows are "Last, First Middle".
-        function gbNormalizeStudent(raw) {
-            let s = String(raw == null ? '' : raw).replace(/^["']|["']$/g, '').trim();
-            if (s.indexOf(',') !== -1) {
-                const ci = s.indexOf(',');
-                const last = s.substring(0, ci).trim();
-                const first = s.substring(ci + 1).trim().split(/\s+/)[0] || '';
-                s = first + ' ' + last;
+            if (!raw) return '';
+            let n = String(raw).replace(/"/g, '').trim().toLowerCase();
+            if (n.includes(',')) {
+                const parts = n.split(',').map(p => p.trim()).filter(Boolean);
+                if (parts.length >= 2) {
+                    n = parts.slice(1).join(' ') + ' ' + parts[0];
+                }
             }
-            return s.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+            return n.replace(/\s+/g, ' ').trim();
         }
-
-        // --- Gradebook guide modal: walks faculty through the export/fill/import flow ---
+        
+        function gbNormalizeStudent(name) {
+            return gbNormalizeName(name);
+        }
+        
         function openGradebookGuide() {
             closeDataModal();
-            const label = document.getElementById('gbCurrentSectionName');
-            if (currentSection && trackerSections[currentSection]) {
-                const n = trackerSections[currentSection].length;
-                label.textContent = currentSection + '  (' + n + ' student' +
-                                     (n === 1 ? '' : 's') + ')';
-            } else {
-                label.textContent = '(no section selected — open a section first)';
-            }
+            document.getElementById('gbCurrentSectionName').textContent =
+                currentSection || '(no section selected)';
             document.getElementById('gradebookGuideModal').style.display = 'block';
         }
+        
         function closeGradebookGuide() {
             document.getElementById('gradebookGuideModal').style.display = 'none';
         }
+        
         function startGradebookFill() {
-            if (!currentSection || !trackerSections[currentSection] ||
-                trackerSections[currentSection].length === 0) {
-                alert('Open a section with students first, then start again.\n\n' +
-                      'The gradebook is filled from the section currently shown in the tracker.');
+            if (!currentSection) {
+                alert('Please open a section first — the gradebook is filled from the section currently shown in the tracker.');
                 return;
             }
             closeGradebookGuide();
             document.getElementById('gradebookFileInput').click();
         }
-
+        
         function handleGradebookFill(event) {
             const file = event.target.files[0];
-            event.target.value = '';
             if (!file) return;
-            if (!currentSection || !trackerSections[currentSection] ||
-                trackerSections[currentSection].length === 0) {
-                alert('Open a section with students first — the gradebook is filled from the section you are viewing.');
+            
+            if (!currentSection) {
+                alert('Please open a section first!');
+                event.target.value = '';
                 return;
             }
-
+            
             const reader = new FileReader();
-            reader.onload = function (e) {
+            reader.onload = function(e) {
                 try {
-                    const text = e.target.result.replace(/^\uFEFF/, '');
-                    const rawLines = text.split(/\r?\n/);
-                    // keep line objects so we can rewrite cells and re-join
-                    const lines = rawLines.filter(function (l, i) {
-                        return i === 0 || l.trim() !== '';
-                    });
+                    const text = e.target.result;
+                    // Keep line endings intact for reconstruction; split on \r\n or \n
+                    const lines = text.split(/\r\n|\n/);
                     if (lines.length < 2) {
-                        alert('That CSV looks empty. Export your gradebook from Canvas (Grades \u2192 Export) and try again.');
+                        alert('That file does not look like a Canvas gradebook export.');
                         return;
                     }
-
+                    
+                    // Parse the header row
                     const header = parseCSVLine(lines[0]);
-                    const headerNorm = header.map(gbNormalizeName);
-
-                    // Canvas gradebook always starts: Student, ID, SIS User ID,
-                    // SIS Login ID, Section. The student name is column 0.
-                    const studentCol = 0;
-                    if (!/student/.test(String(header[0]).toLowerCase())) {
-                        alert('This does not look like a Canvas gradebook export. The first column should be "Student".\n\nIn Canvas: Grades \u2192 Export \u2192 Export Entire Gradebook.');
-                        return;
-                    }
-
-                    // Build a name -> tracker-assignment lookup for this section.
-                    const trackerByName = {};
-                    activeConfig.assignments.forEach(function (a) {
-                        trackerByName[gbNormalizeName(a.name)] = a;
-                    });
-
-                    // Find which gradebook columns correspond to CAP assignments.
-                    const capColumns = [];   // {colIndex, assignment}
-                    const unmatchedCap = []; // CAP assignments with no column
-                    const matchedNames = {};
-                    header.forEach(function (h, idx) {
-                        const norm = headerNorm[idx];
-                        if (norm && trackerByName[norm]) {
-                            capColumns.push({ col: idx, assignment: trackerByName[norm] });
-                            matchedNames[norm] = true;
+                    
+                    // Find which columns correspond to CAP assignments.
+                    // Canvas column headers look like: "Assignment Name (12345)"
+                    // We match on the assignment name portion.
+                    const colToAssignment = {};   // column index -> assignment object
+                    const matchedAssignments = [];
+                    const unmatchedAssignments = [];
+                    
+                    activeConfig.assignments.forEach(assignment => {
+                        let foundCol = -1;
+                        for (let c = 0; c < header.length; c++) {
+                            const colName = header[c].replace(/"/g, '').trim();
+                            // Strip the trailing Canvas ID: "Name (12345)" -> "Name"
+                            const baseName = colName.replace(/\s*\(\d+\)\s*$/, '').trim();
+                            if (baseName.toLowerCase() === assignment.name.toLowerCase()) {
+                                foundCol = c;
+                                break;
+                            }
+                        }
+                        if (foundCol >= 0) {
+                            colToAssignment[foundCol] = assignment;
+                            matchedAssignments.push(assignment.name);
+                        } else {
+                            unmatchedAssignments.push(assignment.name);
                         }
                     });
-                    activeConfig.assignments.forEach(function (a) {
-                        if (!matchedNames[gbNormalizeName(a.name)]) unmatchedCap.push(a.name);
-                    });
-
-                    if (capColumns.length === 0) {
-                        alert('No CAP assignment columns were found in this gradebook.\n\n' +
-                              'Make sure you have already imported the CAP assignments into this ' +
-                              'Canvas course, then export the gradebook again. The column headers ' +
-                              'must match the CAP assignment names.');
+                    
+                    if (matchedAssignments.length === 0) {
+                        alert('No CAP assignment columns were found in that gradebook.\n\n' +
+                              'Make sure the CAP assignments have been imported into the Canvas course first ' +
+                              '(use the Export Canvas Package tool on the setup page), then re-export the gradebook.');
                         return;
                     }
-
-                    // Build a name -> tracker-student lookup.
-                    const studentsByName = {};
-                    trackerSections[currentSection].forEach(function (st) {
-                        studentsByName[gbNormalizeStudent(st.name)] = st;
+                    
+                    // Find the student-name column (usually column 0, "Student")
+                    let nameCol = 0;
+                    for (let c = 0; c < header.length; c++) {
+                        const h = header[c].replace(/"/g, '').trim().toLowerCase();
+                        if (h === 'student' || h === 'student name') { nameCol = c; break; }
+                    }
+                    
+                    // Build lookup of tracker students by normalized name
+                    const trackerLookup = {};
+                    trackerSections[currentSection].forEach(student => {
+                        trackerLookup[gbNormalizeStudent(student.name)] = student;
                     });
-
-                    // Walk the gradebook rows. Row index 1 is usually the
-                    // "Points Possible" row — leave it completely untouched.
-                    const outLines = [lines[0]];
-                    let filledStudents = 0, filledCells = 0;
-                    const unmatchedStudents = [];
-                    let pointsPossibleRowKept = false;
-
+                    
+                    // Walk the data rows and fill in complete/incomplete
+                    let filledStudents = 0;
+                    const skippedStudents = [];
+                    const outLines = [lines[0]];  // header unchanged
+                    
                     for (let i = 1; i < lines.length; i++) {
-                        const fields = parseCSVLine(lines[i]);
-                        const nameCell = (fields[studentCol] || '').replace(/^["']|["']$/g, '').trim();
-                        const lowerName = nameCell.toLowerCase();
-
-                        // Pass through the Points Possible row unchanged.
-                        if (lowerName.indexOf('points possible') !== -1) {
-                            outLines.push(lines[i]);
-                            pointsPossibleRowKept = true;
+                        const line = lines[i];
+                        if (!line.trim()) { outLines.push(line); continue; }
+                        
+                        const fields = parseCSVLine(line);
+                        const rawName = (fields[nameCol] || '').replace(/"/g, '').trim();
+                        
+                        // Pass through non-student rows untouched (Points Possible, test student)
+                        if (!rawName ||
+                            rawName.toLowerCase().includes('points possible') ||
+                            rawName.toLowerCase().includes('student, test')) {
+                            outLines.push(line);
                             continue;
                         }
-                        // Pass through any blank/structural row unchanged.
-                        if (!nameCell) { outLines.push(lines[i]); continue; }
-
-                        const student = studentsByName[gbNormalizeStudent(nameCell)];
+                        
+                        const student = trackerLookup[gbNormalizeName(rawName)];
                         if (!student) {
-                            unmatchedStudents.push(nameCell);
-                            outLines.push(lines[i]); // leave untouched
+                            skippedStudents.push(rawName);
+                            outLines.push(line);
                             continue;
                         }
-
-                        // Fill the CAP columns for this student.
-                        let touched = false;
-                        capColumns.forEach(function (cc) {
-                            const done = !!student.completed[cc.assignment.id];
-                            // ensure the row has enough fields
-                            while (fields.length <= cc.col) fields.push('');
-                            fields[cc.col] = done ? 'complete' : 'incomplete';
-                            filledCells++;
-                            touched = true;
+                        
+                        // Fill each matched CAP column
+                        Object.keys(colToAssignment).forEach(colStr => {
+                            const c = parseInt(colStr);
+                            const assignment = colToAssignment[c];
+                            // Extend the row if it is short
+                            while (fields.length <= c) fields.push('');
+                            fields[c] = student.completed[assignment.id] ? 'complete' : 'incomplete';
                         });
-                        if (touched) filledStudents++;
-
-                        // re-quote any field containing comma/quote/newline
-                        const rebuilt = fields.map(function (f) {
-                            const v = String(f == null ? '' : f);
-                            return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+                        
+                        // Rebuild the CSV line, restoring quotes where needed
+                        const rebuilt = fields.map(f => {
+                            const v = String(f);
+                            return (v.includes(',') || v.includes('"'))
+                                ? '"' + v.replace(/"/g, '""') + '"'
+                                : v;
                         }).join(',');
+                        
                         outLines.push(rebuilt);
+                        filledStudents++;
                     }
-
-                    // Generate the filled file.
-                    const outCsv = outLines.join('\r\n') + '\r\n';
+                    
+                    // Download the filled file
+                    const outCsv = outLines.join('\n');
                     const blob = new Blob([outCsv], { type: 'text/csv' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    const now = new Date();
-                    const stamp = now.getFullYear() + '-' +
-                        String(now.getMonth() + 1).padStart(2, '0') + '-' +
-                        String(now.getDate()).padStart(2, '0') + '_' +
-                        String(now.getHours()).padStart(2, '0') +
-                        String(now.getMinutes()).padStart(2, '0');
-                    const sectionTag = (currentSection || 'Section')
-                        .replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-                    a.download = 'CAP_Gradebook_Filled_' + sectionTag + '_' + stamp + '.csv';
+                    a.download = `CAP_Gradebook_Filled_${new Date().toISOString().split('T')[0]}.csv`;
                     a.click();
                     URL.revokeObjectURL(url);
-
-                    // Honest report — what matched, what didn't.
-                    let msg = 'Filled gradebook downloaded.\n\n' +
-                        '\u2713 ' + capColumns.length + ' CAP assignment column' +
-                        (capColumns.length === 1 ? '' : 's') + ' matched\n' +
-                        '\u2713 ' + filledStudents + ' student' +
-                        (filledStudents === 1 ? '' : 's') + ' filled (' +
-                        filledCells + ' grade cells)\n';
-                    if (!pointsPossibleRowKept) {
-                        msg += '\u2022 Note: no "Points Possible" row was found \u2014 ' +
-                               'that is normal for some exports.\n';
+                    
+                    // Summary report
+                    let msg = `Gradebook filled!\n\n` +
+                        `✓ ${filledStudents} students updated\n` +
+                        `✓ ${matchedAssignments.length} CAP assignment columns filled\n`;
+                    if (unmatchedAssignments.length > 0) {
+                        msg += `\n⚠ ${unmatchedAssignments.length} tracker assignments had no matching Canvas column:\n` +
+                            unmatchedAssignments.slice(0, 8).join('\n') +
+                            (unmatchedAssignments.length > 8 ? '\n…' : '');
                     }
-                    if (unmatchedCap.length > 0) {
-                        msg += '\n\u26A0 ' + unmatchedCap.length + ' CAP assignment' +
-                               (unmatchedCap.length === 1 ? '' : 's') +
-                               ' had no matching gradebook column (left alone):\n   ' +
-                               unmatchedCap.slice(0, 8).join(', ') +
-                               (unmatchedCap.length > 8 ? ', \u2026' : '');
+                    if (skippedStudents.length > 0) {
+                        msg += `\n⚠ ${skippedStudents.length} gradebook students not found in the tracker (left untouched):\n` +
+                            skippedStudents.slice(0, 8).join('\n') +
+                            (skippedStudents.length > 8 ? '\n…' : '');
                     }
-                    if (unmatchedStudents.length > 0) {
-                        msg += '\n\u26A0 ' + unmatchedStudents.length + ' gradebook student' +
-                               (unmatchedStudents.length === 1 ? '' : 's') +
-                               ' not found in this tracker section (left alone):\n   ' +
-                               unmatchedStudents.slice(0, 6).join('; ') +
-                               (unmatchedStudents.length > 6 ? '; \u2026' : '');
-                    }
-                    msg += '\n\nNEXT STEP \u2014 in Canvas: Grades \u2192 Import, and upload ' +
-                           'the file that just downloaded:\n   ' + a.download +
-                           '\n\nReview the preview Canvas shows you before saving.';
+                    msg += `\n\nNow import the downloaded CAP_Gradebook_Filled file in Canvas Grades → Import.`;
                     alert(msg);
-                } catch (err) {
-                    console.error('Gradebook fill failed:', err);
-                    alert('Something went wrong reading that gradebook file: ' +
-                          (err && err.message ? err.message : err) +
-                          '\n\nMake sure it is an unmodified Canvas gradebook export (.csv).');
+                    
+                } catch (error) {
+                    alert('Error processing gradebook: ' + error.message);
                 }
             };
-            reader.onerror = function () { alert('Could not read that file. Please try again.'); };
+            
             reader.readAsText(file);
+            event.target.value = '';
         }
-
-        // Close modal on click outside
+        
+        // Close modal when clicking outside
         window.onclick = function(event) {
-            if (event.target === document.getElementById('detailsModal')) {
+            const detailsModal = document.getElementById('detailsModal');
+            const dataModal = document.getElementById('dataModal');
+            const gbModal = document.getElementById('gradebookGuideModal');
+            
+            if (event.target === detailsModal) {
                 closeModal();
             }
-            if (event.target === document.getElementById('dataModal')) {
+            if (event.target === dataModal) {
                 closeDataModal();
             }
-            if (event.target === document.getElementById('gradebookGuideModal')) {
+            if (event.target === gbModal) {
                 closeGradebookGuide();
             }
         }
-
-        // ====================================================================
-        // CANVAS COMMON CARTRIDGE (.imscc) EXPORT
-        // Generates a valid IMS Common Cartridge v1.1 in the browser from the
-        // assignments the instructor selected in the setup phase. Each becomes
-        // a Complete/Incomplete Canvas assignment with its full rubric in the
-        // description. Uses JSZip (loaded from CDN).
-        // ====================================================================
-
-        // Deterministic 32-char hex id (Canvas resource-identifier style).
-        function capHexId(seed) {
-            // Simple FNV-1a hash spun into 32 hex chars — stable per seed.
-            let h1 = 0x811c9dc5, h2 = 0x811c9dc5 ^ 0x5bd1e995;
-            for (let i = 0; i < seed.length; i++) {
-                const c = seed.charCodeAt(i);
-                h1 = (h1 ^ c) >>> 0; h1 = (h1 * 0x01000193) >>> 0;
-                h2 = (h2 ^ c) >>> 0; h2 = (h2 * 0x01000193 + i) >>> 0;
+        
+        // ═══════════════════════════════════════════════════════════
+        // CANVAS EXPORT (.imscc Common Cartridge package)
+        // ═══════════════════════════════════════════════════════════
+        
+        // Stable pseudo-random hex identifier (Canvas-style "i" + 32 hex chars)
+        function capHexId() {
+            let s = 'i';
+            const hex = '0123456789abcdef';
+            for (let i = 0; i < 32; i++) {
+                s += hex[Math.floor(Math.random() * 16)];
             }
-            const hex = n => ('00000000' + (n >>> 0).toString(16)).slice(-8);
-            // 32 hex chars: weave two 16-char halves
-            return 'g' + (hex(h1) + hex(h2 ^ 0x9e3779b9) +
-                          hex(h1 ^ 0x85ebca6b) + hex(h2)).slice(0, 31);
+            return s;
         }
-
-        function capXmlEscape(t) {
-            return String(t == null ? '' : t)
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        
+        function capXmlEscape(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
         }
-
-        function capSlug(name) {
-            return name.toLowerCase()
-                .replace(/#/g, 'number-')
+        
+        function capSlug(str) {
+            return String(str).toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '') || 'assignment';
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 60) || 'item';
         }
-
-        // Build the assignment_settings.xml (Canvas cccv1p0 schema, pass_fail).
-        function capAssignmentSettingsXml(resId, title) {
-            return '<?xml version="1.0" encoding="UTF-8"?>\n' +
-'<assignment identifier="' + resId + '" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">\n' +
-'  <title>' + capXmlEscape(title) + '</title>\n' +
-'  <due_at/>\n  <lock_at/>\n  <unlock_at/>\n' +
-'  <module_locked>false</module_locked>\n' +
-'  <assignment_group_identifierref>cap_group_main</assignment_group_identifierref>\n' +
-'  <workflow_state>published</workflow_state>\n' +
-'  <assignment_overrides>\n  </assignment_overrides>\n' +
-'  <allowed_extensions></allowed_extensions>\n' +
-'  <has_group_category>false</has_group_category>\n' +
-'  <points_possible>0.0</points_possible>\n' +
-'  <grading_type>pass_fail</grading_type>\n' +
-'  <all_day>false</all_day>\n' +
-'  <submission_types>online_text_entry,online_url,media_recording,online_upload</submission_types>\n' +
-'  <turnitin_enabled>false</turnitin_enabled>\n' +
-'  <vericite_enabled>false</vericite_enabled>\n' +
-'  <peer_review_count>0</peer_review_count>\n' +
-'  <peer_reviews>false</peer_reviews>\n' +
-'  <automatic_peer_reviews>false</automatic_peer_reviews>\n' +
-'  <anonymous_peer_reviews>false</anonymous_peer_reviews>\n' +
-'  <grade_group_students_individually>false</grade_group_students_individually>\n' +
-'  <freeze_on_copy>false</freeze_on_copy>\n' +
-'  <omit_from_final_grade>false</omit_from_final_grade>\n' +
-'  <hide_in_gradebook>false</hide_in_gradebook>\n' +
-'  <intra_group_peer_reviews>false</intra_group_peer_reviews>\n' +
-'  <only_visible_to_overrides>false</only_visible_to_overrides>\n' +
-'  <post_to_sis>false</post_to_sis>\n' +
-'  <moderated_grading>false</moderated_grading>\n' +
-'  <grader_count>0</grader_count>\n' +
-'  <grader_comments_visible_to_graders>true</grader_comments_visible_to_graders>\n' +
-'  <anonymous_grading>false</anonymous_grading>\n' +
-'  <graders_anonymous_to_graders>false</graders_anonymous_to_graders>\n' +
-'  <grader_names_visible_to_final_grader>true</grader_names_visible_to_final_grader>\n' +
-'  <anonymous_instructor_annotations>false</anonymous_instructor_annotations>\n' +
-'  <allowed_attempts>2</allowed_attempts>\n' +
-'  <post_policy>\n    <post_manually>false</post_manually>\n  </post_policy>\n' +
-'</assignment>\n';
+        
+        // Convert a local date (YYYY-MM-DD) + time (HH:MM) into the UTC ISO
+        // string Canvas expects in <due_at>. Canvas reads due_at as UTC, so
+        // "Sept 15 at 11:59 PM Central" must be written as 2026-09-16T04:59:00Z.
+        // Building the Date from local parts and calling toISOString() handles
+        // the instructor's timezone AND daylight saving automatically.
+        function capDueAtIso(dateStr, timeStr) {
+            if (!dateStr) return null;
+            const dp = String(dateStr).split('-').map(Number);
+            if (dp.length !== 3 || dp.some(isNaN)) return null;
+            let hh = 23, mm = 59;
+            const tm = /^(\d{1,2}):(\d{2})/.exec(String(timeStr || ''));
+            if (tm) { hh = parseInt(tm[1]); mm = parseInt(tm[2]); }
+            const local = new Date(dp[0], dp[1] - 1, dp[2], hh, mm, 0);
+            if (isNaN(local.getTime())) return null;
+            return local.toISOString().replace(/\.\d{3}Z$/, 'Z');
         }
-
-        // Build the assignment HTML body (description, requirements, rubric).
-        // `points` is the instructor's chosen value, surfaced in the body since
-        // pass_fail assignments do not carry a numeric points field.
-        function capAssignmentHtml(a, points) {
-            let reqs = '';
-            (a.requirements || []).forEach(function (r) {
-                reqs += '<li>' + capXmlEscape(r) + '</li>\n';
-            });
-            let rubric = '';
+        
+        // assignment_settings.xml — Canvas reads this for grading type etc.
+        function capAssignmentSettingsXml(resId, title, dueAtIso) {
+            return `<?xml version="1.0" encoding="UTF-8"?>
+<assignment identifier="${resId}" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <title>${capXmlEscape(title)}</title>
+  ${dueAtIso ? '<due_at>' + dueAtIso + '</due_at>' : '<due_at/>'}
+  <lock_at/>
+  <unlock_at/>
+  <module_locked>false</module_locked>
+  <workflow_state>unpublished</workflow_state>
+  <assignment_overrides>
+  </assignment_overrides>
+  <allowed_extensions></allowed_extensions>
+  <has_group_category>false</has_group_category>
+  <points_possible>0.0</points_possible>
+  <grading_type>pass_fail</grading_type>
+  <all_day>false</all_day>
+  <submission_types>online_text_entry,online_upload,online_url</submission_types>
+  <position>1</position>
+  <turnitin_enabled>false</turnitin_enabled>
+  <vericite_enabled>false</vericite_enabled>
+  <peer_review_count>0</peer_review_count>
+  <peer_reviews>false</peer_reviews>
+  <automatic_peer_reviews>false</automatic_peer_reviews>
+  <anonymous_peer_reviews>false</anonymous_peer_reviews>
+  <grade_group_students_individually>false</grade_group_students_individually>
+  <freeze_on_copy>false</freeze_on_copy>
+  <omit_from_final_grade>false</omit_from_final_grade>
+  <intra_group_peer_reviews>false</intra_group_peer_reviews>
+  <only_visible_to_overrides>false</only_visible_to_overrides>
+  <post_to_sis>false</post_to_sis>
+  <moderated_grading>false</moderated_grading>
+  <grader_count>0</grader_count>
+  <grader_comments_visible_to_graders>true</grader_comments_visible_to_graders>
+  <anonymous_grading>false</anonymous_grading>
+  <graders_anonymous_to_graders>false</graders_anonymous_to_graders>
+  <grader_names_visible_to_final_grader>true</grader_names_visible_to_final_grader>
+  <anonymous_instructor_annotations>false</anonymous_instructor_annotations>
+  <post_policy>
+    <post_manually>false</post_manually>
+  </post_policy>
+</assignment>
+`;
+        }
+        
+        // Build the rich HTML description for one CAP assignment
+        function capAssignmentHtml(assignment, points) {
+            const a = assignment;
+            let html = `<h2>${capXmlEscape(a.name)}</h2>`;
+            html += `<p><strong>Category:</strong> ${capXmlEscape(a.category)} &nbsp;|&nbsp; <strong>Point Value:</strong> ${points} CAP points &nbsp;|&nbsp; <strong>Estimated Time:</strong> ${capXmlEscape(a.estimatedTime || 'Varies')}</p>`;
+            html += `<p>${capXmlEscape(a.description || '')}</p>`;
+            
+            if (a.requirements && a.requirements.length) {
+                html += `<h3>Requirements</h3><ul>`;
+                a.requirements.forEach(r => { html += `<li>${capXmlEscape(r)}</li>`; });
+                html += `</ul>`;
+            }
+            
             if (a.rubric) {
-                Object.keys(a.rubric).forEach(function (cat) {
-                    let items = '';
-                    (a.rubric[cat] || []).forEach(function (it) {
-                        items += '<li>' + capXmlEscape(it) + '</li>\n';
-                    });
-                    rubric += '<div class="rubric-category">\n<h4>' + capXmlEscape(cat) +
-                              '</h4>\n<ul class="rubric-items">\n' + items + '</ul>\n</div>\n';
+                html += `<h3>Complete/Incomplete Rubric</h3>`;
+                html += `<p><em>Full credit is earned when ALL criteria below are met:</em></p>`;
+                Object.keys(a.rubric).forEach(cat => {
+                    html += `<h4>${capXmlEscape(cat)}</h4><ul>`;
+                    a.rubric[cat].forEach(item => { html += `<li>${capXmlEscape(item)}</li>`; });
+                    html += `</ul>`;
                 });
             }
-            return '<html>\n<head>\n' +
-'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>\n' +
-'<title>Assignment: ' + capXmlEscape(a.name) + '</title>\n</head>\n<body>\n' +
-'<div class="modal-section">\n<h3>\uD83D\uDCDD Description</h3>\n' +
-'<p>' + capXmlEscape(a.description) + '</p>\n' +
-'<p><strong>Point Value:</strong><span>&nbsp;</span>' + points + ' CAP points</p>\n' +
-(a.estimatedTime ? '<p><strong>Estimated Time:</strong><span>&nbsp;</span>' + capXmlEscape(a.estimatedTime) + '</p>\n' : '') +
-'<p><strong>Category:</strong><span>&nbsp;</span>' + capXmlEscape(a.category) + ' Activity</p>\n' +
-'</div>\n' +
-(reqs ? '<div class="modal-section">\n<h3>\uD83D\uDCCB Requirements</h3>\n<ul class="requirements-list">\n' + reqs + '</ul>\n</div>\n' : '') +
-(rubric ? '<div class="modal-section">\n<h3>\u2705 Complete/Incomplete Rubric</h3>\n' +
-'<p>Student receives Complete when ALL criteria below are met:</p>\n' + rubric + '</div>\n' : '') +
-'</body>\n</html>\n';
+            
+            html += `<hr><p><em>This assignment is part of the Civic Action Project (CAP). ` +
+                `Earn ${points} CAP points by completing it to rubric standard. ` +
+                `Remember: CAP requires completing assignments from at least 2 different categories.</em></p>`;
+            
+            return `<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>${capXmlEscape(a.name)}</title>
+</head>
+<body>
+${html}
+</body>
+</html>`;
         }
-
-        // Generic Canvas page HTML (used for checkpoint / survey items).
+        
+        // Simple wiki page HTML wrapper (used for survey/checkpoint content pages)
         function capPageHtml(title, bodyHtml) {
-            return '<html>\n<head>\n' +
-'<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>\n' +
-'<title>' + capXmlEscape(title) + '</title>\n</head>\n<body>\n' +
-bodyHtml + '\n</body>\n</html>\n';
+            return `<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>${capXmlEscape(title)}</title>
+</head>
+<body>
+${bodyHtml}
+</body>
+</html>`;
         }
-
-        // Gather the instructor's selections from the setup-phase checkboxes.
+        
+        // Gather what the instructor has selected right now in the setup UI
         function capGatherSelected() {
-            const db = (typeof completeAssignmentDatabase !== 'undefined') ? completeAssignmentDatabase : {};
-            const custom = (typeof customAssignments !== 'undefined') ? customAssignments : {};
-            const all = {};
-            Object.keys(db).forEach(function (id) { all[id] = db[id]; });
-            Object.keys(custom).forEach(function (id) { all[id] = custom[id]; });
-
-            const tiers = { 'Higher Effort': [], 'Medium Effort': [], 'Quick Engagement': [] };
-            const other = [];
-            Object.keys(all).forEach(function (id) {
-                const cb = document.getElementById('check-' + id);
-                if (!cb || !cb.checked) return;
-                const pInput = document.getElementById('points-' + id);
-                const points = pInput ? (parseInt(pInput.value, 10) || all[id].defaultPoints || 0)
-                                      : (all[id].defaultPoints || 0);
-                const entry = { id: id, data: all[id], points: points };
-                const cat = all[id].category;
-                if (tiers[cat]) tiers[cat].push(entry);
-                else other.push(entry);
+            const selected = [];
+            Object.keys(completeAssignmentDatabase).forEach(id => {
+                const checkbox = document.getElementById(`check-${id}`);
+                const pointsInput = document.getElementById(`points-${id}`);
+                const dateInput = document.getElementById(`date-${id}`);
+                if (checkbox && checkbox.checked) {
+                    selected.push({
+                        id: id,
+                        assignment: completeAssignmentDatabase[id],
+                        points: parseInt(pointsInput && pointsInput.value) || completeAssignmentDatabase[id].defaultPoints || 0,
+                        dueDate: (dateInput && dateInput.value) || null
+                    });
+                }
             });
-            return { tiers: tiers, other: other };
+            return selected;
         }
-
-        // The three checkpoint assignments + the two surveys, as optional extras.
+        
+        // The three CAP checkpoint assignments (optional add-on)
         function capCheckpointItems() {
             return [
-                { title: 'CAP Checkpoint #1',
-                  body: '<div class="modal-section"><h3>\uD83D\uDCCD CAP Checkpoint #1</h3>' +
-                        '<p>Submit confirmation of your CAP progress for the first checkpoint. ' +
-                        'See your course syllabus for the point target and due date your instructor has set.</p></div>' },
-                { title: 'CAP Checkpoint #2',
-                  body: '<div class="modal-section"><h3>\uD83D\uDCCD CAP Checkpoint #2</h3>' +
-                        '<p>Submit confirmation of your CAP progress for the second checkpoint. ' +
-                        'See your course syllabus for the point target and due date your instructor has set.</p></div>' },
-                { title: 'Final CAP Checkpoint',
-                  body: '<div class="modal-section"><h3>\uD83C\uDFC1 Final CAP Checkpoint</h3>' +
-                        '<p>Submit confirmation that all CAP activities are complete. ' +
-                        'See your course syllabus for the final point target and due date.</p></div>' }
+                {
+                    title: 'CAP Checkpoint #1 — Plan Your Path',
+                    body: '<h2>CAP Checkpoint #1 — Plan Your Path</h2>' +
+                        '<p>Submit a short plan for your Civic Action Project:</p>' +
+                        '<ul>' +
+                        '<li>List the CAP assignments you intend to complete this semester.</li>' +
+                        '<li>Show that your plan totals at least the target points.</li>' +
+                        '<li>Confirm your plan includes at least 2 different categories.</li>' +
+                        '<li>Note any assignments that require advance scheduling (meetings, ceremonies, ride-alongs) and when you plan to do them.</li>' +
+                        '</ul>' +
+                        '<p><em>Complete/Incomplete: submitted plans meeting all four bullets earn credit.</em></p>'
+                },
+                {
+                    title: 'CAP Checkpoint #2 — Midpoint Progress',
+                    body: '<h2>CAP Checkpoint #2 — Midpoint Progress</h2>' +
+                        '<p>Report your CAP progress at the midpoint of the semester:</p>' +
+                        '<ul>' +
+                        '<li>List the CAP assignments you have completed so far and their point values.</li>' +
+                        '<li>State your current point total.</li>' +
+                        '<li>Describe any adjustments to your original plan.</li>' +
+                        '<li>Identify your single biggest obstacle and how you will address it.</li>' +
+                        '</ul>' +
+                        '<p><em>Complete/Incomplete: honest, specific progress reports earn credit — even if you are behind.</em></p>'
+                },
+                {
+                    title: 'CAP Checkpoint #3 — Final Reflection',
+                    body: '<h2>CAP Checkpoint #3 — Final Reflection</h2>' +
+                        '<p>Wrap up your Civic Action Project with a final reflection (400+ words):</p>' +
+                        '<ul>' +
+                        '<li>Which CAP assignment taught you the most, and why?</li>' +
+                        '<li>How did your understanding of government change through direct engagement?</li>' +
+                        '<li>Which civic activity will you continue after this course?</li>' +
+                        '<li>What advice would you give a student starting the CAP next semester?</li>' +
+                        '</ul>' +
+                        '<p><em>Complete/Incomplete: reflections meeting the word count and addressing all four prompts earn credit.</em></p>'
+                }
             ];
         }
+        
+        // The pre/post civic engagement surveys (optional add-on)
         function capSurveyItems() {
+            const questions =
+                '<ol>' +
+                '<li>How interested are you in politics and government? (1 = not at all, 5 = very)</li>' +
+                '<li>How confident are you that you could explain how a bill becomes law? (1-5)</li>' +
+                '<li>How confident are you that you could contact a government official about an issue? (1-5)</li>' +
+                '<li>Have you ever attended a public government meeting? (yes/no)</li>' +
+                '<li>Are you registered to vote? (yes/no/not eligible)</li>' +
+                '<li>How likely are you to vote in the next election you are eligible for? (1-5)</li>' +
+                '<li>How much do you feel government decisions affect your daily life? (1-5)</li>' +
+                '<li>Name one government service you used or encountered this week.</li>' +
+                '<li>How confident are you in your ability to make a difference in your community? (1-5)</li>' +
+                '<li>In one sentence: what do you hope to get out of this course?</li>' +
+                '</ol>';
             return [
-                { title: 'Civic Engagement Pre-Survey',
-                  body: '<div class="modal-section"><h3>\uD83D\uDCCA Civic Engagement Pre-Survey</h3>' +
-                        '<p>Complete this short survey at the start of the term to reflect on your ' +
-                        'current civic engagement. Your responses help shape the course.</p></div>' },
-                { title: 'Civic Engagement Post-Survey',
-                  body: '<div class="modal-section"><h3>\uD83D\uDCCA Civic Engagement Post-Survey</h3>' +
-                        '<p>Complete this short survey at the end of the term to reflect on how your ' +
-                        'civic engagement has changed through the CAP.</p></div>' }
+                {
+                    title: 'CAP Pre-Survey — Civic Engagement Baseline',
+                    body: '<h2>CAP Pre-Survey — Civic Engagement Baseline</h2>' +
+                        '<p>Answer honestly — this is a baseline, not a test. Your answers are compared with your post-survey at the end of the semester.</p>' +
+                        questions +
+                        '<p><em>Complete/Incomplete: all questions answered = credit.</em></p>'
+                },
+                {
+                    title: 'CAP Post-Survey — Civic Engagement Growth',
+                    body: '<h2>CAP Post-Survey — Civic Engagement Growth</h2>' +
+                        '<p>Answer the same questions from the pre-survey, then add:</p>' +
+                        questions +
+                        '<p><strong>Reflection:</strong> Compare these answers to your pre-survey. Where did you grow the most? (100+ words)</p>' +
+                        '<p><em>Complete/Incomplete: all questions + reflection = credit.</em></p>'
+                }
             ];
         }
-
+        
         function capSetStatus(kind, html) {
             const el = document.getElementById('canvasExportStatus');
             el.className = 'canvas-export-status show ' + kind;
             el.innerHTML = html;
         }
-
-        // Main entry point — wired to the Export button.
-        // Smooth-scroll from the Setup Instructions "Take It Live in Canvas"
-        // card down to the Canvas export panel, with a brief flash so the
-        // instructor sees where the page landed.
+        
         function jumpToCanvasExport(event) {
-            if (event) event.preventDefault();
+            event.preventDefault();
             const panel = document.getElementById('canvasExportPanel');
-            if (!panel) return;
             panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
             panel.classList.remove('jump-flash');
-            // Force a reflow so the animation restarts on repeat clicks.
+            // Force a reflow so the animation can replay on repeat clicks
             void panel.offsetWidth;
             panel.classList.add('jump-flash');
-            setTimeout(function () { panel.classList.remove('jump-flash'); }, 1500);
         }
-
+        
         async function exportCanvasPackage() {
+            const statusEl = document.getElementById('canvasExportStatus');
+            statusEl.className = 'canvas-export-status';
+            statusEl.innerHTML = '';
+            
             if (typeof JSZip === 'undefined') {
-                capSetStatus('err', 'The packaging library did not load. Check your internet connection and try again.');
+                capSetStatus('err', 'The zip library did not load. Check your internet connection and reload the page.');
                 return;
             }
-            const { tiers, other } = capGatherSelected();
-            const totalSelected = tiers['Higher Effort'].length + tiers['Medium Effort'].length +
-                                  tiers['Quick Engagement'].length + other.length;
-            if (totalSelected === 0) {
-                capSetStatus('err', 'Select at least one assignment above before exporting a Canvas package.');
-                return;
-            }
-
-            const courseTitle = (document.getElementById('exportCourseTitle').value || '').trim()
-                                || 'Civic Action Project (CAP)';
+            
+            const selected = capGatherSelected();
             const includeCheckpoints = document.getElementById('exportIncludeCheckpoints').checked;
             const includeSurveys = document.getElementById('exportIncludeSurveys').checked;
-
-            capSetStatus('ok', 'Building your Canvas package&hellip;');
-
+            
+            if (selected.length === 0 && !includeCheckpoints && !includeSurveys) {
+                capSetStatus('err', 'Nothing to export — check at least one assignment above (or one of the add-on options).');
+                return;
+            }
+            
+            const courseTitle = (document.getElementById('exportCourseTitle').value || 'Civic Action Project (CAP)').trim();
+            
             try {
                 const zip = new JSZip();
-
-                // ---- collect resources + organization items ----
-                const resources = [];   // {resId, htmlFile}
-                const allItems = [];    // {itemId, resId, title} — every assignment, in order
-
-                const tierOrder = [
-                    ['Higher Effort'],
-                    ['Medium Effort'],
-                    ['Quick Engagement']
-                ];
-
-                function addAssignment(entry, sectionItems) {
-                    const resId = capHexId('cap-assign-' + entry.id + '-' + entry.data.name);
-                    const slug = capSlug(entry.data.name);
-                    const htmlFile = slug + '.html';
-                    zip.file(resId + '/' + htmlFile, capAssignmentHtml(entry.data, entry.points));
-                    zip.file(resId + '/assignment_settings.xml',
-                             capAssignmentSettingsXml(resId, entry.data.name));
-                    resources.push({ resId: resId, htmlFile: htmlFile, isAssignment: true });
-                    sectionItems.push({ itemId: capHexId('item-' + resId),
-                                        resId: resId, title: entry.data.name });
-                }
-
-                tierOrder.forEach(function (t) {
-                    const list = tiers[t[0]];
-                    if (list.length === 0) return;
-                    // sort by points high-to-low within the tier
-                    list.sort(function (a, b) {
-                        if (b.points !== a.points) return b.points - a.points;
-                        return a.data.name.localeCompare(b.data.name);
+                const manifestId = capHexId();
+                const orgId = capHexId();
+                const moduleId = capHexId();
+                
+                const resources = [];   // {resId, type, href, files:[]}
+                const moduleItems = []; // {itemId, resId, title, contentType}
+                const assignmentGroupId = capHexId();
+                
+                // ---- Selected CAP assignments ----
+                const exportDueTime = (document.getElementById('bulkDueTime') && document.getElementById('bulkDueTime').value) || dueTime || '23:59';
+                const addAssignment = (title, htmlBody, dueAtIso) => {
+                    const resId = capHexId();
+                    const folder = resId;
+                    const fileName = capSlug(title) + '.html';
+                    const href = `${folder}/${fileName}`;
+                    
+                    zip.file(href, htmlBody);
+                    zip.file(`${folder}/assignment_settings.xml`, capAssignmentSettingsXml(resId, title, dueAtIso));
+                    
+                    resources.push({
+                        resId: resId,
+                        type: 'associatedcontent/imscc_xmlv1p1/learning-application-resource',
+                        href: href,
+                        files: [href, `${folder}/assignment_settings.xml`]
                     });
-                    list.forEach(function (e) { addAssignment(e, allItems); });
+                    moduleItems.push({
+                        itemId: capHexId(),
+                        resId: resId,
+                        title: title,
+                        contentType: 'Assignment'
+                    });
+                };
+                
+                selected.forEach(entry => {
+                    addAssignment(
+                        entry.assignment.name,
+                        capAssignmentHtml(entry.assignment, entry.points),
+                        capDueAtIso(entry.dueDate, exportDueTime)
+                    );
                 });
-
-                other.forEach(function (e) { addAssignment(e, allItems); });
-
-                // checkpoints / surveys: real Canvas assignments too, so they
-                // appear in the gradebook (Complete/Incomplete, like activities)
-                function addAssignmentExtras(defs) {
-                    defs.forEach(function (p) {
-                        const resId = capHexId('cap-extra-' + p.title);
-                        const slug = capSlug(p.title);
-                        const htmlFile = slug + '.html';
-                        zip.file(resId + '/' + htmlFile, capPageHtml(p.title, p.body));
-                        zip.file(resId + '/assignment_settings.xml',
-                                 capAssignmentSettingsXml(resId, p.title));
-                        resources.push({ resId: resId, htmlFile: htmlFile, isAssignment: true });
-                        allItems.push({ itemId: capHexId('item-' + resId),
-                                        resId: resId, title: p.title });
+                
+                // ---- Optional checkpoints ----
+                if (includeCheckpoints) {
+                    capCheckpointItems().forEach(cp => {
+                        addAssignment(cp.title, capPageHtml(cp.title, cp.body));
                     });
                 }
-                if (includeCheckpoints) addAssignmentExtras(capCheckpointItems());
-                if (includeSurveys) addAssignmentExtras(capSurveyItems());
-
-                // ---- assignment_groups.xml ----
-                // Declares the "Civic Action Project" assignment group that
-                // every generated assignment_settings.xml references.
-                const groupXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-'<assignmentGroups xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">\n' +
-'  <assignmentGroup identifier="cap_group_main">\n' +
-'    <title>Civic Action Project</title>\n' +
-'    <position>1</position>\n' +
-'    <group_weight>0.0</group_weight>\n' +
-'  </assignmentGroup>\n' +
-'</assignmentGroups>\n';
-                zip.file('course_settings/assignment_groups.xml', groupXml);
-
-                // ---- module_meta.xml ----
-                // ONE module holding every selected assignment, in tier order.
-                // CRITICAL: each module item's `identifier` must MATCH the
-                // org-tree item identifier (allItems[].itemId) — that shared
-                // identifier is what places the assignment inside the module.
-                const moduleId = capHexId('cap-module-' + courseTitle);
-                let moduleItemsXml = '';
-                allItems.forEach(function (it, ii) {
-                    moduleItemsXml +=
-'      <item identifier="' + it.itemId + '">\n' +
-'        <content_type>Assignment</content_type>\n' +
-'        <workflow_state>active</workflow_state>\n' +
-'        <title>' + capXmlEscape(it.title) + '</title>\n' +
-'        <identifierref>' + it.resId + '</identifierref>\n' +
-'        <position>' + (ii + 1) + '</position>\n' +
-'        <new_tab>false</new_tab>\n' +
-'        <indent>0</indent>\n' +
-'        <link_settings_json>null</link_settings_json>\n' +
-'      </item>\n';
-                });
-                const moduleMetaXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-'<modules xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">\n' +
-'  <module identifier="' + moduleId + '">\n' +
-'    <title>' + capXmlEscape(courseTitle) + '</title>\n' +
-'    <workflow_state>active</workflow_state>\n' +
-'    <position>1</position>\n' +
-'    <require_sequential_progress>false</require_sequential_progress>\n' +
-'    <locked>false</locked>\n' +
-'    <items>\n' + moduleItemsXml + '    </items>\n' +
-'  </module>\n' +
-'</modules>\n';
-                zip.file('course_settings/module_meta.xml', moduleMetaXml);
-
-                // ---- canvas_export.txt (marks this as a Canvas-style export) ----
-                zip.file('course_settings/canvas_export.txt',
-                    'Q2FudmFzCg==\nMy course was exported as a CAP Canvas package.\n');
-
-                // ---- build imsmanifest.xml ----
-                const manId = capHexId('cap-manifest-' + courseTitle + '-' + Date.now());
-                const courseSettingsResId = capHexId('cap-course-settings-' + courseTitle);
-
-                // org tree: one module header, all items nested under it.
-                // Item identifiers MUST match module_meta item identifiers.
-                let org = '        <item identifier="' + moduleId + '">\n' +
-                          '          <title>' + capXmlEscape(courseTitle) + '</title>\n';
-                allItems.forEach(function (it) {
-                    org += '          <item identifier="' + it.itemId +
-                           '" identifierref="' + it.resId + '">\n' +
-                           '            <title>' + capXmlEscape(it.title) + '</title>\n' +
-                           '          </item>\n';
-                });
-                org += '        </item>\n';
-
-                let res = '';
-                resources.forEach(function (r) {
-                    res += '    <resource identifier="' + r.resId +
-                           '" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="' +
-                           r.resId + '/' + r.htmlFile + '">\n' +
-                           '      <file href="' + r.resId + '/' + r.htmlFile + '"/>\n' +
-                           '      <file href="' + r.resId + '/assignment_settings.xml"/>\n' +
-                           '    </resource>\n';
-                });
-                // course_settings resource — carries module_meta + assignment_groups
-                res += '    <resource identifier="' + courseSettingsResId +
-                       '" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="course_settings/canvas_export.txt">\n' +
-                       '      <file href="course_settings/module_meta.xml"/>\n' +
-                       '      <file href="course_settings/assignment_groups.xml"/>\n' +
-                       '      <file href="course_settings/canvas_export.txt"/>\n' +
-                       '    </resource>\n';
-
-                const today = new Date().toISOString().slice(0, 10);
-                const manifest = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-'<manifest identifier="' + manId + '" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:lomimscc="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd">\n' +
-'  <metadata>\n    <schema>IMS Common Cartridge</schema>\n    <schemaversion>1.1.0</schemaversion>\n' +
-'    <lomimscc:lom>\n      <lomimscc:general>\n        <lomimscc:title>\n' +
-'          <lomimscc:string>' + capXmlEscape(courseTitle) + '</lomimscc:string>\n' +
-'        </lomimscc:title>\n      </lomimscc:general>\n' +
-'      <lomimscc:lifeCycle>\n        <lomimscc:contribute>\n          <lomimscc:date>\n' +
-'            <lomimscc:dateTime>' + today + '</lomimscc:dateTime>\n' +
-'          </lomimscc:date>\n        </lomimscc:contribute>\n      </lomimscc:lifeCycle>\n' +
-'    </lomimscc:lom>\n  </metadata>\n' +
-'  <organizations>\n' +
-'    <organization identifier="org_1" structure="rooted-hierarchy">\n' +
-'      <item identifier="LearningModules">\n' +
-org +
-'      </item>\n    </organization>\n  </organizations>\n' +
-'  <resources>\n' + res + '  </resources>\n</manifest>\n';
-
-                zip.file('imsmanifest.xml', manifest);
-
-                // ---- generate + download ----
+                
+                // ---- Optional surveys ----
+                if (includeSurveys) {
+                    capSurveyItems().forEach(sv => {
+                        addAssignment(sv.title, capPageHtml(sv.title, sv.body));
+                    });
+                }
+                
+                // ---- course_settings ----
+                const moduleItemsXml = moduleItems.map((mi, idx) => `
+      <item identifier="${mi.itemId}">
+        <content_type>${mi.contentType}</content_type>
+        <workflow_state>unpublished</workflow_state>
+        <title>${capXmlEscape(mi.title)}</title>
+        <identifierref>${mi.resId}</identifierref>
+        <position>${idx + 1}</position>
+        <new_tab/>
+        <indent>0</indent>
+        <link_settings_json>null</link_settings_json>
+      </item>`).join('');
+                
+                zip.file('course_settings/module_meta.xml',
+`<?xml version="1.0" encoding="UTF-8"?>
+<modules xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <module identifier="${moduleId}">
+    <title>${capXmlEscape(courseTitle)}</title>
+    <workflow_state>unpublished</workflow_state>
+    <position>1</position>
+    <require_sequential_progress>false</require_sequential_progress>
+    <locked>false</locked>
+    <items>${moduleItemsXml}
+    </items>
+  </module>
+</modules>
+`);
+                
+                zip.file('course_settings/assignment_groups.xml',
+`<?xml version="1.0" encoding="UTF-8"?>
+<assignmentGroups xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <assignmentGroup identifier="${assignmentGroupId}">
+    <title>${capXmlEscape(courseTitle)}</title>
+    <position>1</position>
+    <group_weight>0.0</group_weight>
+  </assignmentGroup>
+</assignmentGroups>
+`);
+                
+                zip.file('course_settings/canvas_export.txt', 'what did the panda say when he was forced out of his natural habitat? Bamboozled!');
+                
+                // ---- imsmanifest.xml ----
+                const resourcesXml = resources.map(r => `
+    <resource identifier="${r.resId}" type="${r.type}" href="${r.href}">
+${r.files.map(f => `      <file href="${f}"/>`).join('\n')}
+    </resource>`).join('');
+                
+                const itemsXml = moduleItems.map(mi => `
+        <item identifier="${capHexId()}" identifierref="${mi.resId}">
+          <title>${capXmlEscape(mi.title)}</title>
+        </item>`).join('');
+                
+                zip.file('imsmanifest.xml',
+`<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="${manifestId}"
+  xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1"
+  xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource"
+  xmlns:lomimscc="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd">
+  <metadata>
+    <schema>IMS Common Cartridge</schema>
+    <schemaversion>1.1.0</schemaversion>
+    <lomimscc:lom>
+      <lomimscc:general>
+        <lomimscc:title>
+          <lomimscc:string>${capXmlEscape(courseTitle)}</lomimscc:string>
+        </lomimscc:title>
+      </lomimscc:general>
+    </lomimscc:lom>
+  </metadata>
+  <organizations>
+    <organization identifier="${orgId}" structure="rooted-hierarchy">
+      <item identifier="LearningModules">${itemsXml}
+      </item>
+    </organization>
+  </organizations>
+  <resources>${resourcesXml}
+  </resources>
+</manifest>
+`);
+                
+                // ---- Generate and download ----
                 const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/zip' });
-                const safeTitle = courseTitle.replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
                 const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = (safeTitle || 'CAP') + '_Canvas_Package.imscc';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-
-                let extraNote = '';
-                if (includeCheckpoints) extraNote += ' Includes 3 checkpoint assignments.';
-                if (includeSurveys) extraNote += ' Includes 2 survey assignments.';
+                const a = document.createElement('a');
+                a.href = url;
+                const dateStr = new Date().toISOString().split('T')[0];
+                a.download = `CAP_Canvas_Package_${dateStr}.imscc`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                const parts = [];
+                if (selected.length) parts.push(`${selected.length} CAP assignment${selected.length === 1 ? '' : 's'}`);
+                if (includeCheckpoints) parts.push('3 checkpoints');
+                if (includeSurveys) parts.push('2 surveys');
+                
+                const datedCount = selected.filter(s => s.dueDate).length;
+                const dateNote = selected.length === 0 ? '' :
+                    datedCount > 0
+                        ? `<br>Due dates: <strong>${datedCount} of ${selected.length}</strong> assignments carry one, due at ${capXmlEscape(exportDueTime)} your local time (written as UTC for Canvas).`
+                        : `<br>Due dates: none set &mdash; add them in the 📅 bar above the assignment list if you want Canvas to show deadlines.`;
+                
                 capSetStatus('ok',
-                    '<strong>Package created.</strong> ' + allItems.length +
-                    ' assignment' + (allItems.length === 1 ? '' : 's') +
-                    ' in one &ldquo;' + capXmlEscape(courseTitle) + '&rdquo; module.' + extraNote +
-                    ' Your <code>.imscc</code> file has downloaded &mdash; in Canvas, go to ' +
-                    'Settings &rarr; Import Course Content, choose <strong>Canvas Course Export ' +
-                    'Package</strong> as the content type, and upload it. ' +
-                    '<strong>Test the import in a sandbox course first.</strong>');
+                    `<strong>Package created!</strong> ${parts.join(' + ')} exported to <code>CAP_Canvas_Package_${dateStr}.imscc</code>.` +
+                    dateNote + `<br>` +
+                    `In Canvas: Settings &rarr; Import Course Content &rarr; <strong>Canvas Course Export Package</strong> &rarr; choose this file. ` +
+                    `Everything imports <em>unpublished</em> inside one &ldquo;${capXmlEscape(courseTitle)}&rdquo; module, so you can review before students see anything.`);
+                
             } catch (err) {
                 console.error('Canvas export failed:', err);
-                capSetStatus('err', 'Something went wrong building the package: ' +
-                             capXmlEscape(err && err.message ? err.message : String(err)) +
-                             '. Try again, or use the thumbs-down button to report it.');
+                capSetStatus('err', 'Export failed: ' + capXmlEscape(err.message || String(err)));
             }
         }
     </script>
 <div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
 <div class="tcc-brand-footer">
-    <div class="tagline">Tomorrow Starts Here</div>
-    <div>Tarrant County College &middot; <a href="https://www.tccd.edu" style="color:#dac792;" target="_blank" rel="noopener">www.tccd.edu</a></div>
-    <div class="eeoc">Tarrant County College is an Equal Opportunity Institution that provides educational and employment opportunities on the basis of merit and without discrimination because of race, color, religion, sex, age, national origin, physical or mental disability, sexual orientation, or veteran status.</div>
+    <div class="tagline">Tarrant County College &mdash; Success Within Reach</div>
+    <div>Civic Action Project &bull; Department of Government &bull; Professor Stew</div>
+    <div class="eeoc">Tarrant County College District is an equal opportunity institution that provides educational and employment opportunities on the basis of merit and without discrimination or harassment.</div>
 </div>
 </body>
 </html>
