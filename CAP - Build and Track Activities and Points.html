@@ -1444,6 +1444,25 @@
             opacity: 0.95;
             margin-top: 2px;
         }
+        .site-topbar {
+            background: #002b5c;
+            color: rgba(255,255,255,0.72);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            text-align: center;
+            padding: 9px 16px;
+        }
+        .site-topbar a {
+            color: #dac792;
+            text-decoration: none;
+            font-weight: 600;
+            white-space: nowrap;
+            border-bottom: 1px solid transparent;
+            transition: color .15s ease, border-color .15s ease;
+        }
+        .site-topbar a:hover,
+        .site-topbar a:focus-visible { color: #fff; border-bottom-color: #dac792; }
         .tcc-brand-stripe { display:flex; height:6px; width:100%; }
         .tcc-brand-stripe > span { flex:1; display:block; }
         .tcc-brand-stripe .nv { background:#002b5c; }
@@ -1469,6 +1488,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
+<div class="site-topbar">
+    <a href="https://jaredalanstewart.com/">&#8592; jaredalanstewart.com</a>
+    &nbsp;·&nbsp;
+    <a href="index.html">CAP home</a>
+</div>
 <div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
     <div class="main-container">
         <!-- Setup Phase - DEFAULT VISIBLE -->

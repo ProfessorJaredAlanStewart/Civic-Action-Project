@@ -45,6 +45,16 @@
             letter-spacing: 0.04em;
             text-align: center;
         }
+        .home-link {
+            color: var(--sand);
+            text-decoration: none;
+            font-weight: 600;
+            white-space: nowrap;
+            border-bottom: 1px solid transparent;
+            transition: color .15s ease, border-color .15s ease;
+        }
+        .home-link:hover,
+        .home-link:focus-visible { color: #fff; border-bottom-color: var(--sand); }
         .hero {
             background: linear-gradient(135deg, #002b5c 0%, #004a63 55%, #00788a 100%);
             color: white;
@@ -455,7 +465,7 @@
 </head>
 <body>
 
-<div class="topbar">An Open Educational Resource &middot; Tarrant County College</div>
+<div class="topbar"><a class="home-link" href="https://jaredalanstewart.com/">&#8592; jaredalanstewart.com</a> &nbsp;·&nbsp; <a class="home-link" href="index.html">CAP home</a> &nbsp;·&nbsp; An Open Educational Resource &middot; Tarrant County College</div>
 <div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
 
 <header class="hero">

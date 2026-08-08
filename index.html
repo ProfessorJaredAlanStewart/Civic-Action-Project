@@ -45,6 +45,16 @@
             letter-spacing: 0.04em;
             text-align: center;
         }
+        .home-link {
+            color: var(--sand);
+            text-decoration: none;
+            font-weight: 600;
+            white-space: nowrap;
+            border-bottom: 1px solid transparent;
+            transition: color .15s ease, border-color .15s ease;
+        }
+        .home-link:hover,
+        .home-link:focus-visible { color: #fff; border-bottom-color: var(--sand); }
         .hero {
             background: linear-gradient(135deg, #002b5c 0%, #004a63 55%, #00788a 100%);
             color: white;
@@ -541,7 +551,8 @@
 <body>
 
 <div class="topbar">
-    Developed by <strong>Jared Alan Stewart at Tarrant County College</strong> &nbsp;·&nbsp; Fort Worth, Texas
+    <a class="home-link" href="https://jaredalanstewart.com/">&#8592; jaredalanstewart.com</a>
+    &nbsp;·&nbsp; Developed by <strong>Jared Alan Stewart at Tarrant County College</strong> &nbsp;·&nbsp; Fort Worth, Texas
 </div>
 <div class="tcc-brand-stripe" aria-hidden="true"><span class="nv"></span><span class="tn"></span><span class="bg"></span><span class="tl"></span></div>
 
@@ -941,7 +952,7 @@
     Created by Jared Stewart · Tarrant County College · Fort Worth, Texas<br><br>
     This work is shared as a free, open educational resource.
     Adapt it, improve it, and share it forward.<br>
-    📧 <a href="mailto:jared.stewart@tccd.edu">jared.stewart@tccd.edu</a>
+    🏠 <a href="https://jaredalanstewart.com/">jaredalanstewart.com</a> &nbsp;·&nbsp; 📧 <a href="mailto:jared.stewart@tccd.edu">jared.stewart@tccd.edu</a>
 </footer>
 
 
