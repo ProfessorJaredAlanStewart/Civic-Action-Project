@@ -1677,6 +1677,10 @@
                             <input type="checkbox" id="exportIncludeSurveys">
                             <span>Include the civic engagement pre-survey and post-survey</span>
                         </label>
+                        <label class="export-toggle">
+                            <input type="checkbox" id="exportTitlePoints" checked>
+                            <span>Show point values in assignment titles &mdash; e.g. &ldquo;Myth Busting Video (25 Points)&rdquo;</span>
+                        </label>
                     </div>
                     <div class="canvas-export-field">
                         <label for="exportCourseTitle">Package title (shown in Canvas):</label>
@@ -1690,7 +1694,9 @@
                     <div class="canvas-export-status" id="canvasExportStatus"></div>
                     <p class="canvas-export-note">
                         Assignments are created as Complete/Incomplete, each with its full rubric in the
-                        description. <strong>Test the import in a Canvas sandbox course before relying on
+                        description. Point values appear in the title and description only &mdash; every
+                        activity imports at 0 gradebook points, so CAP activities never affect the Canvas
+                        grade on their own. <strong>Test the import in a Canvas sandbox course before relying on
                         it</strong> &mdash; Canvas import behavior can vary by institution.
                     </p>
                 </div>
@@ -4785,6 +4791,20 @@
             return gbNormalizeName(name);
         }
         
+        // Normalize an assignment title for matching between the tracker and a
+        // Canvas gradebook header. Strips the trailing Canvas column id
+        // "(12345)" and any "(25 Points)"-style suffix the export adds to
+        // titles, so packages exported with or without titled points both match.
+        function gbNormalizeAssignment(raw) {
+            return String(raw == null ? '' : raw)
+                .replace(/"/g, '')
+                .trim()
+                .replace(/\s*\(\d+\)\s*$/, '')
+                .replace(/\s*\(\s*\d+\s*(?:points?|pts?)\b[^)]*\)\s*$/i, '')
+                .trim()
+                .toLowerCase();
+        }
+        
         function openGradebookGuide() {
             closeDataModal();
             document.getElementById('gbCurrentSectionName').textContent =
@@ -4838,11 +4858,9 @@
                     
                     activeConfig.assignments.forEach(assignment => {
                         let foundCol = -1;
+                        const targetName = gbNormalizeAssignment(assignment.name);
                         for (let c = 0; c < header.length; c++) {
-                            const colName = header[c].replace(/"/g, '').trim();
-                            // Strip the trailing Canvas ID: "Name (12345)" -> "Name"
-                            const baseName = colName.replace(/\s*\(\d+\)\s*$/, '').trim();
-                            if (baseName.toLowerCase() === assignment.name.toLowerCase()) {
+                            if (gbNormalizeAssignment(header[c]) === targetName) {
                                 foundCol = c;
                                 break;
                             }
@@ -5245,6 +5263,8 @@ ${bodyHtml}
             const selected = capGatherSelected();
             const includeCheckpoints = document.getElementById('exportIncludeCheckpoints').checked;
             const includeSurveys = document.getElementById('exportIncludeSurveys').checked;
+            const tpEl = document.getElementById('exportTitlePoints');
+            const includeTitlePoints = tpEl ? tpEl.checked : true;
             
             if (selected.length === 0 && !includeCheckpoints && !includeSurveys) {
                 capSetStatus('err', 'Nothing to export — check at least one assignment above (or one of the add-on options).');
@@ -5289,8 +5309,11 @@ ${bodyHtml}
                 };
                 
                 selected.forEach(entry => {
+                    const exportTitle = includeTitlePoints
+                        ? entry.assignment.name + ' (' + entry.points + ' Points)'
+                        : entry.assignment.name;
                     addAssignment(
-                        entry.assignment.name,
+                        exportTitle,
                         capAssignmentHtml(entry.assignment, entry.points),
                         capDueAtIso(entry.dueDate, exportDueTime)
                     );
