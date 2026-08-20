@@ -1182,6 +1182,11 @@
             border-left: 3px solid #222 !important;
         }
         
+        /* ── Heavier divider where one effort tier ends and the next begins ── */
+        .tier-boundary {
+            border-left: 6px double #111 !important;
+        }
+        
         /* ── High-contrast completion marks ── */
         .completed {
             color: #1a1a1a;
@@ -3734,6 +3739,32 @@
                 });
         }
         
+        // ---- Tracker column order ----
+        // Columns are grouped by tier so every Higher Effort column sits in one
+        // block, then Medium Effort, then Quick Engagement, then Custom. Within
+        // a tier: highest points first, then alphabetical. Without this the
+        // tracker used raw database insertion order, which scattered each tier
+        // into several separate runs (the safety-focused activities were added
+        // to the database later, so they landed in their own colored clump).
+        const TIER_ORDER = {
+            'Higher Effort': 0,
+            'Medium Effort': 1,
+            'Quick Engagement': 2,
+            'Custom': 3
+        };
+        
+        function sortAssignmentsByTier(list) {
+            return (list || []).slice().sort((a, b) => {
+                const ta = TIER_ORDER[a.category] !== undefined ? TIER_ORDER[a.category] : 4;
+                const tb = TIER_ORDER[b.category] !== undefined ? TIER_ORDER[b.category] : 4;
+                if (ta !== tb) return ta - tb;
+                const pa = a.points || 0;
+                const pb = b.points || 0;
+                if (pb !== pa) return pb - pa;
+                return String(a.name).localeCompare(String(b.name));
+            });
+        }
+        
         // ---- Collapsible tier sections ----
         // Each tier's collapsed/expanded state persists in localStorage so
         // reloads remember what the instructor had open. Defaults to expanded.
@@ -4133,7 +4164,14 @@
                     }
                     
                     // MIGRATION: Convert old positional arrays to keyed objects
+                    // (must run BEFORE any re-ordering — the old array format
+                    // is positional and depends on the saved column order)
                     migrateCompletedData();
+                    
+                    // Regroup existing trackers by tier. Completions are keyed
+                    // by assignment ID, so reordering columns never moves a
+                    // student's checkmarks.
+                    activeConfig.assignments = sortAssignmentsByTier(activeConfig.assignments);
                 } catch (e) {
                     console.error('Error loading saved data:', e);
                 }
@@ -4258,6 +4296,9 @@
                 return;
             }
             
+            // Group the columns by tier before the tracker is built
+            activeConfig.assignments = sortAssignmentsByTier(activeConfig.assignments);
+            
             // Show/hide custom legend
             const hasCustom = activeConfig.assignments.some(a => a.category === 'Custom');
             const ctl2 = document.getElementById('customToggleLabel');
@@ -4341,13 +4382,17 @@
             
             // Assignment columns - colored by CATEGORY
             let prevGroup = null;
+            let prevCat = null;
             activeConfig.assignments.forEach((assignment) => {
                 const th = document.createElement('th');
                 th.className = getCatClass(assignment.category);
                 const group = getGroupName(assignment.name);
-                if (prevGroup !== null && group !== prevGroup) {
+                if (prevCat !== null && assignment.category !== prevCat) {
+                    th.classList.add('tier-boundary');
+                } else if (prevGroup !== null && group !== prevGroup) {
                     th.classList.add('cat-boundary');
                 }
+                prevCat = assignment.category;
                 th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)` +
                     (assignment.dueDate ? `<br><span class="th-due">due ${fmtDueShort(assignment.dueDate)}</span>` : '');
                 headerRow.appendChild(th);
@@ -4477,8 +4522,11 @@
             
             // Precompute which columns are assignment-group boundaries
             const boundarySet = new Set();
+            const tierBoundarySet = new Set();
             for (let i = 1; i < activeConfig.assignments.length; i++) {
-                if (getGroupName(activeConfig.assignments[i].name) !== getGroupName(activeConfig.assignments[i-1].name)) {
+                if (activeConfig.assignments[i].category !== activeConfig.assignments[i-1].category) {
+                    tierBoundarySet.add(i);
+                } else if (getGroupName(activeConfig.assignments[i].name) !== getGroupName(activeConfig.assignments[i-1].name)) {
                     boundarySet.add(i);
                 }
             }
@@ -4487,7 +4535,8 @@
             activeConfig.assignments.forEach((assignment, i) => {
                 const th = document.createElement('th');
                 th.className = getCatClass(assignment.category);
-                if (boundarySet.has(i)) th.classList.add('cat-boundary');
+                if (tierBoundarySet.has(i)) th.classList.add('tier-boundary');
+                else if (boundarySet.has(i)) th.classList.add('cat-boundary');
                 th.innerHTML = `${assignment.name}<br>(${assignment.points} pts)` +
                     (assignment.dueDate ? `<br><span class="th-due">due ${fmtDueShort(assignment.dueDate)}</span>` : '');
                 headerRow.appendChild(th);
@@ -4520,7 +4569,8 @@
                         
                         const completed = student.completed[assignment.id] || false;
                         cell.className = `${catCls} activity-cell${completed ? ' is-done' : ''}`;
-                        if (boundarySet.has(aIdx)) cell.classList.add('cat-boundary');
+                        if (tierBoundarySet.has(aIdx)) cell.classList.add('tier-boundary');
+                        else if (boundarySet.has(aIdx)) cell.classList.add('cat-boundary');
                         cell.innerHTML = `<span class="${completed ? 'completed' : 'not-completed'}">${completed ? '✓' : '○'}</span>`;
                         cell.onclick = () => toggleActivity(sIdx, assignment.id);
                         
@@ -4968,6 +5018,10 @@
                             }
                         });
                     });
+                    
+                    // Regroup by tier last — the legacy array conversions above
+                    // rely on the original saved column order.
+                    activeConfig.assignments = sortAssignmentsByTier(activeConfig.assignments);
                     
                     saveConfiguration();
                     renderSectionTabs();
