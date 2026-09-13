@@ -1308,6 +1308,84 @@
         #tableBody tr .student-name:hover {
             background-color: #e6f2f4;
         }
+
+        /* ── Tracker column search ── */
+        .tracker-search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 6px 0 12px;
+            padding: 10px 14px;
+            background: #f5f8fc;
+            border: 1px solid #bfe0e5;
+            border-radius: 8px;
+        }
+        .tracker-search-bar .tsearch-input {
+            flex: 1;
+            min-width: 240px;
+            padding: 10px 14px;
+            border: 2px solid #bcccdc;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+        .tracker-search-bar .tsearch-input:focus {
+            outline: none;
+            border-color: #00788a;
+            box-shadow: 0 0 0 3px rgba(0,120,138,0.15);
+        }
+        .tracker-search-bar .tsearch-count {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #00788a;
+            white-space: nowrap;
+            min-width: 84px;
+        }
+        .tracker-search-bar .tsearch-count.none { color: #98002e; }
+        .tracker-search-bar label.tsearch-hide {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9em;
+            color: #002b5c;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .tracker-search-bar label.tsearch-hide input { width: 16px; height: 16px; accent-color: #00788a; cursor: pointer; }
+        .tracker-search-bar .tsearch-hint {
+            flex-basis: 100%;
+            font-size: 0.82em;
+            color: #667;
+            font-style: italic;
+        }
+
+        /* Matching assignment columns pop; the ring layers on top of the
+           category color so the tier is still readable. */
+        #trackerTable th.col-match {
+            box-shadow: 0 0 0 3px #f9a825, 0 4px 10px rgba(0,0,0,0.25);
+            animation: tsearch-pulse 1s ease;
+        }
+        #trackerTable td.col-match {
+            background-image: linear-gradient(rgba(249,168,37,0.22), rgba(249,168,37,0.22));
+            box-shadow: inset 2px 0 0 #f9a825, inset -2px 0 0 #f9a825;
+        }
+        @keyframes tsearch-pulse {
+            0%   { box-shadow: 0 0 0 3px #fff59d, 0 4px 10px rgba(0,0,0,0.25); }
+            100% { box-shadow: 0 0 0 3px #f9a825, 0 4px 10px rgba(0,0,0,0.25); }
+        }
+        /* The column you're parked on while cycling matches with Enter */
+        #trackerTable th.col-current {
+            box-shadow: 0 0 0 4px #e65100, 0 6px 14px rgba(0,0,0,0.35);
+        }
+        /* Non-matches fade back (kept in place so you don't lose the grid) */
+        #trackerTable th.col-dim,
+        #trackerTable td.col-dim { opacity: 0.28; }
+        /* Strict "Hide non-matches" mode collapses to just the matches */
+        #trackerTable th.col-hidden,
+        #trackerTable td.col-hidden { display: none; }
+
         /* ── Setup landing: compact stepper + progressive disclosure ── */
         .setup-steps {
             display: grid;
@@ -1902,6 +1980,22 @@
                     <label><input type="checkbox" checked onchange="toggleCategory('quick', this.checked)"> <span class="cat-swatch" style="background:#3a6a9e;"></span> Quick Engagement</label>
                     <label id="customToggleLabel" style="display:none;"><input type="checkbox" checked onchange="toggleCategory('custom', this.checked)"> <span class="cat-swatch" style="background:#455A64;"></span> Custom</label>
                     <span style="margin-left:auto; font-size:0.85em; color:#666; font-style:italic;">💡 Click a student's name to highlight their row</span>
+                </div>
+
+                <!-- Assignment column search -->
+                <div class="tracker-search-bar">
+                    <input type="search" id="trackerSearch" class="tsearch-input"
+                           placeholder="🔎 Find an assignment column — try &ldquo;Food&rdquo;, &ldquo;Higher&rdquo;, &ldquo;25 pts&rdquo;, &ldquo;10/3&rdquo;…"
+                           oninput="filterTrackerColumns(this.value)"
+                           onkeydown="trackerSearchKey(event)"
+                           aria-label="Search assignment columns">
+                    <span id="trackerSearchCount" class="tsearch-count" aria-live="polite"></span>
+                    <label class="tsearch-hide">
+                        <input type="checkbox" id="trackerHideNonMatch"
+                               onchange="filterTrackerColumns(document.getElementById('trackerSearch').value)">
+                        Hide non-matches
+                    </label>
+                    <span class="tsearch-hint">Matching columns highlight in place and scroll into view. Searches name, tier, points, and due date. Press <strong>Enter</strong> to jump to the next match, <strong>Esc</strong> to clear.</span>
                 </div>
                 
                 <!-- The table is ALWAYS visible, showing the selected assignments -->
@@ -4362,6 +4456,134 @@
         function getGroupName(name) {
             return name.replace(/\s*#\d+$/, '');
         }
+
+        // ── Tracker column search ──────────────────────────────────────────
+        // Highlights assignment COLUMNS whose name / tier / points / due date
+        // match the query, scrolls the first match into view, and (optionally)
+        // hides the rest. It works purely by column position: the header row and
+        // every student row share the layout
+        //   [ Student Name, ...assignments, Total, Categories, Notes, Actions ]
+        // so assignment i is always child (i + 1) in each row. That means the
+        // search needs no changes to how cells are built and survives re-renders.
+        let trackerMatchCols = [];   // header <th> elements for the current matches
+        let trackerMatchPos = 0;     // index within trackerMatchCols Enter last hit
+
+        function assignmentSearchText(a) {
+            let s = (a.name || '') + ' ' + (a.category || '') + ' ' + a.points + ' pts';
+            if (a.dueDate) s += ' due ' + fmtDueShort(a.dueDate);
+            return s.toLowerCase();
+        }
+
+        function filterTrackerColumns(query, opts) {
+            opts = opts || {};
+            const doScroll = opts.scroll !== false;   // default: scroll to first match
+            const keepPos  = !!opts.keepPos;          // preserve Enter position on re-render
+            const q = (query || '').trim().toLowerCase();
+            const hideEl = document.getElementById('trackerHideNonMatch');
+            const hide = !!(hideEl && hideEl.checked);
+            const headerRow = document.querySelector('#tableHeader tr');
+            const N = activeConfig.assignments.length;
+
+            // Which assignment indices match the query?
+            const matchIdx = [];
+            if (q) {
+                activeConfig.assignments.forEach((a, i) => {
+                    if (assignmentSearchText(a).includes(q)) matchIdx.push(i);
+                });
+            }
+            const matchSet = new Set(matchIdx);
+
+            // Walk the header row + every body row, tagging cells by column index.
+            const rows = [];
+            if (headerRow) rows.push(headerRow);
+            document.querySelectorAll('#tableBody tr').forEach(r => rows.push(r));
+            rows.forEach(row => {
+                for (let i = 0; i < N; i++) {
+                    const cell = row.children[i + 1];      // +1 skips the Student Name column
+                    if (!cell) continue;                    // placeholder / short rows
+                    cell.classList.remove('col-match', 'col-dim', 'col-hidden', 'col-current');
+                    if (!q) continue;                       // cleared → everything back to normal
+                    if (matchSet.has(i)) cell.classList.add('col-match');
+                    else cell.classList.add(hide ? 'col-hidden' : 'col-dim');
+                }
+            });
+
+            // Remember the matching header cells for Enter-cycling and scrolling.
+            trackerMatchCols = headerRow
+                ? matchIdx.map(i => headerRow.children[i + 1]).filter(Boolean)
+                : [];
+            if (!keepPos) trackerMatchPos = 0;
+            if (trackerMatchPos >= trackerMatchCols.length) trackerMatchPos = 0;
+
+            // Live match counter.
+            const counter = document.getElementById('trackerSearchCount');
+            if (counter) {
+                if (!q) {
+                    counter.textContent = '';
+                    counter.classList.remove('none');
+                } else {
+                    const n = matchIdx.length;
+                    counter.textContent = n ? (n + (n === 1 ? ' match' : ' matches')) : 'no matches';
+                    counter.classList.toggle('none', n === 0);
+                }
+            }
+
+            // Mark / reveal the current match.
+            if (q && trackerMatchCols.length) {
+                if (doScroll) {
+                    scrollToMatch(trackerMatchPos);
+                } else {
+                    trackerMatchCols.forEach(th => th.classList.remove('col-current'));
+                    const cur = trackerMatchCols[trackerMatchPos];
+                    if (cur) cur.classList.add('col-current');
+                }
+            }
+        }
+
+        // Move the "current" highlight to a match and scroll it into view,
+        // skipping any column currently hidden by a category toggle.
+        function scrollToMatch(pos) {
+            if (!trackerMatchCols.length) return;
+            const len = trackerMatchCols.length;
+            pos = ((pos % len) + len) % len;                // wrap around
+            let tries = 0;
+            while (trackerMatchCols[pos].offsetParent === null && tries < len) {
+                pos = (pos + 1) % len;
+                tries++;
+            }
+            trackerMatchPos = pos;
+            trackerMatchCols.forEach(th => th.classList.remove('col-current'));
+            const th = trackerMatchCols[pos];
+            th.classList.add('col-current');
+            th.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        }
+
+        function trackerSearchKey(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (trackerMatchCols.length) scrollToMatch(trackerMatchPos + 1);
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                clearTrackerSearch();
+            }
+        }
+
+        function clearTrackerSearch() {
+            const input = document.getElementById('trackerSearch');
+            if (input) input.value = '';
+            filterTrackerColumns('');
+            if (input) input.blur();
+        }
+
+        // Marking a completion, switching sections, or adding a student rebuilds
+        // the table and wipes the highlight classes — re-apply the active search
+        // afterward (without yanking the scroll position or resetting Enter).
+        function reapplyTrackerSearch() {
+            const input = document.getElementById('trackerSearch');
+            if (input && input.value.trim()) {
+                filterTrackerColumns(input.value, { scroll: false, keepPos: true });
+            }
+        }
         
         function renderTableHeaders() {
             // This function ALWAYS shows the assignment columns, even with no sections
@@ -4434,6 +4656,7 @@
                 placeholderRow.appendChild(placeholderCell);
                 body.appendChild(placeholderRow);
             }
+            reapplyTrackerSearch();
         }
         
         function addSection() {
@@ -4625,6 +4848,7 @@
                     body.appendChild(row);
                 });
             }
+            reapplyTrackerSearch();
         }
         
         function toggleActivity(studentIdx, assignmentId) {
