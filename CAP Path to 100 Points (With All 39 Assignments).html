@@ -427,6 +427,17 @@
             color: white;
         }
         
+        .save-note {
+            margin: 12px 0 0;
+            padding: 10px 12px;
+            border-left: 4px solid #98002e;
+            background: #fdf2f4;
+            color: #4a3b3f;
+            font-size: 0.86em;
+            line-height: 1.5;
+            border-radius: 6px;
+        }
+
         .btn-save {
             background: linear-gradient(135deg, #002b5c, #002b5c);
             color: white;
@@ -881,10 +892,16 @@
                     </div>
                     
                     <div class="button-row">
-                        <button class="btn btn-save" onclick="savePlan()">💾 Save</button>
-                        <button class="btn btn-load" onclick="loadPlan()">📂 Load</button>
+                        <button class="btn btn-save" onclick="savePlan()">💾 Save draft to this browser</button>
+                        <button class="btn btn-load" onclick="loadPlan()">📂 Load saved draft</button>
                         <button class="btn btn-reset" onclick="resetAll()">🔄 Reset</button>
                     </div>
+
+                    <p class="save-note">
+                        <strong>This does not submit anything.</strong> A saved draft stays in this
+                        browser on this device only. To turn in your plan, scroll down, answer the
+                        questions, generate the PDF, and upload it to Canvas.
+                    </p>
                     
                     <div class="selection-summary" id="selectionSummary" style="display: none;">
                         <h4>Your Selected Activities:</h4>
@@ -909,7 +926,7 @@
 
             <div class="plan-field">
                 <label for="q1">1. When is the final deadline for submitting all activities?</label>
-                <input type="text" id="q1" placeholder="Check your syllabus or Canvas — e.g., 'End of Week 7, March 6'">
+                <input type="text" id="q1" placeholder="Check your syllabus or Canvas for the exact date">
             </div>
 
             <div class="plan-field">
@@ -1426,13 +1443,13 @@
         
         function savePlan() {
             saveToStorage();
-            alert('✅ Your plan has been saved to this browser!\n\nYour selections will be here when you return.\n\nRemember: Check your Canvas course to confirm which activities your instructor has assigned.');
+            alert('💾 Draft saved to this browser.\n\nThis is NOT a submission. Your instructor cannot see this.\n\nYour selections will be here when you return on this device, in this browser.\n\nTo turn in your plan: scroll down, answer the questions, click "Generate My CAP Plan (PDF)," and upload that PDF to Canvas.');
         }
         
         function loadPlan() {
             const saved = loadFromStorage();
             if (saved) {
-                alert('📂 Your saved plan has been loaded!');
+                alert('📂 Draft loaded. Remember: loading a draft is not submitting it.');
             } else {
                 alert('No saved plan found in this browser.');
             }
