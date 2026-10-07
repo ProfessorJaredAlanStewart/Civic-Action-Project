@@ -25,7 +25,7 @@ This comprehensive guide contains **complete, detailed assignment descriptions a
 - **Higher Effort Activities**: 14 assignments (20-30 points each)
 - **Medium Effort Activities**: 14 assignments (10-15 points each)  
 - **Quick Engagement Activities**: 11 assignments (5-8 points each)
-- **Total Possible Points**: 596 points
+- **Total Possible Points**: 602 points
 - **Student Requirement**: 100 points minimum
 - **Category Requirement**: Must complete activities from at least 2 different categories
 
@@ -34,13 +34,13 @@ This comprehensive guide contains **complete, detailed assignment descriptions a
 ## 📚 Table of Contents
 
 ### [Higher Effort Activities (20-30 points)](#higher-effort-activities)
-1. [Government Meeting Attendance - 25 points](#1-government-meeting-attendance)
+1. [Government Meeting Attendance - 30 points](#1-government-meeting-attendance)
 2. [Civic Interview Series #1 - 20 points](#2-civic-interview-series-1)
 3. [Civic Interview Series #2 - 20 points](#3-civic-interview-series-2)
-4. [Public Services Directory - 30 points](#4-public-services-directory)
+4. [Public Services Directory - 20 points](#4-public-services-directory)
 5. [Myth Busting Video - 25 points](#5-myth-busting-video)
-6. [Public Comment Champion - 25 points](#6-public-comment-champion)
-7. [Civic Organization Immersion - 25 points](#7-civic-organization-immersion)
+6. [Public Comment Champion - 30 points](#6-public-comment-champion)
+7. [Civic Organization Immersion - 30 points](#7-civic-organization-immersion)
 8. [Naturalization Ceremony Witness - 25 points](#8-naturalization-ceremony-witness)
 9. [Ride-Along Documentary - 30 points](#9-ride-along-documentary)
 10. [Voter Registration Drive - 30 points](#10-voter-registration-drive)
@@ -94,7 +94,7 @@ This comprehensive guide contains **complete, detailed assignment descriptions a
 
 ## 1. Government Meeting Attendance
 
-**Points**: 25  
+**Points**: 30  
 **Estimated Time**: 3-4 hours total  
 **Best For**: Students who want to observe democracy in action
 
@@ -112,7 +112,7 @@ Attend a public government meeting (city council, school board, county commissio
 
 ### Complete/Incomplete Rubric
 
-**Students earn COMPLETE (25 points) when ALL criteria below are met:**
+**Students earn COMPLETE (30 points) when ALL criteria below are met:**
 
 #### Attendance Evidence ✓
 - [ ] Proof of attendance provided (photo, program, screenshot, signed sheet, etc.)
@@ -249,7 +249,7 @@ Conduct a second interview with a DIFFERENT community member from Interview #1. 
 
 ## 4. Public Services Directory
 
-**Points**: 30  
+**Points**: 20  
 **Estimated Time**: 4-5 hours  
 **Best For**: Students who like research
 
@@ -268,7 +268,7 @@ Research and create a comprehensive guide to local government services for a spe
 
 ### Complete/Incomplete Rubric
 
-**Students earn COMPLETE (30 points) when ALL criteria below are met:**
+**Students earn COMPLETE (20 points) when ALL criteria below are met:**
 
 #### Scope and Research ✓
 - [ ] Includes minimum 10 different government services
@@ -355,7 +355,7 @@ Create a 3-5 minute video that debunks a common misconception about government u
 
 ## 6. Public Comment Champion
 
-**Points**: 25  
+**Points**: 30  
 **Estimated Time**: 4-5 hours total  
 **Best For**: Students who want direct participation
 
@@ -373,7 +373,7 @@ Research a local issue, prepare public comments following official meeting rules
 
 ### Complete/Incomplete Rubric
 
-**Students earn COMPLETE (25 points) when ALL criteria below are met:**
+**Students earn COMPLETE (30 points) when ALL criteria below are met:**
 
 #### Research and Preparation ✓
 - [ ] Issue thoroughly researched with credible sources
@@ -409,7 +409,7 @@ Research a local issue, prepare public comments following official meeting rules
 
 ## 7. Civic Organization Immersion
 
-**Points**: 25  
+**Points**: 30  
 **Estimated Time**: 10+ hours volunteer time plus documentation  
 **Best For**: Students who want sustained engagement
 
@@ -427,7 +427,7 @@ Volunteer minimum 10 hours with a civic organization to understand how citizens 
 
 ### Complete/Incomplete Rubric
 
-**Students earn COMPLETE (25 points) when ALL criteria below are met:**
+**Students earn COMPLETE (30 points) when ALL criteria below are met:**
 
 #### Volunteer Documentation ✓
 - [ ] 10+ hours completed and verified
@@ -1933,13 +1933,13 @@ All CAP activities use **Complete/Incomplete** grading:
 
 | # | Activity | Points | Time | Category |
 |---|----------|--------|------|----------|
-| 1 | Government Meeting | 25 | 3-4h | Higher |
+| 1 | Government Meeting | 30 | 3-4h | Higher |
 | 2 | Civic Interview #1 | 20 | 2-3h | Higher |
 | 3 | Civic Interview #2 | 20 | 2-3h | Higher |
-| 4 | Public Services Directory | 30 | 4-5h | Higher |
+| 4 | Public Services Directory | 20 | 4-5h | Higher |
 | 5 | Myth Busting Video | 25 | 3-4h | Higher |
-| 6 | Public Comment | 25 | 4-5h | Higher |
-| 7 | Civic Organization | 25 | 10+h | Higher |
+| 6 | Public Comment | 30 | 4-5h | Higher |
+| 7 | Civic Organization | 30 | 10+h | Higher |
 | 8 | Naturalization Ceremony | 25 | 3-4h | Higher |
 | 9 | Ride-Along | 30 | 4-6h | Higher |
 | 10 | Voter Registration | 30 | 6-8h | Higher |
@@ -1973,7 +1973,7 @@ All CAP activities use **Complete/Incomplete** grading:
 | 38 | Emergency Mgmt Visit | 25 | 3-4h | Higher |
 | 39 | Campus Safety Policy Brief | 30 | 5-7h | Higher |
 
-**Total Possible**: 597 points | **Student Requirement**: 100 points
+**Total Possible**: 602 points | **Student Requirement**: 100 points
 
 ---
 

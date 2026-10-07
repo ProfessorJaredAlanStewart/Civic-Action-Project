@@ -1815,7 +1815,7 @@
             meeting: {
                 name: "Government Meeting Attendance",
                 category: "Higher Effort",
-                defaultPoints: 25,
+                defaultPoints: 30,
                 description: "Attend a public government meeting (city council, school board, county commissioners, planning commission, or similar legitimate public body) and write a structured 500-word reflection connecting your observations to course concepts. This activity helps students see how theoretical government concepts play out in real decisions affecting their communities.",
                 estimatedTime: "3-4 hours total",
                 requirements: [
@@ -1922,7 +1922,7 @@
             directory: {
                 name: "Public Services Directory",
                 category: "Higher Effort",
-                defaultPoints: 30,
+                defaultPoints: 20,
                 description: "Create a comprehensive guide documenting at least 10 government services available to a specific audience (college students, families, small businesses, seniors, etc.). This activity helps students discover the breadth of government services while creating a useful resource for their community.",
                 estimatedTime: "4-5 hours",
                 requirements: [
@@ -1998,7 +1998,7 @@
             publiccomment: {
                 name: "Public Comment Champion",
                 category: "Higher Effort",
-                defaultPoints: 25,
+                defaultPoints: 30,
                 description: "Research a local issue, prepare public comments following official meeting rules, and deliver those comments at 2 different government meetings. This activity provides firsthand experience with civic participation and helps students understand the public comment process.",
                 estimatedTime: "4-5 hours total",
                 requirements: [
@@ -2037,7 +2037,7 @@
             civicorg: {
                 name: "Civic Organization Immersion",
                 category: "Higher Effort",
-                defaultPoints: 25,
+                defaultPoints: 30,
                 description: "Volunteer minimum 10 hours with a civic organization to understand how citizens organize to influence government. This activity provides deep insight into grassroots democracy and advocacy strategies.",
                 estimatedTime: "10+ hours volunteer time plus documentation",
                 requirements: [
@@ -3316,6 +3316,12 @@
             const parsed = JSON.parse(raw);
             state.studentName = parsed.studentName || '';
             state.completed = parsed.completed || {};
+            // Point values are fixed by the assignment list, so keep saved
+            // progress in step with it when a value is updated.
+            Object.keys(state.completed).forEach((key) => {
+                const a = completeAssignmentDatabase[key];
+                if (a && state.completed[key]) state.completed[key].points = a.defaultPoints;
+            });
             state.requirementsChecked = parsed.requirementsChecked || {};
         } catch (e) {
             console.warn('Could not load saved state', e);
