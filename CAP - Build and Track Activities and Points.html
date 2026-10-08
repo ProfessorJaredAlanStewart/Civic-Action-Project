@@ -1898,7 +1898,7 @@
                     <div class="canvas-export-options">
                         <label class="export-toggle">
                             <input type="checkbox" id="exportIncludeCheckpoints">
-                            <span>Include the three CAP checkpoint assignments</span>
+                            <span>Include the three CAP checkpoint assignments (set to No Submission; you record each student's points there)</span>
                         </label>
                         <label class="export-toggle">
                             <input type="checkbox" id="exportIncludeSurveys">
@@ -2168,7 +2168,7 @@
             meeting: {
                 name: "Government Meeting Attendance",
                 category: "Higher Effort",
-                defaultPoints: 25,
+                defaultPoints: 30,
                 description: "Attend a public government meeting (city council, school board, county commissioners, planning commission, or similar legitimate public body) and write a structured 500-word reflection connecting your observations to course concepts. This activity helps students see how theoretical government concepts play out in real decisions affecting their communities.",
                 estimatedTime: "3-4 hours total",
                 requirements: [
@@ -2275,7 +2275,7 @@
             directory: {
                 name: "Public Services Directory",
                 category: "Higher Effort",
-                defaultPoints: 30,
+                defaultPoints: 20,
                 description: "Create a comprehensive guide documenting at least 10 government services available to a specific audience (college students, families, small businesses, seniors, etc.). This activity helps students discover the breadth of government services while creating a useful resource for their community.",
                 estimatedTime: "4-5 hours",
                 requirements: [
@@ -2351,7 +2351,7 @@
             publiccomment: {
                 name: "Public Comment Champion",
                 category: "Higher Effort",
-                defaultPoints: 25,
+                defaultPoints: 30,
                 description: "Research a local issue, prepare public comments following official meeting rules, and deliver those comments at 2 different government meetings. This activity provides firsthand experience with civic participation and helps students understand the public comment process.",
                 estimatedTime: "4-5 hours total",
                 requirements: [
@@ -2390,7 +2390,7 @@
             civicorg: {
                 name: "Civic Organization Immersion",
                 category: "Higher Effort",
-                defaultPoints: 25,
+                defaultPoints: 30,
                 description: "Volunteer minimum 10 hours with a civic organization to understand how citizens organize to influence government. This activity provides deep insight into grassroots democracy and advocacy strategies.",
                 estimatedTime: "10+ hours volunteer time plus documentation",
                 requirements: [
@@ -5617,7 +5617,7 @@
         }
 
         // Build the assignment_settings.xml (Canvas cccv1p0 schema, pass_fail).
-        function capAssignmentSettingsXml(resId, title, dueAtIso) {
+        function capAssignmentSettingsXml(resId, title, dueAtIso, submissionTypes) {
             return '<?xml version="1.0" encoding="UTF-8"?>\n' +
 '<assignment identifier="' + resId + '" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">\n' +
 '  <title>' + capXmlEscape(title) + '</title>\n' +
@@ -5631,7 +5631,7 @@
 '  <points_possible>0.0</points_possible>\n' +
 '  <grading_type>pass_fail</grading_type>\n' +
 '  <all_day>false</all_day>\n' +
-'  <submission_types>online_text_entry,online_url,media_recording,online_upload</submission_types>\n' +
+'  <submission_types>' + (submissionTypes || 'online_text_entry,online_url,media_recording,online_upload') + '</submission_types>\n' +
 '  <turnitin_enabled>false</turnitin_enabled>\n' +
 '  <vericite_enabled>false</vericite_enabled>\n' +
 '  <peer_review_count>0</peer_review_count>\n' +
@@ -5727,19 +5727,26 @@ bodyHtml + '\n</body>\n</html>\n';
 
         // The three checkpoint assignments + the two surveys, as optional extras.
         function capCheckpointItems() {
+            // Checkpoints are where the instructor records each student's running
+            // CAP total. Students submit nothing here, so they export as No Submission.
+            const how = '<p>You earn CAP points by completing activities and submitting each one ' +
+                        'on its <strong>own assignment page</strong> in the CAP module.</p>';
             return [
-                { title: 'CAP Checkpoint #1',
+                { title: 'CAP Checkpoint #1', noSubmission: true,
                   body: '<div class="modal-section"><h3>\uD83D\uDCCD CAP Checkpoint #1</h3>' +
-                        '<p>Submit confirmation of your CAP progress for the first checkpoint. ' +
-                        'See your course syllabus for the point target and due date your instructor has set.</p></div>' },
-                { title: 'CAP Checkpoint #2',
+                        '<p><strong>There is nothing to submit here.</strong> This is where your instructor ' +
+                        'records the CAP points you have earned by the first checkpoint.</p>' + how +
+                        '<p>See your course syllabus for this checkpoint\'s point target and date.</p></div>' },
+                { title: 'CAP Checkpoint #2', noSubmission: true,
                   body: '<div class="modal-section"><h3>\uD83D\uDCCD CAP Checkpoint #2</h3>' +
-                        '<p>Submit confirmation of your CAP progress for the second checkpoint. ' +
-                        'See your course syllabus for the point target and due date your instructor has set.</p></div>' },
-                { title: 'Final CAP Checkpoint',
+                        '<p><strong>There is nothing to submit here.</strong> This is where your instructor ' +
+                        'records the CAP points you have earned by the second checkpoint.</p>' + how +
+                        '<p>See your course syllabus for this checkpoint\'s point target and date.</p></div>' },
+                { title: 'Final CAP Checkpoint', noSubmission: true,
                   body: '<div class="modal-section"><h3>\uD83C\uDFC1 Final CAP Checkpoint</h3>' +
-                        '<p>Submit confirmation that all CAP activities are complete. ' +
-                        'See your course syllabus for the final point target and due date.</p></div>' }
+                        '<p><strong>There is nothing to submit here.</strong> This is where your instructor ' +
+                        'records your final CAP points.</p>' + how +
+                        '<p>Submit every activity before the final deadline in your course syllabus.</p></div>' }
             ];
         }
         function capSurveyItems() {
@@ -5852,7 +5859,8 @@ bodyHtml + '\n</body>\n</html>\n';
                         const htmlFile = slug + '.html';
                         zip.file(resId + '/' + htmlFile, capPageHtml(p.title, p.body));
                         zip.file(resId + '/assignment_settings.xml',
-                                 capAssignmentSettingsXml(resId, p.title));
+                                 capAssignmentSettingsXml(resId, p.title, null,
+                                     p.noSubmission ? 'none' : null));
                         resources.push({ resId: resId, htmlFile: htmlFile, isAssignment: true });
                         allItems.push({ itemId: capHexId('item-' + resId),
                                         resId: resId, title: p.title });
